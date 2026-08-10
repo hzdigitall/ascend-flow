@@ -27,7 +27,10 @@ import { Route as AuthenticatedPedidosRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedPlanosRouteImport } from './routes/_authenticated/planos'
 import { Route as AuthenticatedPontosRouteImport } from './routes/_authenticated/pontos'
 import { Route as AuthenticatedSaquesRouteImport } from './routes/_authenticated/saques'
+import { Route as AuthenticatedAdminConfiguracoesRouteImport } from './routes/_authenticated/admin/configuracoes'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
+import { Route as AuthenticatedAdminSaquesRouteImport } from './routes/_authenticated/admin/saques'
+import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
 import { Route as AuthenticatedPagamentoPaymentIdRouteImport } from './routes/_authenticated/pagamento.$paymentId'
 import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/webhooks/pix'
 
@@ -121,10 +124,28 @@ const AuthenticatedSaquesRoute = AuthenticatedSaquesRouteImport.update({
   path: '/saques',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminConfiguracoesRoute =
+  AuthenticatedAdminConfiguracoesRouteImport.update({
+    id: '/admin/configuracoes',
+    path: '/admin/configuracoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminDashboardRoute =
   AuthenticatedAdminDashboardRouteImport.update({
     id: '/admin/dashboard',
     path: '/admin/dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminSaquesRoute =
+  AuthenticatedAdminSaquesRouteImport.update({
+    id: '/admin/saques',
+    path: '/admin/saques',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminUsuariosRoute =
+  AuthenticatedAdminUsuariosRouteImport.update({
+    id: '/admin/usuarios',
+    path: '/admin/usuarios',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPagamentoPaymentIdRoute =
@@ -157,7 +178,10 @@ export interface FileRoutesByFullPath {
   '/planos': typeof AuthenticatedPlanosRoute
   '/pontos': typeof AuthenticatedPontosRoute
   '/saques': typeof AuthenticatedSaquesRoute
+  '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/saques': typeof AuthenticatedAdminSaquesRoute
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
@@ -179,7 +203,10 @@ export interface FileRoutesByTo {
   '/planos': typeof AuthenticatedPlanosRoute
   '/pontos': typeof AuthenticatedPontosRoute
   '/saques': typeof AuthenticatedSaquesRoute
+  '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/saques': typeof AuthenticatedAdminSaquesRoute
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
@@ -203,7 +230,10 @@ export interface FileRoutesById {
   '/_authenticated/planos': typeof AuthenticatedPlanosRoute
   '/_authenticated/pontos': typeof AuthenticatedPontosRoute
   '/_authenticated/saques': typeof AuthenticatedSaquesRoute
+  '/_authenticated/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/_authenticated/admin/saques': typeof AuthenticatedAdminSaquesRoute
+  '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
@@ -227,7 +257,10 @@ export interface FileRouteTypes {
     | '/planos'
     | '/pontos'
     | '/saques'
+    | '/admin/configuracoes'
     | '/admin/dashboard'
+    | '/admin/saques'
+    | '/admin/usuarios'
     | '/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   fileRoutesByTo: FileRoutesByTo
@@ -249,7 +282,10 @@ export interface FileRouteTypes {
     | '/planos'
     | '/pontos'
     | '/saques'
+    | '/admin/configuracoes'
     | '/admin/dashboard'
+    | '/admin/saques'
+    | '/admin/usuarios'
     | '/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   id:
@@ -272,7 +308,10 @@ export interface FileRouteTypes {
     | '/_authenticated/planos'
     | '/_authenticated/pontos'
     | '/_authenticated/saques'
+    | '/_authenticated/admin/configuracoes'
     | '/_authenticated/admin/dashboard'
+    | '/_authenticated/admin/saques'
+    | '/_authenticated/admin/usuarios'
     | '/_authenticated/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   fileRoutesById: FileRoutesById
@@ -417,11 +456,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSaquesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/configuracoes': {
+      id: '/_authenticated/admin/configuracoes'
+      path: '/admin/configuracoes'
+      fullPath: '/admin/configuracoes'
+      preLoaderRoute: typeof AuthenticatedAdminConfiguracoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/dashboard': {
       id: '/_authenticated/admin/dashboard'
       path: '/admin/dashboard'
       fullPath: '/admin/dashboard'
       preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/saques': {
+      id: '/_authenticated/admin/saques'
+      path: '/admin/saques'
+      fullPath: '/admin/saques'
+      preLoaderRoute: typeof AuthenticatedAdminSaquesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/usuarios': {
+      id: '/_authenticated/admin/usuarios'
+      path: '/admin/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/pagamento/$paymentId': {
@@ -452,7 +512,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlanosRoute: typeof AuthenticatedPlanosRoute
   AuthenticatedPontosRoute: typeof AuthenticatedPontosRoute
   AuthenticatedSaquesRoute: typeof AuthenticatedSaquesRoute
+  AuthenticatedAdminConfiguracoesRoute: typeof AuthenticatedAdminConfiguracoesRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
+  AuthenticatedAdminSaquesRoute: typeof AuthenticatedAdminSaquesRoute
+  AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedPagamentoPaymentIdRoute: typeof AuthenticatedPagamentoPaymentIdRoute
 }
 
@@ -467,7 +530,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlanosRoute: AuthenticatedPlanosRoute,
   AuthenticatedPontosRoute: AuthenticatedPontosRoute,
   AuthenticatedSaquesRoute: AuthenticatedSaquesRoute,
+  AuthenticatedAdminConfiguracoesRoute: AuthenticatedAdminConfiguracoesRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
+  AuthenticatedAdminSaquesRoute: AuthenticatedAdminSaquesRoute,
+  AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedPagamentoPaymentIdRoute: AuthenticatedPagamentoPaymentIdRoute,
 }
 
