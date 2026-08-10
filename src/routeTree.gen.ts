@@ -19,6 +19,7 @@ import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedPlanosRouteImport } from './routes/_authenticated/planos'
+import { Route as AuthenticatedPontosRouteImport } from './routes/_authenticated/pontos'
 import { Route as AuthenticatedPagamentoPaymentIdRouteImport } from './routes/_authenticated/pagamento.$paymentId'
 import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/webhooks/pix'
 
@@ -71,6 +72,11 @@ const AuthenticatedPlanosRoute = AuthenticatedPlanosRouteImport.update({
   path: '/planos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPontosRoute = AuthenticatedPontosRouteImport.update({
+  id: '/pontos',
+  path: '/pontos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPagamentoPaymentIdRoute =
   AuthenticatedPagamentoPaymentIdRouteImport.update({
     id: '/pagamento/$paymentId',
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/termos': typeof TermosRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/planos': typeof AuthenticatedPlanosRoute
+  '/pontos': typeof AuthenticatedPontosRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/termos': typeof TermosRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/planos': typeof AuthenticatedPlanosRoute
+  '/pontos': typeof AuthenticatedPontosRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/termos': typeof TermosRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/planos': typeof AuthenticatedPlanosRoute
+  '/_authenticated/pontos': typeof AuthenticatedPontosRoute
   '/_authenticated/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
@@ -136,6 +145,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/dashboard'
     | '/planos'
+    | '/pontos'
     | '/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   fileRoutesByTo: FileRoutesByTo
@@ -149,6 +159,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/dashboard'
     | '/planos'
+    | '/pontos'
     | '/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   id:
@@ -163,6 +174,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/_authenticated/dashboard'
     | '/_authenticated/planos'
+    | '/_authenticated/pontos'
     | '/_authenticated/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   fileRoutesById: FileRoutesById
@@ -251,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pontos': {
+      id: '/_authenticated/pontos'
+      path: '/pontos'
+      fullPath: '/pontos'
+      preLoaderRoute: typeof AuthenticatedPontosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/pagamento/$paymentId': {
       id: '/_authenticated/pagamento/$paymentId'
       path: '/pagamento/$paymentId'
@@ -271,12 +290,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedPlanosRoute: typeof AuthenticatedPlanosRoute
+  AuthenticatedPontosRoute: typeof AuthenticatedPontosRoute
   AuthenticatedPagamentoPaymentIdRoute: typeof AuthenticatedPagamentoPaymentIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedPlanosRoute: AuthenticatedPlanosRoute,
+  AuthenticatedPontosRoute: AuthenticatedPontosRoute,
   AuthenticatedPagamentoPaymentIdRoute: AuthenticatedPagamentoPaymentIdRoute,
 }
 
