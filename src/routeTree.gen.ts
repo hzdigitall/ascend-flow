@@ -27,6 +27,7 @@ import { Route as AuthenticatedPedidosRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedPlanosRouteImport } from './routes/_authenticated/planos'
 import { Route as AuthenticatedPontosRouteImport } from './routes/_authenticated/pontos'
 import { Route as AuthenticatedSaquesRouteImport } from './routes/_authenticated/saques'
+import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
 import { Route as AuthenticatedPagamentoPaymentIdRouteImport } from './routes/_authenticated/pagamento.$paymentId'
 import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/webhooks/pix'
 
@@ -120,6 +121,12 @@ const AuthenticatedSaquesRoute = AuthenticatedSaquesRouteImport.update({
   path: '/saques',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminDashboardRoute =
+  AuthenticatedAdminDashboardRouteImport.update({
+    id: '/admin/dashboard',
+    path: '/admin/dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPagamentoPaymentIdRoute =
   AuthenticatedPagamentoPaymentIdRouteImport.update({
     id: '/pagamento/$paymentId',
@@ -150,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/planos': typeof AuthenticatedPlanosRoute
   '/pontos': typeof AuthenticatedPontosRoute
   '/saques': typeof AuthenticatedSaquesRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
@@ -171,6 +179,7 @@ export interface FileRoutesByTo {
   '/planos': typeof AuthenticatedPlanosRoute
   '/pontos': typeof AuthenticatedPontosRoute
   '/saques': typeof AuthenticatedSaquesRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
@@ -194,6 +203,7 @@ export interface FileRoutesById {
   '/_authenticated/planos': typeof AuthenticatedPlanosRoute
   '/_authenticated/pontos': typeof AuthenticatedPontosRoute
   '/_authenticated/saques': typeof AuthenticatedSaquesRoute
+  '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
@@ -217,6 +227,7 @@ export interface FileRouteTypes {
     | '/planos'
     | '/pontos'
     | '/saques'
+    | '/admin/dashboard'
     | '/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   fileRoutesByTo: FileRoutesByTo
@@ -238,6 +249,7 @@ export interface FileRouteTypes {
     | '/planos'
     | '/pontos'
     | '/saques'
+    | '/admin/dashboard'
     | '/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   id:
@@ -260,6 +272,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planos'
     | '/_authenticated/pontos'
     | '/_authenticated/saques'
+    | '/_authenticated/admin/dashboard'
     | '/_authenticated/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   fileRoutesById: FileRoutesById
@@ -404,6 +417,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSaquesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/dashboard': {
+      id: '/_authenticated/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/pagamento/$paymentId': {
       id: '/_authenticated/pagamento/$paymentId'
       path: '/pagamento/$paymentId'
@@ -432,6 +452,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlanosRoute: typeof AuthenticatedPlanosRoute
   AuthenticatedPontosRoute: typeof AuthenticatedPontosRoute
   AuthenticatedSaquesRoute: typeof AuthenticatedSaquesRoute
+  AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedPagamentoPaymentIdRoute: typeof AuthenticatedPagamentoPaymentIdRoute
 }
 
@@ -446,6 +467,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlanosRoute: AuthenticatedPlanosRoute,
   AuthenticatedPontosRoute: AuthenticatedPontosRoute,
   AuthenticatedSaquesRoute: AuthenticatedSaquesRoute,
+  AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
   AuthenticatedPagamentoPaymentIdRoute: AuthenticatedPagamentoPaymentIdRoute,
 }
 

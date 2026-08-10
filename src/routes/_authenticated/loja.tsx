@@ -29,7 +29,7 @@ function Page() {
         .from("products")
         .select("*")
         .eq("active", true)
-        .order("points_price", { ascending: true });
+        .order("points_cost", { ascending: true });
       if (error) throw error;
       return data;
     },
@@ -62,7 +62,7 @@ function Page() {
               <CardContent className="p-5">
                 <h2 className="truncate text-base font-bold">{p.name}</h2>
                 <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{p.description}</p>
-                <p className="mt-3 text-lg font-extrabold text-primary">{pts(p.points_price)}</p>
+                <p className="mt-3 text-lg font-extrabold text-primary">{pts(p.points_cost)}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {p.stock > 0 ? `${p.stock} em estoque` : "Sem estoque"}
                 </p>

@@ -53,7 +53,7 @@ function Page() {
               {data!.map((o) => (
                 <li key={o.id} className="flex items-center justify-between gap-3 py-3">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{pts(o.points_total)}</p>
+                    <p className="truncate text-sm font-medium">{pts(o.points_used)}</p>
                     <p className="text-xs text-muted-foreground">{dateTimeBR(o.created_at)}</p>
                   </div>
                   <StatusBadge status={o.status} />
