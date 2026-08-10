@@ -19,6 +19,7 @@ import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedPlanosRouteImport } from './routes/_authenticated/planos'
+import { Route as AuthenticatedPagamentoPaymentIdRouteImport } from './routes/_authenticated/pagamento.$paymentId'
 import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/webhooks/pix'
 
 const IndexRoute = IndexRouteImport.update({
@@ -70,6 +71,12 @@ const AuthenticatedPlanosRoute = AuthenticatedPlanosRouteImport.update({
   path: '/planos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPagamentoPaymentIdRoute =
+  AuthenticatedPagamentoPaymentIdRouteImport.update({
+    id: '/pagamento/$paymentId',
+    path: '/pagamento/$paymentId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicWebhooksPixRoute = ApiPublicWebhooksPixRouteImport.update({
   id: '/api/public/webhooks/pix',
   path: '/api/public/webhooks/pix',
@@ -86,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/termos': typeof TermosRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/planos': typeof AuthenticatedPlanosRoute
+  '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
 export interface FileRoutesByTo {
@@ -98,6 +106,7 @@ export interface FileRoutesByTo {
   '/termos': typeof TermosRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/planos': typeof AuthenticatedPlanosRoute
+  '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
 export interface FileRoutesById {
@@ -112,6 +121,7 @@ export interface FileRoutesById {
   '/termos': typeof TermosRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/planos': typeof AuthenticatedPlanosRoute
+  '/_authenticated/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
 export interface FileRouteTypes {
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/dashboard'
     | '/planos'
+    | '/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/dashboard'
     | '/planos'
+    | '/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   id:
     | '__root__'
@@ -151,6 +163,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/_authenticated/dashboard'
     | '/_authenticated/planos'
+    | '/_authenticated/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   fileRoutesById: FileRoutesById
 }
@@ -238,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pagamento/$paymentId': {
+      id: '/_authenticated/pagamento/$paymentId'
+      path: '/pagamento/$paymentId'
+      fullPath: '/pagamento/$paymentId'
+      preLoaderRoute: typeof AuthenticatedPagamentoPaymentIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/webhooks/pix': {
       id: '/api/public/webhooks/pix'
       path: '/api/public/webhooks/pix'
@@ -251,11 +271,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedPlanosRoute: typeof AuthenticatedPlanosRoute
+  AuthenticatedPagamentoPaymentIdRoute: typeof AuthenticatedPagamentoPaymentIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedPlanosRoute: AuthenticatedPlanosRoute,
+  AuthenticatedPagamentoPaymentIdRoute: AuthenticatedPagamentoPaymentIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
