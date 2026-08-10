@@ -69,7 +69,7 @@ export const Route = createFileRoute("/api/public/webhooks/pix")({
           .from("payment_events")
           .insert({ payment_id: paymentId, event_type: `webhook:${status || "unknown"}`, payload: payload as unknown as Json });
 
-        if (["paid", "approved", "completed", "confirmed", "payment.approved"].includes(status)) {
+        if (["paid", "approved", "completed", "confirmed", "payment.approved", "payment.paid"].includes(status)) {
           const { error } = await supabaseAdmin.rpc("confirm_payment", {
             _payment: paymentId,
             _payload: payload as unknown as Json,
