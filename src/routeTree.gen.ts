@@ -18,9 +18,15 @@ import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
+import { Route as AuthenticatedContaRouteImport } from './routes/_authenticated/conta'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedIndicacoesRouteImport } from './routes/_authenticated/indicacoes'
+import { Route as AuthenticatedLojaRouteImport } from './routes/_authenticated/loja'
+import { Route as AuthenticatedNotificacoesRouteImport } from './routes/_authenticated/notificacoes'
+import { Route as AuthenticatedPedidosRouteImport } from './routes/_authenticated/pedidos'
 import { Route as AuthenticatedPlanosRouteImport } from './routes/_authenticated/planos'
 import { Route as AuthenticatedPontosRouteImport } from './routes/_authenticated/pontos'
+import { Route as AuthenticatedSaquesRouteImport } from './routes/_authenticated/saques'
 import { Route as AuthenticatedPagamentoPaymentIdRouteImport } from './routes/_authenticated/pagamento.$paymentId'
 import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/webhooks/pix'
 
@@ -68,9 +74,35 @@ const AuthenticatedCarteiraRoute = AuthenticatedCarteiraRouteImport.update({
   path: '/carteira',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedContaRoute = AuthenticatedContaRouteImport.update({
+  id: '/conta',
+  path: '/conta',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedIndicacoesRoute = AuthenticatedIndicacoesRouteImport.update({
+  id: '/indicacoes',
+  path: '/indicacoes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLojaRoute = AuthenticatedLojaRouteImport.update({
+  id: '/loja',
+  path: '/loja',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedNotificacoesRoute =
+  AuthenticatedNotificacoesRouteImport.update({
+    id: '/notificacoes',
+    path: '/notificacoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPedidosRoute = AuthenticatedPedidosRouteImport.update({
+  id: '/pedidos',
+  path: '/pedidos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPlanosRoute = AuthenticatedPlanosRouteImport.update({
@@ -81,6 +113,11 @@ const AuthenticatedPlanosRoute = AuthenticatedPlanosRouteImport.update({
 const AuthenticatedPontosRoute = AuthenticatedPontosRouteImport.update({
   id: '/pontos',
   path: '/pontos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSaquesRoute = AuthenticatedSaquesRouteImport.update({
+  id: '/saques',
+  path: '/saques',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPagamentoPaymentIdRoute =
@@ -104,9 +141,15 @@ export interface FileRoutesByFullPath {
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/termos': typeof TermosRoute
   '/carteira': typeof AuthenticatedCarteiraRoute
+  '/conta': typeof AuthenticatedContaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/indicacoes': typeof AuthenticatedIndicacoesRoute
+  '/loja': typeof AuthenticatedLojaRoute
+  '/notificacoes': typeof AuthenticatedNotificacoesRoute
+  '/pedidos': typeof AuthenticatedPedidosRoute
   '/planos': typeof AuthenticatedPlanosRoute
   '/pontos': typeof AuthenticatedPontosRoute
+  '/saques': typeof AuthenticatedSaquesRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
@@ -119,9 +162,15 @@ export interface FileRoutesByTo {
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/termos': typeof TermosRoute
   '/carteira': typeof AuthenticatedCarteiraRoute
+  '/conta': typeof AuthenticatedContaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/indicacoes': typeof AuthenticatedIndicacoesRoute
+  '/loja': typeof AuthenticatedLojaRoute
+  '/notificacoes': typeof AuthenticatedNotificacoesRoute
+  '/pedidos': typeof AuthenticatedPedidosRoute
   '/planos': typeof AuthenticatedPlanosRoute
   '/pontos': typeof AuthenticatedPontosRoute
+  '/saques': typeof AuthenticatedSaquesRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
@@ -136,9 +185,15 @@ export interface FileRoutesById {
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/termos': typeof TermosRoute
   '/_authenticated/carteira': typeof AuthenticatedCarteiraRoute
+  '/_authenticated/conta': typeof AuthenticatedContaRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/indicacoes': typeof AuthenticatedIndicacoesRoute
+  '/_authenticated/loja': typeof AuthenticatedLojaRoute
+  '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
+  '/_authenticated/pedidos': typeof AuthenticatedPedidosRoute
   '/_authenticated/planos': typeof AuthenticatedPlanosRoute
   '/_authenticated/pontos': typeof AuthenticatedPontosRoute
+  '/_authenticated/saques': typeof AuthenticatedSaquesRoute
   '/_authenticated/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
@@ -153,9 +208,15 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/termos'
     | '/carteira'
+    | '/conta'
     | '/dashboard'
+    | '/indicacoes'
+    | '/loja'
+    | '/notificacoes'
+    | '/pedidos'
     | '/planos'
     | '/pontos'
+    | '/saques'
     | '/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   fileRoutesByTo: FileRoutesByTo
@@ -168,9 +229,15 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/termos'
     | '/carteira'
+    | '/conta'
     | '/dashboard'
+    | '/indicacoes'
+    | '/loja'
+    | '/notificacoes'
+    | '/pedidos'
     | '/planos'
     | '/pontos'
+    | '/saques'
     | '/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   id:
@@ -184,9 +251,15 @@ export interface FileRouteTypes {
     | '/redefinir-senha'
     | '/termos'
     | '/_authenticated/carteira'
+    | '/_authenticated/conta'
     | '/_authenticated/dashboard'
+    | '/_authenticated/indicacoes'
+    | '/_authenticated/loja'
+    | '/_authenticated/notificacoes'
+    | '/_authenticated/pedidos'
     | '/_authenticated/planos'
     | '/_authenticated/pontos'
+    | '/_authenticated/saques'
     | '/_authenticated/pagamento/$paymentId'
     | '/api/public/webhooks/pix'
   fileRoutesById: FileRoutesById
@@ -268,11 +341,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCarteiraRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/conta': {
+      id: '/_authenticated/conta'
+      path: '/conta'
+      fullPath: '/conta'
+      preLoaderRoute: typeof AuthenticatedContaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/indicacoes': {
+      id: '/_authenticated/indicacoes'
+      path: '/indicacoes'
+      fullPath: '/indicacoes'
+      preLoaderRoute: typeof AuthenticatedIndicacoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/loja': {
+      id: '/_authenticated/loja'
+      path: '/loja'
+      fullPath: '/loja'
+      preLoaderRoute: typeof AuthenticatedLojaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/notificacoes': {
+      id: '/_authenticated/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/notificacoes'
+      preLoaderRoute: typeof AuthenticatedNotificacoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pedidos': {
+      id: '/_authenticated/pedidos'
+      path: '/pedidos'
+      fullPath: '/pedidos'
+      preLoaderRoute: typeof AuthenticatedPedidosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/planos': {
@@ -287,6 +395,13 @@ declare module '@tanstack/react-router' {
       path: '/pontos'
       fullPath: '/pontos'
       preLoaderRoute: typeof AuthenticatedPontosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/saques': {
+      id: '/_authenticated/saques'
+      path: '/saques'
+      fullPath: '/saques'
+      preLoaderRoute: typeof AuthenticatedSaquesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/pagamento/$paymentId': {
@@ -308,17 +423,29 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCarteiraRoute: typeof AuthenticatedCarteiraRoute
+  AuthenticatedContaRoute: typeof AuthenticatedContaRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedIndicacoesRoute: typeof AuthenticatedIndicacoesRoute
+  AuthenticatedLojaRoute: typeof AuthenticatedLojaRoute
+  AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
+  AuthenticatedPedidosRoute: typeof AuthenticatedPedidosRoute
   AuthenticatedPlanosRoute: typeof AuthenticatedPlanosRoute
   AuthenticatedPontosRoute: typeof AuthenticatedPontosRoute
+  AuthenticatedSaquesRoute: typeof AuthenticatedSaquesRoute
   AuthenticatedPagamentoPaymentIdRoute: typeof AuthenticatedPagamentoPaymentIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCarteiraRoute: AuthenticatedCarteiraRoute,
+  AuthenticatedContaRoute: AuthenticatedContaRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedIndicacoesRoute: AuthenticatedIndicacoesRoute,
+  AuthenticatedLojaRoute: AuthenticatedLojaRoute,
+  AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
+  AuthenticatedPedidosRoute: AuthenticatedPedidosRoute,
   AuthenticatedPlanosRoute: AuthenticatedPlanosRoute,
   AuthenticatedPontosRoute: AuthenticatedPontosRoute,
+  AuthenticatedSaquesRoute: AuthenticatedSaquesRoute,
   AuthenticatedPagamentoPaymentIdRoute: AuthenticatedPagamentoPaymentIdRoute,
 }
 
