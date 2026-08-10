@@ -114,7 +114,6 @@ function WalletPage() {
                         <TableHead>Descrição</TableHead>
                         <TableHead>Carteira</TableHead>
                         <TableHead>Data</TableHead>
-                        <TableHead>Percentual</TableHead>
                         <TableHead className="text-right">Valor</TableHead>
                         <TableHead className="text-right">Saldo</TableHead>
                       </TableRow>
