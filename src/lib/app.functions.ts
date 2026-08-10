@@ -112,13 +112,13 @@ export const redeemProduct = createServerFn({ method: "POST" })
           productId: z.string().uuid(),
           address: z.object({
             name: z.string().trim().min(3).max(120),
-            zip: z.string().trim().min(8).max(9),
+            zip: z.string().trim().min(8, "CEP inválido").max(9),
             street: z.string().trim().min(3).max(160),
             number: z.string().trim().min(1).max(20),
             complement: z.string().trim().max(80).optional().default(""),
             district: z.string().trim().min(2).max(80),
             city: z.string().trim().min(2).max(80),
-            state: z.string().trim().length(2),
+            state: z.string().trim().length(2, "UF deve ter 2 caracteres"),
           }),
         })
         .parse(data),

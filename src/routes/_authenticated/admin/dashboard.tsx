@@ -1,7 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { LayoutDashboard, ShieldCheck, Users, Wallet } from "lucide-react";
+import {
+  LayoutDashboard,
+  ShieldCheck,
+  Users,
+  Wallet,
+  Settings,
+  Package,
+  Gift,
+  ShoppingCart,
+  Image,
+} from "lucide-react";
 import { adminStats } from "@/lib/admin.functions";
 import { AppShell, type NavItem } from "@/components/layout/AppShell";
 import { PageHeader, StatCard, ErrorState } from "@/components/states";
@@ -9,6 +19,14 @@ import { brl } from "@/lib/format";
 
 const items: NavItem[] = [
   { label: "Visão geral", to: "/admin/dashboard", icon: LayoutDashboard, section: "Administração" },
+  { label: "Usuários", to: "/admin/usuarios", icon: Users, section: "Gestão" },
+  { label: "Planos", to: "/admin/planos", icon: ShieldCheck, section: "Gestão" },
+  { label: "Pagamentos", to: "/admin/pagamentos", icon: Wallet, section: "Financeiro" },
+  { label: "Saques", to: "/admin/saques", icon: Gift, section: "Financeiro" },
+  { label: "Produtos", to: "/admin/produtos", icon: Package, section: "Loja" },
+  { label: "Pedidos", to: "/admin/pedidos", icon: ShoppingCart, section: "Loja" },
+  { label: "Banners", to: "/admin/banners", icon: Image, section: "Site" },
+  { label: "Configurações", to: "/admin/configuracoes", icon: Settings, section: "Sistema" },
 ];
 
 export const Route = createFileRoute("/_authenticated/admin/dashboard")({
@@ -30,7 +48,7 @@ function AdminDashboard() {
     queryFn: () => stats({ data: { days: 30 } }),
   });
 
-  const s = data as Record<string, number> | undefined;
+  const s = data;
 
   return (
     <AppShell items={items} variant="admin">
@@ -41,27 +59,27 @@ function AdminDashboard() {
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             label="Usuários"
-            value={s?.["users"] ?? 0}
+            value={s?.totalUsers ?? 0}
             icon={Users}
             loading={isLoading}
           />
           <StatCard
             label="Pagamentos confirmados"
-            value={s?.["paidPayments"] ?? 0}
+            value={s?.plansSold ?? 0}
             icon={ShieldCheck}
             tone="success"
             loading={isLoading}
           />
           <StatCard
             label="Receita"
-            value={brl(s?.["revenue"] ?? 0)}
+            value={brl(s?.paymentVolume ?? 0)}
             icon={Wallet}
             tone="purple"
             loading={isLoading}
           />
           <StatCard
             label="Saques pendentes"
-            value={s?.["pendingWithdrawals"] ?? 0}
+            value={s?.pendingWithdrawals ?? 0}
             icon={Wallet}
             tone="muted"
             loading={isLoading}
