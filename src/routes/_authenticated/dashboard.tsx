@@ -107,7 +107,7 @@ function DashboardPage() {
             </div>
             {data.banner.button_url ? (
               <Button asChild variant="secondary" className="shrink-0">
-                <a href={data.banner.button_url}>Saiba mais</a>
+                <a href={data.banner.button_url}>{data.banner.button_label ?? "Saiba mais"}</a>
               </Button>
             ) : null}
           </CardContent>
