@@ -41,7 +41,7 @@ function DashboardPage() {
       const [planRes, txRes, refRes, bannerRes] = await Promise.all([
         supabase
           .from("user_plans")
-          .select("*, plans(name, points_reward)")
+          .select("*, plans(name, points)")
           .eq("user_id", profile!.id)
           .eq("status", "active")
           .order("activated_at", { ascending: false })
@@ -57,7 +57,7 @@ function DashboardPage() {
           .from("banners")
           .select("*")
           .eq("active", true)
-          .order("position", { ascending: true })
+          .order("sort_order", { ascending: true })
           .limit(1)
           .maybeSingle(),
       ]);
@@ -105,9 +105,9 @@ function DashboardPage() {
                 <p className="mt-1 text-sm text-primary-foreground/85">{data.banner.subtitle}</p>
               ) : null}
             </div>
-            {data.banner.link_url ? (
+            {data.banner.button_url ? (
               <Button asChild variant="secondary" className="shrink-0">
-                <a href={data.banner.link_url}>Saiba mais</a>
+                <a href={data.banner.button_url}>Saiba mais</a>
               </Button>
             ) : null}
           </CardContent>
@@ -173,12 +173,12 @@ function DashboardPage() {
                     </div>
                     <span
                       className={
-                        tx.direction === "credit"
+                        tx.direction === "in"
                           ? "shrink-0 text-sm font-semibold text-success"
                           : "shrink-0 text-sm font-semibold text-destructive"
                       }
                     >
-                      {tx.direction === "credit" ? "+" : "-"}
+                      {tx.direction === "in" ? "+" : "-"}
                       {brl(tx.amount)}
                     </span>
                   </li>
