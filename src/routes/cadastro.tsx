@@ -91,7 +91,7 @@ function SignUpPage() {
       return;
     }
 
-    if (data.session) {
+    if (data.user || data.session) {
       toast.success("Conta criada com sucesso!");
       navigate({ to: "/dashboard", replace: true });
       return;
