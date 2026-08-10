@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { UserShell } from "@/components/layout/UserShell";
 import { PageHeader, StatCard, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
-import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -115,6 +114,7 @@ function WalletPage() {
                         <TableHead>Descrição</TableHead>
                         <TableHead>Carteira</TableHead>
                         <TableHead>Data</TableHead>
+                        <TableHead>Percentual</TableHead>
                         <TableHead className="text-right">Valor</TableHead>
                         <TableHead className="text-right">Saldo</TableHead>
                       </TableRow>
@@ -175,7 +175,7 @@ function WalletPage() {
                       <TableRow>
                         <TableHead>Nível</TableHead>
                         <TableHead>Data</TableHead>
-                        <TableHead>Status</TableHead>
+                        <TableHead>Percentual</TableHead>
                         <TableHead className="text-right">Valor</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -186,8 +186,8 @@ function WalletPage() {
                           <TableCell className="text-muted-foreground">
                             {dateTimeBR(c.created_at)}
                           </TableCell>
-                          <TableCell>
-                            <StatusBadge status={c.status} />
+                          <TableCell className="text-muted-foreground">
+                            {c.percentage}%
                           </TableCell>
                           <TableCell className="text-right font-semibold text-success">
                             {brl(c.amount)}
