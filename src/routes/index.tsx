@@ -7,16 +7,16 @@ import { Card, CardContent } from "@/components/ui/card";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Nexora — Planos, pontos e recompensas" },
+      { title: "Arena Saúde — Seu futuro, nosso propósito" },
       {
         name: "description",
         content:
-          "Ative planos com PIX, acumule pontos, indique amigos e troque por prêmios no catálogo.",
+          "Transforme escolhas em conquistas com a Arena Saúde. Saúde, bem estar e resultados através de produtos premium e oportunidades reais.",
       },
-      { property: "og:title", content: "Nexora — Planos, pontos e recompensas" },
+      { property: "og:title", content: "Arena Saúde — Seu futuro, nosso propósito" },
       {
         property: "og:description",
-        content: "Ative planos com PIX, acumule pontos e resgate prêmios.",
+        content: "Saúde, bem estar e resultados através de produtos premium.",
       },
     ],
   }),
