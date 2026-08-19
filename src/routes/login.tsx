@@ -13,10 +13,10 @@ import { Card, CardContent } from "@/components/ui/card";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Entrar — Nexora" },
-      { name: "description", content: "Acesse sua conta Nexora para ver planos, pontos e indicações." },
-      { property: "og:title", content: "Entrar — Nexora" },
-      { property: "og:description", content: "Acesse sua conta Nexora." },
+      { title: "Entrar — Arena Saúde" },
+      { name: "description", content: "Acesse sua conta Arena Saúde para ver planos, pontos e indicações." },
+      { property: "og:title", content: "Entrar — Arena Saúde" },
+      { property: "og:description", content: "Acesse sua conta Arena Saúde." },
     ],
   }),
   component: LoginPage,
@@ -64,13 +64,13 @@ function LoginPage() {
         <Logo className="text-primary-foreground" />
         <div className="max-w-md text-primary-foreground">
           <h2 className="text-4xl font-extrabold leading-tight">
-            Seus pontos, seus planos, suas recompensas.
+            Seu futuro, nosso propósito.
           </h2>
           <p className="mt-4 text-primary-foreground/85">
-            Acompanhe ganhos, indicações e resgates em um painel simples e transparente.
+            Saúde, bem estar e resultados através de tecnologia e ciência.
           </p>
         </div>
-        <p className="text-sm text-primary-foreground/70">© {new Date().getFullYear()} Nexora</p>
+        <p className="text-sm text-primary-foreground/70">© {new Date().getFullYear()} Arena Saúde</p>
       </div>
 
       <div className="flex items-center justify-center px-4 py-12">
