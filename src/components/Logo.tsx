@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 export function Logo({ className, to = "/" }: { className?: string; to?: string }) {
   const { get } = useSettings();
-  const name = get<string>("platform_name", "Nexora");
+  const name = get<string>("platform_name", "Arena Saúde");
   const logoUrl = get<string | null>("logo_url", null);
 
   return (

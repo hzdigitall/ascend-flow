@@ -17,10 +17,10 @@ import { brl, pts } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/planos")({
   head: () => ({
     meta: [
-      { title: "Planos — Nexora" },
-      { name: "description", content: "Escolha seu plano, pague via PIX e receba os pontos na hora." },
-      { property: "og:title", content: "Planos — Nexora" },
-      { property: "og:description", content: "Planos com pagamento PIX e pontos de bônus." },
+      { title: "Planos — Arena Saúde" },
+      { name: "description", content: "Escolha seu plano Arena Saúde, pague via PIX e receba os pontos na hora." },
+      { property: "og:title", content: "Planos — Arena Saúde" },
+      { property: "og:description", content: "Planos Arena Saúde com pagamento PIX e pontos de bônus." },
     ],
   }),
   component: PlansPage,
@@ -61,7 +61,7 @@ function PlansPage() {
     <UserShell>
       <PageHeader
         title="Planos"
-        description="Ative um plano para receber pontos e liberar comissões na sua rede."
+        description="Ative um plano para receber rendimentos diários e bônus de indicação. Limite de 4 planos ativos do mesmo tipo por usuário."
       />
 
       {isLoading ? (
@@ -99,11 +99,22 @@ function PlansPage() {
                 <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
 
                 <p className="mt-5 text-3xl font-extrabold tracking-tight">{brl(plan.price)}</p>
-                <Badge variant="secondary" className="mt-2 w-fit gap-1">
-                  <Coins className="h-3.5 w-3.5" /> {pts(plan.points)} de bônus
-                </Badge>
+                <div className="mt-2 flex flex-col gap-1.5">
+                  <Badge variant="secondary" className="w-fit gap-1">
+                    <Coins className="h-3.5 w-3.5" /> {pts(plan.points)} de bônus
+                  </Badge>
+                  <p className="text-xs font-semibold text-success">
+                    Rendimento: {
+                      plan.name === 'Iniciante' ? '3,5%' :
+                      plan.name === 'Intermediário' ? '4,5%' :
+                      plan.name === 'Avançado' ? '6,5%' :
+                      plan.name === 'Profissional' ? '6,5%' :
+                      plan.name === 'Elite' ? '7,5%' : '0%'
+                    } ao dia
+                  </p>
+                </div>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Validade de {plan.validity_days} dias
+                  Validade de {plan.validity_days} dias · Limite 200% ROI
                 </p>
 
                 <ul className="mt-5 flex-1 space-y-2">

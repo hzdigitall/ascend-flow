@@ -12,10 +12,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const Route = createFileRoute("/_authenticated/loja")({
   head: () => ({
     meta: [
-      { title: "Loja de prêmios — Nexora" },
-      { name: "description", content: "Troque seus pontos por produtos disponíveis no catálogo." },
-      { property: "og:title", content: "Loja de prêmios — Nexora" },
-      { property: "og:description", content: "Troque seus pontos por produtos disponíveis no catálogo." },
+      { title: "Loja de prêmios — Arena Saúde" },
+      { name: "description", content: "Troque seus pontos Arena por produtos disponíveis no catálogo." },
+      { property: "og:title", content: "Loja de prêmios — Arena Saúde" },
+      { property: "og:description", content: "Troque seus pontos Arena por produtos disponíveis no catálogo." },
     ],
   }),
   component: Page,
@@ -37,7 +37,7 @@ function Page() {
 
   return (
     <UserShell>
-      <PageHeader title="Loja de prêmios" description="Use seus pontos para resgatar produtos." />
+      <PageHeader title="Loja de prêmios" description="Use seus pontos Arena para resgatar produtos exclusivos. R$ 50 investidos em planos = 5 pontos." />
       {isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {[0, 1, 2].map((i) => (

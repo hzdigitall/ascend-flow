@@ -14,10 +14,10 @@ import { dateBR } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/indicacoes")({
   head: () => ({
     meta: [
-      { title: "Indicações — Nexora" },
-      { name: "description", content: "Veja sua rede de indicados por nível e o link para convidar novos usuários." },
-      { property: "og:title", content: "Indicações — Nexora" },
-      { property: "og:description", content: "Veja sua rede de indicados por nível e o link para convidar novos usuários." },
+      { title: "Indicações — Arena Saúde" },
+      { name: "description", content: "Veja sua rede de indicados por nível e o link para convidar novos usuários na Arena Saúde." },
+      { property: "og:title", content: "Indicações — Arena Saúde" },
+      { property: "og:description", content: "Veja sua rede de indicados por nível e o link para convidar novos usuários na Arena Saúde." },
     ],
   }),
   component: Page,

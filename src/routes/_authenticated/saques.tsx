@@ -11,10 +11,10 @@ import { brl, dateTimeBR } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/saques")({
   head: () => ({
     meta: [
-      { title: "Saques — Nexora" },
-      { name: "description", content: "Solicite saques via PIX e acompanhe o status de cada pedido." },
-      { property: "og:title", content: "Saques — Nexora" },
-      { property: "og:description", content: "Solicite saques via PIX e acompanhe o status de cada pedido." },
+      { title: "Saques — Arena Saúde" },
+      { name: "description", content: "Solicite saques via PIX e acompanhe o status de cada pedido na Arena Saúde." },
+      { property: "og:title", content: "Saques — Arena Saúde" },
+      { property: "og:description", content: "Solicite saques via PIX e acompanhe o status de cada pedido na Arena Saúde." },
     ],
   }),
   component: Page,
@@ -35,7 +35,7 @@ function Page() {
 
   return (
     <UserShell>
-      <PageHeader title="Saques" description="Acompanhe suas solicitações de saque via PIX." />
+      <PageHeader title="Saques" description="Acompanhe suas solicitações de saque via PIX. Rendimentos às segundas (10h-17h) e Bônus diariamente (09h-17h)." />
       <Card className="shadow-card">
         <CardContent className="p-4 sm:p-6">
           {isLoading ? (

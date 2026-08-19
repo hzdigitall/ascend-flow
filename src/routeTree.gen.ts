@@ -32,6 +32,7 @@ import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminSaquesRouteImport } from './routes/_authenticated/admin/saques'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
 import { Route as AuthenticatedPagamentoPaymentIdRouteImport } from './routes/_authenticated/pagamento.$paymentId'
+import { Route as ApiPublicCronRoiRouteImport } from './routes/api/public/cron/roi'
 import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/webhooks/pix'
 
 const IndexRoute = IndexRouteImport.update({
@@ -154,6 +155,11 @@ const AuthenticatedPagamentoPaymentIdRoute =
     path: '/pagamento/$paymentId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicCronRoiRoute = ApiPublicCronRoiRouteImport.update({
+  id: '/api/public/cron/roi',
+  path: '/api/public/cron/roi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWebhooksPixRoute = ApiPublicWebhooksPixRouteImport.update({
   id: '/api/public/webhooks/pix',
   path: '/api/public/webhooks/pix',
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/admin/saques': typeof AuthenticatedAdminSaquesRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
+  '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
 export interface FileRoutesByTo {
@@ -208,6 +215,7 @@ export interface FileRoutesByTo {
   '/admin/saques': typeof AuthenticatedAdminSaquesRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
+  '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
 export interface FileRoutesById {
@@ -235,6 +243,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/saques': typeof AuthenticatedAdminSaquesRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
+  '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
 }
 export interface FileRouteTypes {
@@ -262,6 +271,7 @@ export interface FileRouteTypes {
     | '/admin/saques'
     | '/admin/usuarios'
     | '/pagamento/$paymentId'
+    | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -287,6 +297,7 @@ export interface FileRouteTypes {
     | '/admin/saques'
     | '/admin/usuarios'
     | '/pagamento/$paymentId'
+    | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
   id:
     | '__root__'
@@ -313,6 +324,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/saques'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/pagamento/$paymentId'
+    | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
   fileRoutesById: FileRoutesById
 }
@@ -325,6 +337,7 @@ export interface RootRouteChildren {
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
   TermosRoute: typeof TermosRoute
+  ApiPublicCronRoiRoute: typeof ApiPublicCronRoiRoute
   ApiPublicWebhooksPixRoute: typeof ApiPublicWebhooksPixRoute
 }
 
@@ -491,6 +504,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPagamentoPaymentIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/cron/roi': {
+      id: '/api/public/cron/roi'
+      path: '/api/public/cron/roi'
+      fullPath: '/api/public/cron/roi'
+      preLoaderRoute: typeof ApiPublicCronRoiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/pix': {
       id: '/api/public/webhooks/pix'
       path: '/api/public/webhooks/pix'
@@ -549,6 +569,7 @@ const rootRouteChildren: RootRouteChildren = {
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
   TermosRoute: TermosRoute,
+  ApiPublicCronRoiRoute: ApiPublicCronRoiRoute,
   ApiPublicWebhooksPixRoute: ApiPublicWebhooksPixRoute,
 }
 export const routeTree = rootRouteImport

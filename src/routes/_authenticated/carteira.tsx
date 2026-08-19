@@ -21,10 +21,10 @@ import { brl, dateTimeBR } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/carteira")({
   head: () => ({
     meta: [
-      { title: "Carteira — Nexora" },
-      { name: "description", content: "Saldos, extrato completo e comissões recebidas na sua carteira." },
-      { property: "og:title", content: "Carteira — Nexora" },
-      { property: "og:description", content: "Extrato e saldos da sua conta Nexora." },
+      { title: "Carteira — Arena Saúde" },
+      { name: "description", content: "Saldos, extrato completo e comissões recebidas na sua carteira na Arena Saúde." },
+      { property: "og:title", content: "Carteira — Arena Saúde" },
+      { property: "og:description", content: "Extrato e saldos da sua conta Arena Saúde." },
     ],
   }),
   component: WalletPage,
