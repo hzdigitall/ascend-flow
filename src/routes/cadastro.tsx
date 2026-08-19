@@ -105,10 +105,9 @@ function SignUpPage() {
         <Card className="w-full max-w-md shadow-card">
           <CardContent className="p-8 text-center">
             <Logo className="justify-center" />
-            <h1 className="mt-6 text-xl font-bold">Confirme seu e-mail</h1>
+            <h1 className="mt-6 text-xl font-bold">Confirmação enviada</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Enviamos um link de confirmação para <strong>{form.email}</strong>. Abra o e-mail para
-              ativar sua conta e depois faça login.
+              Enviamos um link de acesso para <strong>{form.email}</strong>. Por favor, verifique sua caixa de entrada para continuar.
             </p>
             <Button asChild className="mt-6 w-full">
               <Link to="/login">Ir para o login</Link>
