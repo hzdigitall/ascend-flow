@@ -99,11 +99,22 @@ function PlansPage() {
                 <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
 
                 <p className="mt-5 text-3xl font-extrabold tracking-tight">{brl(plan.price)}</p>
-                <Badge variant="secondary" className="mt-2 w-fit gap-1">
-                  <Coins className="h-3.5 w-3.5" /> {pts(plan.points)} de bônus
-                </Badge>
+                <div className="mt-2 flex flex-col gap-1.5">
+                  <Badge variant="secondary" className="w-fit gap-1">
+                    <Coins className="h-3.5 w-3.5" /> {pts(plan.points)} de bônus
+                  </Badge>
+                  <p className="text-xs font-semibold text-success">
+                    Rendimento: {
+                      plan.name === 'Iniciante' ? '3,5%' :
+                      plan.name === 'Intermediário' ? '4,5%' :
+                      plan.name === 'Avançado' ? '6,5%' :
+                      plan.name === 'Profissional' ? '6,5%' :
+                      plan.name === 'Elite' ? '7,5%' : '0%'
+                    } ao dia
+                  </p>
+                </div>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Validade de {plan.validity_days} dias
+                  Validade de {plan.validity_days} dias · Limite 200% ROI
                 </p>
 
                 <ul className="mt-5 flex-1 space-y-2">
