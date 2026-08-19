@@ -17,10 +17,10 @@ import { brl, pts } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/planos")({
   head: () => ({
     meta: [
-      { title: "Planos — Nexora" },
-      { name: "description", content: "Escolha seu plano, pague via PIX e receba os pontos na hora." },
-      { property: "og:title", content: "Planos — Nexora" },
-      { property: "og:description", content: "Planos com pagamento PIX e pontos de bônus." },
+      { title: "Planos — Arena Saúde" },
+      { name: "description", content: "Escolha seu plano Arena Saúde, pague via PIX e receba os pontos na hora." },
+      { property: "og:title", content: "Planos — Arena Saúde" },
+      { property: "og:description", content: "Planos Arena Saúde com pagamento PIX e pontos de bônus." },
     ],
   }),
   component: PlansPage,

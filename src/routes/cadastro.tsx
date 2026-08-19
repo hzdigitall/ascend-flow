@@ -19,13 +19,13 @@ export const Route = createFileRoute("/cadastro")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Criar conta — Nexora" },
+      { title: "Criar conta — Arena Saúde" },
       {
         name: "description",
-        content: "Crie sua conta Nexora e comece a acumular pontos, indicar amigos e resgatar prêmios.",
+        content: "Crie sua conta na Arena Saúde e comece a acumular pontos, indicar amigos e resgatar prêmios.",
       },
-      { property: "og:title", content: "Criar conta — Nexora" },
-      { property: "og:description", content: "Cadastre-se na Nexora em menos de um minuto." },
+      { property: "og:title", content: "Criar conta — Arena Saúde" },
+      { property: "og:description", content: "Cadastre-se na Arena Saúde em menos de um minuto." },
     ],
   }),
   component: SignUpPage,

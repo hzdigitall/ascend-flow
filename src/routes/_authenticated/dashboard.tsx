@@ -22,10 +22,10 @@ import { brl, dateBR, dateTimeBR, pts } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Meu painel — Nexora" },
-      { name: "description", content: "Resumo dos seus saldos, pontos, plano ativo e indicações." },
-      { property: "og:title", content: "Meu painel — Nexora" },
-      { property: "og:description", content: "Acompanhe saldos, pontos e indicações." },
+      { title: "Meu painel — Arena Saúde" },
+      { name: "description", content: "Resumo dos seus saldos, pontos, plano ativo e indicações na Arena Saúde." },
+      { property: "og:title", content: "Meu painel — Arena Saúde" },
+      { property: "og:description", content: "Acompanhe saldos, pontos e indicações na Arena Saúde." },
     ],
   }),
   component: DashboardPage,
