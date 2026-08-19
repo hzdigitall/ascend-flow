@@ -17,6 +17,17 @@ export const createPlanPayment = createServerFn({ method: "POST" })
       .eq("id", context.userId)
       .maybeSingle();
 
+    const { data: activePlans } = await supabaseAdmin
+      .from("user_plans")
+      .select("plan_id")
+      .eq("user_id", context.userId)
+      .eq("status", "active")
+      .eq("plan_id", data.planId);
+
+    if ((activePlans?.length ?? 0) >= 4) {
+      throw new Error("Você atingiu o limite máximo de 4 planos ativos deste mesmo tipo.");
+    }
+
     const { data: paymentId, error } = await supabaseAdmin.rpc("create_plan_payment", {
       _user: context.userId,
       _plan: data.planId,
