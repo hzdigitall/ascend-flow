@@ -38,7 +38,7 @@ function DashboardPage() {
     queryKey: ["dashboard", profile?.id],
     enabled: Boolean(profile?.id),
     queryFn: async () => {
-      const [planRes, txRes, refRes, bannerRes] = await Promise.all([
+      const [planRes, txRes, refRes, bannerRes, roiRes] = await Promise.all([
         supabase
           .from("user_plans")
           .select("*, plans(name, points)")
@@ -60,12 +60,33 @@ function DashboardPage() {
           .order("sort_order", { ascending: true })
           .limit(1)
           .maybeSingle(),
+        supabase
+          .from("wallet_transactions")
+          .select("amount.sum()")
+          .eq("user_id", profile!.id)
+          .eq("category", "earning")
+          .filter("reference_id", "not.is", null),
       ]);
+
+      // Calculate total earned for the specific active plan
+      let planTotalRoi = 0;
+      if (planRes.data) {
+        const { data: roiData } = await supabase
+          .from("wallet_transactions")
+          .select("amount")
+          .eq("user_id", profile!.id)
+          .eq("category", "earning")
+          .eq("reference_id", planRes.data.id);
+        
+        planTotalRoi = roiData?.reduce((acc, t) => acc + Number(t.amount), 0) || 0;
+      }
+
       return {
         plan: planRes.data,
         transactions: txRes.data ?? [],
         referrals: refRes.data ?? [],
         banner: bannerRes.data,
+        planTotalRoi,
       };
     },
   });
@@ -204,16 +225,16 @@ function DashboardPage() {
                   <div className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-muted-foreground">Progresso ROI</span>
-                      <span className="font-medium">{((data.plan.total_roi_earned / (data.plan.purchase_price * 2)) * 100).toFixed(1)}%</span>
+                      <span className="font-medium">{((data.planTotalRoi / (data.plan.price * 2)) * 100).toFixed(1)}%</span>
                     </div>
                     <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                       <div 
                         className="h-full bg-primary transition-all" 
-                        style={{ width: `${Math.min(100, (data.plan.total_roi_earned / (data.plan.purchase_price * 2)) * 100)}%` }}
+                        style={{ width: `${Math.min(100, (data.planTotalRoi / (data.plan.price * 2)) * 100)}%` }}
                       />
                     </div>
                     <p className="text-[10px] text-muted-foreground">
-                      Limite de 200%: {brl(data.plan.total_roi_earned)} de {brl(data.plan.purchase_price * 2)}
+                      Limite de 200%: {brl(data.planTotalRoi)} de {brl(data.plan.price * 2)}
                     </p>
                   </div>
 
