@@ -1,30 +1,43 @@
 # Plano de Implementação: Arena Saúde
 
-Implementação da identidade visual e regras de negócio da Arena Saúde, conforme o PDF de apresentação.
+Implementação completa das regras de negócio, branding e funcionalidades descritas no PDF "ARENA - APRESENTAÇÃO", mantendo o layout e fontes atuais do projeto.
 
-## Alterações Visuais (Branding)
+## 1. Branding & Identidade Visual
 - Renomear a plataforma de **Nexora** para **Arena Saúde**.
-- Atualizar títulos, descrições e meta tags de SEO em todas as rotas.
-- Ajustar textos da Landing Page para refletir o propósito: "Seu Futuro, Nosso Propósito" e "Saúde, Bem Estar, Resultados".
+- Atualizar a Landing Page (`src/routes/index.tsx`):
+    - Título: "Seu Futuro, Nosso Propósito".
+    - Subtítulo: "Uma marca criada para transformar escolhas em conquistas. Unimos saúde, qualidade, resultados e transparência."
+    - Destaques: Saúde, Bem Estar, Resultados.
 
-## Regras de Negócio & Banco de Dados
-- **Planos:**
-  - Atualizar os planos existentes e adicionar os novos conforme a tabela (Iniciante R$ 50, Intermediário R$ 250, Avançado R$ 500, Profissional R$ 1000, Elite R$ 5000).
-  - Configurar rendimento diário (ROI) variável por plano (3,5% a 7,5%).
-  - Implementar lógica de "Dobra" (todos os planos rendem até 200%).
-  - Limite de até 4 planos iguais por usuário.
-- **Indicações & Comissões:**
-  - Expandir o sistema de comissões de 3 níveis para **8 níveis** (12%, 5%, 3%, 2%, 1%, 1%, 1%, 1%).
-- **Financeiro:**
-  - Taxa de saque: **2%**.
-  - Saque de rendimentos: Mínimo R$ 10, às segundas-feiras (10h-17h).
-  - Saque de bônus: Mínimo R$ 10, todos os dias (9h-17h).
-- **Pontuação:**
-  - Proporção: **R$ 50,00 = 5 Pontos Arena**.
-- **Bônus de Cadastro:**
-  - Voucher de **R$ 30,00** no cadastro (plano de R$ 50 sai por R$ 20).
+## 2. Configurações & Regras de Negócio (Banco de Dados)
+- **Taxa de Saque:** Definir como **2%** fixos.
+- **Saque de Rendimentos:** Permitido apenas às segundas-feiras, das 10h às 17h (mínimo R$ 10).
+- **Saque de Bônus:** Permitido todos os dias, das 09h às 17h (mínimo R$ 10).
+- **Pontuação Arena:** R$ 50,00 investidos = 5 Pontos Arena.
+- **Voucher de Cadastro:** Bônus de R$ 30,00 automático no primeiro aporte (ex: Plano de R$ 50 custa R$ 20).
+- **Limite de Planos:** Máximo de 4 planos ativos do mesmo tipo por usuário.
+
+## 3. Planos & Investimentos
+Atualizar e criar os planos conforme a tabela de projeção (dobra em dias úteis):
+- **Iniciante:** R$ 50,00 (3,5% ao dia, dobra em 29 dias úteis).
+- **Intermediário:** R$ 250,00 (4,5% ao dia, dobra em 23 dias úteis).
+- **Avançado:** R$ 500,00 (6,5% ao dia, dobra em 16 dias úteis).
+- **Profissional:** R$ 1.000,00 (6,5% ao dia, dobra em 16 dias úteis).
+- **Elite:** R$ 5.000,00 (7,5% ao dia, dobra em 14 dias úteis).
+- *Nota: Implementar rendimentos diários automáticos via cron/scheduler.*
+
+## 4. Marketing Multinível (8 Níveis)
+Expandir o sistema de comissões para 8 níveis de profundidade:
+- 1º Nível: 12%
+- 2º Nível: 5%
+- 3º Nível: 3%
+- 4º Nível: 2%
+- 5º ao 8º Nível: 1% cada.
+
+## 5. Plano de Carreira
+Implementar verificação automática de graduações baseada em pontos e requisitos de rede (ex: Master, Bronze, Prata... até Titan).
 
 ## Detalhes Técnicos
-- Atualizar migrações SQL para refletir as novas taxas e níveis de comissão.
-- Modificar `src/lib/app.functions.ts` e `confirm_payment` no banco para processar 8 níveis.
-- Atualizar componentes de UI para refletir a nova marca e regras.
+- Nova migração SQL para atualizar `settings`, `plans` e a função `confirm_payment` (para os 8 níveis).
+- Ajustar `src/lib/app.functions.ts` para validar regras de saque (horários e dias).
+- Atualizar `src/routes/_authenticated/planos.tsx` e `dashboard.tsx` com as novas informações.
