@@ -11,10 +11,10 @@ import { dateTimeBR, pts } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/pedidos")({
   head: () => ({
     meta: [
-      { title: "Meus pedidos — Nexora" },
-      { name: "description", content: "Acompanhe o status dos produtos resgatados com seus pontos." },
-      { property: "og:title", content: "Meus pedidos — Nexora" },
-      { property: "og:description", content: "Acompanhe o status dos produtos resgatados com seus pontos." },
+      { title: "Meus pedidos — Arena Saúde" },
+      { name: "description", content: "Acompanhe o status dos produtos resgatados com seus pontos Arena." },
+      { property: "og:title", content: "Meus pedidos — Arena Saúde" },
+      { property: "og:description", content: "Acompanhe o status dos produtos resgatados com seus pontos Arena." },
     ],
   }),
   component: Page,
