@@ -61,7 +61,7 @@ function PlansPage() {
     <UserShell>
       <PageHeader
         title="Planos"
-        description="Ative um plano para receber pontos e liberar comissões na sua rede."
+        description="Ative um plano para receber rendimentos diários e bônus de indicação. Limite de 4 planos ativos do mesmo tipo por usuário."
       />
 
       {isLoading ? (
