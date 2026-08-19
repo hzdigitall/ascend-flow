@@ -195,10 +195,29 @@ function DashboardPage() {
             </CardHeader>
             <CardContent>
               {data?.plan ? (
-                <div className="space-y-2">
-                  <p className="text-lg font-bold">{data.plan.plans?.name}</p>
-                  <StatusBadge status={data.plan.status} />
-                  <p className="text-xs text-muted-foreground">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-lg font-bold">{data.plan.plans?.name}</p>
+                    <StatusBadge status={data.plan.status} />
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Progresso ROI</span>
+                      <span className="font-medium">{((data.plan.total_roi_earned / (data.plan.purchase_price * 2)) * 100).toFixed(1)}%</span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                      <div 
+                        className="h-full bg-primary transition-all" 
+                        style={{ width: `${Math.min(100, (data.plan.total_roi_earned / (data.plan.purchase_price * 2)) * 100)}%` }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">
+                      Limite de 200%: {brl(data.plan.total_roi_earned)} de {brl(data.plan.purchase_price * 2)}
+                    </p>
+                  </div>
+
+                  <p className="text-[10px] text-muted-foreground">
                     Ativado em {dateBR(data.plan.activated_at)}
                     {data.plan.expires_at ? ` · expira em ${dateBR(data.plan.expires_at)}` : ""}
                   </p>
