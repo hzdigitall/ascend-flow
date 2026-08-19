@@ -6,7 +6,6 @@ Implementação da identidade visual e regras de negócio da Arena Saúde, confo
 - Renomear a plataforma de **Nexora** para **Arena Saúde**.
 - Atualizar títulos, descrições e meta tags de SEO em todas as rotas.
 - Ajustar textos da Landing Page para refletir o propósito: "Seu Futuro, Nosso Propósito" e "Saúde, Bem Estar, Resultados".
-- Atualizar a logomarca (fallback de texto) e cores para reforçar o laranja vibrante e roxo.
 
 ## Regras de Negócio & Banco de Dados
 - **Planos:**
@@ -28,12 +27,4 @@ Implementação da identidade visual e regras de negócio da Arena Saúde, confo
 ## Detalhes Técnicos
 - Atualizar migrações SQL para refletir as novas taxas e níveis de comissão.
 - Modificar `src/lib/app.functions.ts` e `confirm_payment` no banco para processar 8 níveis.
-- Atualizar `src/routes/_authenticated/saques.tsx` para validar horários e dias permitidos.
-- Ajustar `src/lib/validators.ts` se necessário para novos fluxos.
-
-```text
-ARENA SAÚDE
-Planos: R$ 50 (3.5%) -> R$ 5000 (7.5%)
-Níveis: 8 (12% -> 1%)
-Taxa Saque: 2%
-```
+- Atualizar componentes de UI para refletir a nova marca e regras.
