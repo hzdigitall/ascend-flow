@@ -37,7 +37,7 @@ function Page() {
 
   return (
     <UserShell>
-      <PageHeader title="Loja de prêmios" description="Use seus pontos para resgatar produtos." />
+      <PageHeader title="Loja de prêmios" description="Use seus pontos Arena para resgatar produtos exclusivos. R$ 50 investidos em planos = 5 pontos." />
       {isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {[0, 1, 2].map((i) => (
