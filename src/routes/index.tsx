@@ -24,10 +24,10 @@ export const Route = createFileRoute("/")({
 });
 
 const features = [
-  { icon: Sparkles, title: "Planos com PIX", text: "Pagamento instantâneo e ativação automática." },
-  { icon: Coins, title: "Pontos em tempo real", text: "Acompanhe cada crédito no seu extrato." },
-  { icon: Users, title: "Indicações por níveis", text: "Comissões automáticas na sua rede." },
-  { icon: ShieldCheck, title: "Dados protegidos", text: "Cada usuário acessa somente o que é seu." },
+  { icon: Sparkles, title: "Produtos Premium", text: "Saúde, qualidade e ciência trabalhando a seu favor." },
+  { icon: Coins, title: "Pontos & Benefícios", text: "Acumule pontos Arena e troque por produtos originais." },
+  { icon: Users, title: "Indicação em 8 Níveis", text: "Bônus automáticos para quem constrói o movimento." },
+  { icon: ShieldCheck, title: "Segurança Total", text: "Transparência e proteção de dados em cada transação." },
 ];
 
 function Landing() {
