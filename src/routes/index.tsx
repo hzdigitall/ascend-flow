@@ -47,14 +47,13 @@ function Landing() {
 
       <section className="mx-auto max-w-6xl px-4 py-16 text-center sm:py-24">
         <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
-          <Sparkles className="h-3.5 w-3.5" /> Pagamentos PIX em segundos
+          <Sparkles className="h-3.5 w-3.5" /> Saúde · Bem Estar · Resultados
         </span>
         <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
-          Seus planos, <span className="text-gradient-brand">seus pontos</span>, suas recompensas.
+          Seu futuro, <span className="text-gradient-brand">nosso propósito</span>.
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
-          Uma plataforma completa para ativar planos, acompanhar ganhos e indicações e trocar pontos
-          por produtos reais.
+          Transforme escolhas em conquistas através de produtos de alta qualidade, tecnologia e oportunidades de crescimento.
         </p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
           <Button asChild size="lg">
