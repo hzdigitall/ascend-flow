@@ -73,7 +73,7 @@ function LoginPage() {
         <p className="text-sm text-white/70">© {new Date().getFullYear()} Arena Saúde</p>
       </div>
 
-      <div className="flex items-center justify-center px-4 py-12">
+      <div className="flex items-center justify-center px-4 py-12 bg-background">
         <div className="w-full max-w-md">
           <div className="mb-8 lg:hidden">
             <Logo />
