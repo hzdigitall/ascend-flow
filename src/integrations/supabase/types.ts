@@ -952,7 +952,37 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      confirm_payment: {
+        Args: { _payload: Json; _payment: string }
+        Returns: boolean
+      }
+      create_plan_payment: {
+        Args: { _plan: string; _user: string }
+        Returns: string
+      }
+      credit_points: {
+        Args: {
+          _cat: Database["public"]["Enums"]["tx_category"]
+          _desc: string
+          _points: number
+          _ref: string
+          _user: string
+        }
+        Returns: undefined
+      }
+      credit_wallet: {
+        Args: {
+          _amount: number
+          _cat: Database["public"]["Enums"]["tx_category"]
+          _desc: string
+          _ref: string
+          _user: string
+          _wallet: Database["public"]["Enums"]["wallet_type"]
+        }
+        Returns: undefined
+      }
       generate_referral_code: { Args: never; Returns: string }
+      get_setting: { Args: { _default: Json; _key: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -961,6 +991,24 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      process_withdrawal: {
+        Args: { _action: string; _admin: string; _reason: string; _wid: string }
+        Returns: boolean
+      }
+      redeem_product: {
+        Args: { _addr: Json; _product: string; _user: string }
+        Returns: string
+      }
+      request_withdrawal: {
+        Args: {
+          _amount: number
+          _key: string
+          _key_type: Database["public"]["Enums"]["pix_key_type"]
+          _user: string
+          _wallet: Database["public"]["Enums"]["wallet_type"]
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "user" | "admin"
