@@ -50,7 +50,7 @@ function Landing() {
           <Sparkles className="h-3.5 w-3.5" /> Saúde · Bem Estar · Resultados
         </span>
         <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
-          Seu futuro, <span className="text-gradient-brand">nosso propósito</span>.
+          Seu futuro, <span className="text-primary">nosso propósito</span>.
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
           Transforme escolhas em conquistas através de produtos de alta qualidade, tecnologia e oportunidades de crescimento.

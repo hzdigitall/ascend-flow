@@ -74,7 +74,7 @@ function AdminDashboard() {
             label="Receita"
             value={brl(s?.paymentVolume ?? 0)}
             icon={Wallet}
-            tone="purple"
+            tone="secondary"
             loading={isLoading}
           />
           <StatCard
