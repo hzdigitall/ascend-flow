@@ -237,7 +237,7 @@ function SignUpPage() {
                 />
               </div>
 
-              <div className="flex items-start gap-3 rounded-xl bg-muted/60 p-3">
+              <div className="flex items-start gap-3 rounded-xl bg-white border border-[var(--color-border)] p-3">
                 <Checkbox
                   id="terms"
                   checked={form.terms}

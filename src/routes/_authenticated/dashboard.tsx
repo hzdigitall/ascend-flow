@@ -118,12 +118,12 @@ function DashboardPage() {
       />
 
       {data?.banner ? (
-        <Card className="overflow-hidden border-0 bg-gradient-brand text-primary-foreground shadow-card">
+        <Card className="overflow-hidden border-0 bg-primary text-primary-foreground shadow-card">
           <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <h2 className="text-lg font-bold">{data.banner.title}</h2>
               {data.banner.subtitle ? (
-                <p className="mt-1 text-sm text-primary-foreground/85">{data.banner.subtitle}</p>
+                <p className="mt-1 text-sm text-white/85">{data.banner.subtitle}</p>
               ) : null}
             </div>
             {data.banner.button_url ? (

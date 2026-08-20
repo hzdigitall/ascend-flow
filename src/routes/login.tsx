@@ -61,16 +61,16 @@ function LoginPage() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden overflow-hidden bg-primary p-12 lg:flex lg:flex-col lg:justify-between">
-        <Logo className="text-primary-foreground" />
-        <div className="max-w-md text-primary-foreground">
+        <Logo className="text-white" />
+        <div className="max-w-md text-white">
           <h2 className="text-4xl font-extrabold leading-tight">
             Seu futuro, nosso propósito.
           </h2>
-          <p className="mt-4 text-primary-foreground/85">
+          <p className="mt-4 text-white/85">
             Saúde, bem estar e resultados através de tecnologia e ciência.
           </p>
         </div>
-        <p className="text-sm text-primary-foreground/70">© {new Date().getFullYear()} Arena Saúde</p>
+        <p className="text-sm text-white/70">© {new Date().getFullYear()} Arena Saúde</p>
       </div>
 
       <div className="flex items-center justify-center px-4 py-12">
