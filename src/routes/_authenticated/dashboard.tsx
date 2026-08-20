@@ -153,7 +153,7 @@ function DashboardPage() {
           label="Comissões de indicação"
           value={brl(wallet?.referral_balance)}
           icon={Users}
-          tone="purple"
+          tone="secondary"
           loading={!wallet}
         />
         <StatCard

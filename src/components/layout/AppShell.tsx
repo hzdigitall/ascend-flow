@@ -144,7 +144,7 @@ export function AppShell({
         {variant === "user" && isAdmin ? (
           <Link
             to="/admin/dashboard"
-            className="flex items-center gap-3 rounded-xl bg-brand-purple-soft px-3 py-2.5 text-sm font-medium text-brand-purple"
+            className="flex items-center gap-3 rounded-xl bg-primary-soft px-3 py-2.5 text-sm font-medium text-primary"
           >
             <Shield className="h-4.5 w-4.5" aria-hidden />
             Painel administrativo
@@ -168,7 +168,7 @@ export function AppShell({
           </p>
           <div className="mt-3 flex items-center gap-3">
             <Avatar className="h-9 w-9">
-              <AvatarFallback className="bg-brand-purple-soft text-xs text-brand-purple">
+              <AvatarFallback className="bg-primary-soft text-xs text-primary">
                 {initials(sponsor.full_name)}
               </AvatarFallback>
             </Avatar>

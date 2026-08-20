@@ -79,11 +79,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Nexora — Planos, pontos e recompensas" },
+      { title: "Arena Saúde — Seu Futuro, Nosso Propósito" },
       {
         name: "description",
         content:
-          "Plataforma para gerenciar planos, acompanhar pontos, indicações e resgatar produtos no catálogo.",
+          "Transforme escolhas em conquistas com a Arena Saúde. Saúde, bem estar e resultados através de produtos premium e oportunidades reais.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
