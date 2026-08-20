@@ -60,7 +60,7 @@ function LoginPage() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="relative hidden overflow-hidden bg-gradient-brand p-12 lg:flex lg:flex-col lg:justify-between">
+      <div className="relative hidden overflow-hidden bg-primary p-12 lg:flex lg:flex-col lg:justify-between">
         <Logo className="text-primary-foreground" />
         <div className="max-w-md text-primary-foreground">
           <h2 className="text-4xl font-extrabold leading-tight">
