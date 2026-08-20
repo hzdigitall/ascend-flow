@@ -83,7 +83,7 @@ function WalletPage() {
           label="Comissões"
           value={brl(wallet?.referral_balance)}
           icon={Users}
-          tone="purple"
+          tone="secondary"
         />
       </div>
 

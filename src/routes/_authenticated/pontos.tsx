@@ -69,7 +69,7 @@ function PointsPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard label="Saldo atual" value={pts(wallet?.points_balance)} icon={Coins} />
         <StatCard label="Total acumulado" value={pts(earned)} icon={Coins} tone="success" />
-        <StatCard label="Total resgatado" value={pts(spent)} icon={ShoppingBag} tone="purple" />
+        <StatCard label="Total resgatado" value={pts(spent)} icon={ShoppingBag} tone="secondary" />
       </div>
 
       <Card className="shadow-card">

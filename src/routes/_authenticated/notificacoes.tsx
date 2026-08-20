@@ -11,9 +11,9 @@ import { dateTimeBR } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/notificacoes")({
   head: () => ({
     meta: [
-      { title: "Notificações — Nexora" },
+      { title: "Notificações — Arena Saúde" },
       { name: "description", content: "Avisos sobre pagamentos, comissões, saques e pedidos da sua conta." },
-      { property: "og:title", content: "Notificações — Nexora" },
+      { property: "og:title", content: "Notificações — Arena Saúde" },
       { property: "og:description", content: "Avisos sobre pagamentos, comissões, saques e pedidos da sua conta." },
     ],
   }),

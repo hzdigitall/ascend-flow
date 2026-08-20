@@ -38,12 +38,12 @@ export function StatCard({
   value: ReactNode;
   icon: LucideIcon;
   hint?: string;
-  tone?: "primary" | "purple" | "success" | "muted";
+  tone?: "primary" | "secondary" | "success" | "muted";
   loading?: boolean;
 }) {
   const tones = {
     primary: "bg-primary-soft text-primary",
-    purple: "bg-brand-purple-soft text-brand-purple",
+    secondary: "bg-secondary text-secondary-foreground",
     success: "bg-success/10 text-success",
     muted: "bg-muted text-muted-foreground",
   } as const;

@@ -88,7 +88,7 @@ function Page() {
                     </p>
                     <p className="text-xs text-muted-foreground">{dateBR(r.created_at)}</p>
                   </div>
-                  <span className="shrink-0 rounded-full bg-brand-purple-soft px-3 py-1 text-xs font-semibold text-brand-purple">
+                  <span className="shrink-0 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
                     Nível {r.level}
                   </span>
                 </li>

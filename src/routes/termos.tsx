@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/termos")({
   head: () => ({
     meta: [
-      { title: "Termos de Uso — Nexora" },
-      { name: "description", content: "Condições de uso da plataforma Nexora: planos, pontos, indicações e resgates." },
-      { property: "og:title", content: "Termos de Uso — Nexora" },
-      { property: "og:description", content: "Leia as condições de uso da plataforma Nexora." },
+      { title: "Termos de Uso — Arena Saúde" },
+      { name: "description", content: "Condições de uso da plataforma Arena Saúde: planos, pontos, indicações e resgates." },
+      { property: "og:title", content: "Termos de Uso — Arena Saúde" },
+      { property: "og:description", content: "Leia as condições de uso da plataforma Arena Saúde." },
     ],
   }),
   component: TermsPage,

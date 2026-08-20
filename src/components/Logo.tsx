@@ -13,7 +13,7 @@ export function Logo({ className, to = "/" }: { className?: string; to?: string 
       {logoUrl ? (
         <img src={logoUrl} alt={name} className="h-8 w-auto shrink-0 object-contain" />
       ) : (
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-brand">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary">
           <Zap className="h-5 w-5 text-primary-foreground" aria-hidden />
         </span>
       )}

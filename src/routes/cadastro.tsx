@@ -119,7 +119,7 @@ function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-10">
+    <div className="flex min-h-screen items-center justify-center px-4 py-10 bg-background">
       <div className="w-full max-w-lg">
         <Logo />
         <h1 className="mt-6 text-2xl font-bold tracking-tight">Criar sua conta</h1>
@@ -237,7 +237,7 @@ function SignUpPage() {
                 />
               </div>
 
-              <div className="flex items-start gap-3 rounded-xl bg-muted/60 p-3">
+              <div className="flex items-start gap-3 rounded-xl bg-white border border-[var(--color-border)] p-3">
                 <Checkbox
                   id="terms"
                   checked={form.terms}

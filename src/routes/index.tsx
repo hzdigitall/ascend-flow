@@ -46,11 +46,11 @@ function Landing() {
       </header>
 
       <section className="mx-auto max-w-6xl px-4 py-16 text-center sm:py-24">
-        <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
+        <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary border border-primary/20">
           <Sparkles className="h-3.5 w-3.5" /> Saúde · Bem Estar · Resultados
         </span>
         <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
-          Seu futuro, <span className="text-gradient-brand">nosso propósito</span>.
+          Seu futuro, <span className="text-primary">nosso propósito</span>.
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
           Transforme escolhas em conquistas através de produtos de alta qualidade, tecnologia e oportunidades de crescimento.
@@ -70,7 +70,7 @@ function Landing() {
           {features.map((f) => (
             <Card key={f.title} className="shadow-card">
               <CardContent className="p-6">
-                <span className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-brand text-primary-foreground">
+                <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary text-primary-foreground">
                   <f.icon className="h-5 w-5" />
                 </span>
                 <h2 className="mt-4 text-base font-bold">{f.title}</h2>
