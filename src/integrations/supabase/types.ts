@@ -158,6 +158,35 @@ export type Database = {
           },
         ]
       }
+      daily_roi_logs: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          user_plan_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          user_plan_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          user_plan_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_roi_logs_user_plan_id_fkey"
+            columns: ["user_plan_id"]
+            isOneToOne: false
+            referencedRelation: "user_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string
@@ -991,6 +1020,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      process_daily_roi: { Args: never; Returns: undefined }
       process_withdrawal: {
         Args: { _action: string; _admin: string; _reason: string; _wid: string }
         Returns: boolean
