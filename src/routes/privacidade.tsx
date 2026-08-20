@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/privacidade")({
   head: () => ({
     meta: [
-      { title: "Política de Privacidade — Nexora" },
+      { title: "Política de Privacidade — Arena Saúde" },
       {
         name: "description",
-        content: "Como a Nexora coleta, usa e protege seus dados pessoais conforme a LGPD.",
+        content: "Como a Arena Saúde coleta, usa e protege seus dados pessoais conforme a LGPD.",
       },
-      { property: "og:title", content: "Política de Privacidade — Nexora" },
-      { property: "og:description", content: "Tratamento de dados pessoais na plataforma Nexora." },
+      { property: "og:title", content: "Política de Privacidade — Arena Saúde" },
+      { property: "og:description", content: "Tratamento de dados pessoais na plataforma Arena Saúde." },
     ],
   }),
   component: PrivacyPage,

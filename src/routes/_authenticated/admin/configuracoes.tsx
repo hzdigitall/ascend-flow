@@ -33,7 +33,7 @@ const items: NavItem[] = [
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
     meta: [
-      { title: "Configurações do sistema — Nexora" },
+      { title: "Configurações do sistema — Arena Saúde" },
       { name: "description", content: "Ajuste taxas, nomes e comportamentos da plataforma." },
     ],
   }),

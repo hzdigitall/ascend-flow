@@ -33,7 +33,7 @@ const items: NavItem[] = [
 export const Route = createFileRoute("/_authenticated/admin/saques")({
   head: () => ({
     meta: [
-      { title: "Gestão de saques — Nexora" },
+      { title: "Gestão de saques — Arena Saúde" },
       { name: "description", content: "Processamento e aprovação de pedidos de saque via PIX." },
     ],
   }),
