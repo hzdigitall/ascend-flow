@@ -6,7 +6,8 @@ import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/
 import { StatusBadge } from "@/components/StatusBadge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Package } from "lucide-react";
-import { dateTimeBR, pts } from "@/lib/format";
+import { dateTimeBR, pts, dateBR } from "@/lib/format";
+import { Truck } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/pedidos")({
   head: () => ({
@@ -52,11 +53,31 @@ function Page() {
             <ul className="divide-y">
               {data!.map((o) => (
                 <li key={o.id} className="flex items-center justify-between gap-3 py-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{pts(o.points_used)}</p>
-                    <p className="text-xs text-muted-foreground">{dateTimeBR(o.created_at)}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-sm font-bold">{pts(o.points_used)}</p>
+                      <StatusBadge status={o.status} />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">{dateTimeBR(o.created_at)}</p>
+                    <div className="mt-2 flex items-start gap-2 rounded-lg bg-muted/50 p-2 text-[10px] text-muted-foreground">
+                      <Truck className="h-3 w-3 shrink-0 text-primary mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-foreground">Prazo de envio: 15 dias</p>
+                        <p>
+                          {o.ship_street}, {o.ship_number}
+                          {o.ship_complement ? ` - ${o.ship_complement}` : ""}
+                          <br />
+                          {o.ship_district}, {o.ship_city} - {o.ship_state} ({o.ship_zip})
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <StatusBadge status={o.status} />
+                  {o.tracking_code && (
+                    <div className="text-right">
+                      <p className="text-[10px] font-bold uppercase text-primary">Rastreio</p>
+                      <p className="text-xs font-mono">{o.tracking_code}</p>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
