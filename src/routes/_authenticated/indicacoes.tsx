@@ -144,7 +144,7 @@ function Page() {
                               </p>
                             </div>
                           </div>
-                          <StatusBadge status="completed" label="Ativo" />
+                          <StatusBadge status="active" />
                         </li>
                       ))}
                     </ul>
