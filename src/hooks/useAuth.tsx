@@ -9,6 +9,7 @@ type Profile = {
   email: string;
   phone: string | null;
   cpf: string | null;
+  avatar_url: string | null;
   referral_code: string;
   sponsor_id: string | null;
   blocked: boolean;
