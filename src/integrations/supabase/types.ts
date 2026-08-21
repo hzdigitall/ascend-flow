@@ -989,16 +989,27 @@ export type Database = {
         Args: { _plan: string; _user: string }
         Returns: string
       }
-      credit_points: {
-        Args: {
-          _cat: Database["public"]["Enums"]["tx_category"]
-          _desc: string
-          _points: number
-          _ref: string
-          _user: string
-        }
-        Returns: undefined
-      }
+      credit_points:
+        | {
+            Args: {
+              _cat: string
+              _desc?: string
+              _points: number
+              _ref?: string
+              _user: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              _cat: Database["public"]["Enums"]["tx_category"]
+              _desc: string
+              _points: number
+              _ref: string
+              _user: string
+            }
+            Returns: undefined
+          }
       credit_wallet: {
         Args: {
           _amount: number
