@@ -70,7 +70,7 @@ export function AppShell({
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("full_name, phone")
+        .select("full_name, phone, avatar_url")
         .eq("id", profile!.sponsor_id!)
         .maybeSingle();
       return data;
