@@ -34,6 +34,8 @@ export const Route = createFileRoute("/_authenticated/indicacoes")({
 
 function Page() {
   const { profile } = useAuth();
+  const [selectedReferral, setSelectedReferral] = useState<any>(null);
+  
   const link =
     typeof window !== "undefined" && profile?.referral_code
       ? `${window.location.origin}/cadastro?ref=${profile.referral_code}`
