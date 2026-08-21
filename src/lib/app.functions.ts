@@ -108,6 +108,10 @@ export const requestWithdrawal = createServerFn({ method: "POST" })
 
     // Regra: Rendimentos (earnings) -> Segundas, 10h às 17h
     if (data.wallet === "earnings") {
+      const nowBR = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+      const day = nowBR.getDay(); // 0=domingo, 1=segunda, 2=terça...
+      const hour = nowBR.getHours();
+
       if (day !== 1) {
         throw new Error("Saques de rendimentos são permitidos apenas às segundas-feiras.");
       }

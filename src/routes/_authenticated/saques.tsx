@@ -35,7 +35,7 @@ function Page() {
 
   return (
     <UserShell>
-      <PageHeader title="Saques" description="Acompanhe suas solicitações de saque via PIX. Rendimentos às segundas (10h-17h) e Bônus diariamente (09h-17h)." />
+      <PageHeader title="Saques" description="Acompanhe suas solicitações de saque via PIX. Rendimentos: Segundas (10h-17h). Bônus: Diariamente (09h-17h). Taxa de 2%." />
       <Card className="shadow-card">
         <CardContent className="p-4 sm:p-6">
           {isLoading ? (
