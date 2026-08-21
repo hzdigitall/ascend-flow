@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useServerFn } from "@tanstack/react-start";
 import { updateProfile } from "@/lib/app.functions";
 import { toast } from "sonner";
-import { Loader2, User, Phone, CreditCard, Mail, Key, Camera, Trash2 } from "lucide-react";
+import { Loader2, User, Phone, CreditCard, Mail, Key, Camera, Trash2, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/conta")({
@@ -199,9 +199,17 @@ function Page() {
               )}
             </div>
             
-            <p className="text-[10px] text-muted-foreground text-center">
-              Formatos aceitos: JPG, PNG. Tamanho máx: 2MB.
-            </p>
+            <div className="flex flex-col items-center gap-2 mt-2">
+              <p className="text-[10px] text-muted-foreground text-center">
+                Formatos aceitos: JPG, PNG. Tamanho máx: 2MB.
+              </p>
+              <div className="flex items-start gap-1 p-2 rounded bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50">
+                <AlertCircle className="w-3 h-3 mt-0.5 shrink-0" />
+                <p className="text-[9px] leading-tight">
+                  Implementar validação de tipo e tamanho do arquivo da foto de perfil antes do upload e exibir mensagens de erro claras quando houver problemas.
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
