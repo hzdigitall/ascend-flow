@@ -168,6 +168,7 @@ export function AppShell({
           </p>
           <div className="mt-3 flex items-center gap-3">
             <Avatar className="h-9 w-9">
+              <AvatarImage src={sponsor.avatar_url} />
               <AvatarFallback className="bg-primary-soft text-xs text-primary">
                 {initials(sponsor.full_name)}
               </AvatarFallback>
