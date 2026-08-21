@@ -201,12 +201,13 @@ export const claimFirstAdmin = createServerFn({ method: "POST" })
 export const updateProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (data: { full_name?: string; phone?: string; cpf?: string }) =>
+    (data: { full_name?: string; phone?: string; cpf?: string; avatar_url?: string | null }) =>
       z
         .object({
           full_name: z.string().trim().min(3).max(120).optional(),
           phone: z.string().trim().min(10).max(15).optional(),
           cpf: z.string().trim().min(11).max(14).optional(),
+          avatar_url: z.string().url().nullable().optional(),
         })
         .parse(data),
   )
@@ -214,9 +215,10 @@ export const updateProfile = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
     const updateData: any = {};
-    if (data.full_name) updateData.full_name = data.full_name;
-    if (data.phone) updateData.phone = data.phone.replace(/\D/g, "");
-    if (data.cpf) updateData.cpf = data.cpf.replace(/\D/g, "");
+    if (data.full_name !== undefined) updateData.full_name = data.full_name;
+    if (data.phone !== undefined) updateData.phone = data.phone.replace(/\D/g, "");
+    if (data.cpf !== undefined) updateData.cpf = data.cpf.replace(/\D/g, "");
+    if (data.avatar_url !== undefined) updateData.avatar_url = data.avatar_url;
 
     const { error } = await supabaseAdmin
       .from("profiles")

@@ -18,7 +18,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSettings } from "@/hooks/useSettings";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,7 +70,7 @@ export function AppShell({
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("full_name, phone")
+        .select("full_name, phone, avatar_url")
         .eq("id", profile!.sponsor_id!)
         .maybeSingle();
       return data;
@@ -168,6 +168,7 @@ export function AppShell({
           </p>
           <div className="mt-3 flex items-center gap-3">
             <Avatar className="h-9 w-9">
+              <AvatarImage src={sponsor.avatar_url ?? undefined} />
               <AvatarFallback className="bg-primary-soft text-xs text-primary">
                 {initials(sponsor.full_name)}
               </AvatarFallback>
@@ -246,6 +247,7 @@ export function AppShell({
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 rounded-xl px-2 py-1.5 transition-colors hover:bg-muted">
                   <Avatar className="h-9 w-9">
+                    <AvatarImage src={profile?.avatar_url ?? undefined} />
                     <AvatarFallback className="bg-gradient-brand text-xs text-primary-foreground">
                       {initials(profile?.full_name)}
                     </AvatarFallback>
