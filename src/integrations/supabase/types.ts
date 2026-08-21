@@ -991,10 +991,10 @@ export type Database = {
       }
       credit_points: {
         Args: {
-          _cat: Database["public"]["Enums"]["tx_category"]
-          _desc: string
+          _cat: string
+          _desc?: string
           _points: number
-          _ref: string
+          _ref?: string
           _user: string
         }
         Returns: undefined
@@ -1002,11 +1002,11 @@ export type Database = {
       credit_wallet: {
         Args: {
           _amount: number
-          _cat: Database["public"]["Enums"]["tx_category"]
-          _desc: string
-          _ref: string
+          _cat: string
+          _desc?: string
+          _ref?: string
           _user: string
-          _wallet: Database["public"]["Enums"]["wallet_type"]
+          _wallet: string
         }
         Returns: undefined
       }
@@ -1033,9 +1033,9 @@ export type Database = {
         Args: {
           _amount: number
           _key: string
-          _key_type: Database["public"]["Enums"]["pix_key_type"]
+          _key_type: string
           _user: string
-          _wallet: Database["public"]["Enums"]["wallet_type"]
+          _wallet: string
         }
         Returns: string
       }
