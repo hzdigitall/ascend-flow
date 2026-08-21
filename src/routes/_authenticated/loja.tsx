@@ -64,27 +64,35 @@ function Page() {
 
   const handleCepBlur = async () => {
     const cep = address.zip.replace(/\D/g, "");
-    if (cep.length !== 8) return;
+    if (!cep) return;
+    if (cep.length !== 8) {
+      toast.error("CEP inválido. Digite 8 números.");
+      return;
+    }
 
     setIsFetchingCep(true);
     try {
       const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      if (!response.ok) throw new Error("Falha na conexão com a API de CEP.");
+      
       const data = await response.json();
 
       if (data.erro) {
         toast.error("CEP não encontrado.");
+        setAddress(prev => ({ ...prev, street: "", district: "", city: "", state: "" }));
         return;
       }
 
       setAddress((prev) => ({
         ...prev,
-        street: data.logradouro,
-        district: data.bairro,
-        city: data.localidade,
-        state: data.uf,
+        street: data.logradouro || "",
+        district: data.bairro || "",
+        city: data.localidade || "",
+        state: data.uf || "",
       }));
+      toast.success("Endereço preenchido automaticamente.");
     } catch (error) {
-      toast.error("Erro ao buscar CEP.");
+      toast.error("Erro ao buscar CEP. Verifique sua conexão.");
     } finally {
       setIsFetchingCep(false);
     }
