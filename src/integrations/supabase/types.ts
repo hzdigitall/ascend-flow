@@ -989,50 +989,27 @@ export type Database = {
         Args: { _plan: string; _user: string }
         Returns: string
       }
-      credit_points:
-        | {
-            Args: {
-              _cat: string
-              _desc?: string
-              _points: number
-              _ref?: string
-              _user: string
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              _cat: Database["public"]["Enums"]["tx_category"]
-              _desc: string
-              _points: number
-              _ref: string
-              _user: string
-            }
-            Returns: undefined
-          }
-      credit_wallet:
-        | {
-            Args: {
-              _amount: number
-              _cat: string
-              _desc?: string
-              _ref?: string
-              _user: string
-              _wallet: string
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              _amount: number
-              _cat: Database["public"]["Enums"]["tx_category"]
-              _desc: string
-              _ref: string
-              _user: string
-              _wallet: Database["public"]["Enums"]["wallet_type"]
-            }
-            Returns: undefined
-          }
+      credit_points: {
+        Args: {
+          _cat: string
+          _desc?: string
+          _points: number
+          _ref?: string
+          _user: string
+        }
+        Returns: undefined
+      }
+      credit_wallet: {
+        Args: {
+          _amount: number
+          _cat: string
+          _desc?: string
+          _ref?: string
+          _user: string
+          _wallet: string
+        }
+        Returns: undefined
+      }
       generate_referral_code: { Args: never; Returns: string }
       get_setting: { Args: { _default: Json; _key: string }; Returns: Json }
       has_role: {
@@ -1052,27 +1029,16 @@ export type Database = {
         Args: { _addr: Json; _product: string; _user: string }
         Returns: string
       }
-      request_withdrawal:
-        | {
-            Args: {
-              _amount: number
-              _key: string
-              _key_type: string
-              _user: string
-              _wallet: string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              _amount: number
-              _key: string
-              _key_type: Database["public"]["Enums"]["pix_key_type"]
-              _user: string
-              _wallet: Database["public"]["Enums"]["wallet_type"]
-            }
-            Returns: string
-          }
+      request_withdrawal: {
+        Args: {
+          _amount: number
+          _key: string
+          _key_type: string
+          _user: string
+          _wallet: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "user" | "admin"
