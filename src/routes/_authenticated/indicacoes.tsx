@@ -153,7 +153,17 @@ function Page() {
                               </p>
                             </div>
                           </div>
-                          <StatusBadge status="active" />
+                          <div className="flex items-center gap-2">
+                            <StatusBadge status="active" />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-muted-foreground"
+                              onClick={() => setSelectedReferral(r)}
+                            >
+                              <Info className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </li>
                       ))}
                     </ul>
@@ -170,6 +180,59 @@ function Page() {
           ))}
         </Tabs>
       )}
+
+      <Dialog
+        open={!!selectedReferral}
+        onOpenChange={(open) => !open && setSelectedReferral(null)}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Detalhes do Indicado</DialogTitle>
+            <DialogDescription>
+              Informações detalhadas sobre o usuário em sua rede.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedReferral && (
+            <div className="space-y-4 py-4">
+              <div className="flex items-center gap-4 rounded-xl bg-muted p-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white">
+                  <UserCheck className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-lg font-bold">
+                    {(selectedReferral.profiles as any)?.full_name ?? "Usuário"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Nível {selectedReferral.level} da sua rede
+                  </p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-xl border p-3">
+                  <p className="text-xs text-muted-foreground">Status</p>
+                  <div className="mt-1">
+                    <StatusBadge status="active" />
+                  </div>
+                </div>
+                <div className="rounded-xl border p-3">
+                  <p className="text-xs text-muted-foreground">Cadastro</p>
+                  <p className="mt-1 text-sm font-medium">
+                    {dateBR(selectedReferral.created_at)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-xl border p-3">
+                <p className="text-xs text-muted-foreground">ID de Referência</p>
+                <p className="mt-1 font-mono text-xs text-primary">
+                  {selectedReferral.referred_id}
+                </p>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </UserShell>
   );
 }
