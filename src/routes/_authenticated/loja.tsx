@@ -102,8 +102,10 @@ function Page() {
     setIsRedeeming(true);
     try {
       await redeemFn({
-        productId: selectedProduct.id,
-        address: { ...address },
+        data: {
+          productId: selectedProduct.id,
+          address: { ...address },
+        },
       });
       toast.success("Resgate realizado com sucesso! Prazo de envio de 15 dias.");
       setSelectedProduct(null);
