@@ -54,7 +54,9 @@ function Page() {
           {data!.map((p) => (
             <Card key={p.id} className="overflow-hidden shadow-card">
               {p.image_url ? (
-                <img src={p.image_url} alt={p.name} className="h-40 w-full object-cover" />
+                <div className="flex aspect-square items-center justify-center bg-white p-4">
+                  <img src={p.image_url} alt={p.name} className="h-full w-full object-contain" />
+                </div>
               ) : (
                 <div className="grid h-40 w-full place-items-center bg-muted text-muted-foreground">
                   <ShoppingBag className="h-8 w-8" />
