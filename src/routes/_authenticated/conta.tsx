@@ -31,12 +31,70 @@ function Page() {
   const updateProfileFn = useServerFn(updateProfile);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
     full_name: profile?.full_name || "",
     phone: profile?.phone || "",
     cpf: profile?.cpf || "",
   });
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !profile?.id) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Por favor, selecione uma imagem válida.");
+      return;
+    }
+
+    // Validate file size (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 2MB.");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${profile.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      await updateProfileFn({ data: { avatar_url: publicUrl } });
+      toast.success("Foto de perfil atualizada!");
+      refresh();
+    } catch (error: any) {
+      toast.error("Erro ao fazer upload: " + error.message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemovePhoto = async () => {
+    if (!profile?.id) return;
+    
+    setIsUploading(true);
+    try {
+      await updateProfileFn({ data: { avatar_url: null } });
+      toast.success("Foto removida com sucesso!");
+      refresh();
+    } catch (error: any) {
+      toast.error("Erro ao remover foto: " + error.message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,11 +132,84 @@ function Page() {
         description="Gerencie seus dados cadastrais e informações de contato." 
       />
       
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="shadow-card">
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card className="md:col-span-1 shadow-card h-fit">
           <CardHeader className="border-b bg-muted/30 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-bold">Informações Pessoais</CardTitle>
+            <CardTitle className="text-base font-bold">Foto de Perfil</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 flex flex-col items-center space-y-4">
+            <div className="relative group">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 bg-muted flex items-center justify-center">
+                {profile?.avatar_url ? (
+                  <img 
+                    src={profile.avatar_url} 
+                    alt={profile.full_name} 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-16 h-16 text-muted-foreground" />
+                )}
+                {isUploading && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-full">
+                    <Loader2 className="w-8 h-8 text-white animate-spin" />
+                  </div>
+                )}
+              </div>
+              
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="absolute bottom-0 right-0 p-2 bg-primary text-white rounded-full shadow-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+                title="Alterar foto"
+              >
+                <Camera className="w-4 h-4" />
+              </button>
+            </div>
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              accept="image/*"
+              className="hidden"
+            />
+
+            <div className="flex flex-col w-full gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+              >
+                {profile?.avatar_url ? "Trocar foto" : "Adicionar foto"}
+              </Button>
+              
+              {profile?.avatar_url && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={handleRemovePhoto}
+                  disabled={isUploading}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Remover foto
+                </Button>
+              )}
+            </div>
+            
+            <p className="text-[10px] text-muted-foreground text-center">
+              Formatos aceitos: JPG, PNG. Tamanho máx: 2MB.
+            </p>
+          </CardContent>
+        </Card>
+
+        <div className="md:col-span-2 space-y-6">
+          <Card className="shadow-card">
+            <CardHeader className="border-b bg-muted/30 px-6 py-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base font-bold">Informações Pessoais</CardTitle>
               {!isEditing && (
                 <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
                   Editar
@@ -228,6 +359,7 @@ function Page() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </UserShell>
   );
