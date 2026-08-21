@@ -5,13 +5,16 @@ import { UserShell } from "@/components/layout/UserShell";
 import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, Copy, UserCheck, Info } from "lucide-react";
+import { Users, Copy, UserCheck, Info, Trophy, Star, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { dateBR } from "@/lib/format";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemo, useState } from "react";
+import careerPlanAsset from "@/assets/career-plan.png.asset.json";
+import { Progress } from "@/components/ui/progress";
+import { formatPoints } from "@/lib/format";
 import {
   Dialog,
   DialogContent,
@@ -33,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/indicacoes")({
 });
 
 function Page() {
-  const { profile } = useAuth();
+  const { profile, wallet } = useAuth();
   const [selectedReferral, setSelectedReferral] = useState<any>(null);
   
   const link =
@@ -70,49 +73,201 @@ function Page() {
     return groups;
   }, [data]);
 
+  const careerRanks = [
+    { name: "Master", points: 500, bonus: 300 },
+    { name: "Bronze", points: 1000, bonus: 500 },
+    { name: "Prata", points: 2000, bonus: 800, req: "2 Master" },
+    { name: "Ouro", points: 5000, bonus: 1300, req: "4 Master" },
+    { name: "Platina", points: 10000, bonus: 2000, req: "4 Prata" },
+    { name: "Diamante", points: 20000, bonus: 3000, req: "8 Prata" },
+    { name: "Duplo Diamante", points: 40000, bonus: 4500, req: "10 Ouro" },
+    { name: "Triplo Diamante", points: 80000, bonus: 6500, req: "10 Diamante" },
+    { name: "Imperial", points: 160000, bonus: 9000, req: "10 Duplo Diamante" },
+    { name: "Embaixador", points: 320000, bonus: 12000, req: "5 Imperial" },
+    { name: "Presidente", points: 500000, bonus: 16000, req: "2 Embaixador" },
+    { name: "Titan", points: 1000000, bonus: 25000, req: "1 Presidente" },
+  ];
+
+  const currentPoints = wallet?.points_balance || 0;
+  const nextRank = careerRanks.find(r => r.points > currentPoints) || careerRanks[careerRanks.length - 1];
+  const currentRank = [...careerRanks].reverse().find(r => r.points <= currentPoints) || null;
+  const progress = Math.min((currentPoints / nextRank.points) * 100, 100);
+
   return (
     <UserShell>
       <PageHeader
-        title="Indicações"
-        description="Sua rede e o link para convidar novas pessoas."
+        title="Rede e Carreira"
+        description="Acompanhe sua rede de indicados e sua evolução no Plano de Carreira."
       />
 
-      <Card className="mb-6 shadow-card">
-        <CardContent className="flex flex-col gap-3 p-6 sm:flex-row sm:items-center">
-          <div className="min-w-0 flex-1 rounded-xl bg-muted p-3">
-            <p className="break-all text-xs text-muted-foreground">
-              {link || "—"}
-            </p>
-          </div>
-          <Button
-            className="shrink-0"
-            disabled={!link}
-            onClick={async () => {
-              await navigator.clipboard.writeText(link);
-              toast.success("Link copiado!");
-            }}
-          >
-            <Copy className="mr-2 h-4 w-4" /> Copiar link
-          </Button>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="rede" className="w-full">
+        <TabsList className="mb-8 grid w-full grid-cols-2 lg:w-[400px]">
+          <TabsTrigger value="rede">Minha Rede</TabsTrigger>
+          <TabsTrigger value="carreira">Plano de Carreira</TabsTrigger>
+        </TabsList>
 
-      {isLoading ? (
-        <TableSkeleton />
-      ) : isError ? (
-        <ErrorState onRetry={() => refetch()} />
-      ) : (data?.length ?? 0) === 0 ? (
-        <Card className="shadow-card">
-          <CardContent className="p-12">
-            <EmptyState
-              icon={Users}
-              title="Você ainda não tem indicados"
-              description="Compartilhe seu link e comece a construir sua rede."
-            />
-          </CardContent>
-        </Card>
-      ) : (
-        <Tabs defaultValue="1" className="w-full">
+        <TabsContent value="carreira" className="space-y-6">
+          <Card className="overflow-hidden border-primary/20 bg-primary/5 shadow-card">
+            <CardContent className="p-6 sm:p-8">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="h-6 w-6 text-primary" />
+                    <h3 className="text-2xl font-bold">Seu Progresso</h3>
+                  </div>
+                  <p className="text-muted-foreground">
+                    Você tem <span className="font-bold text-primary">{formatPoints(currentPoints)}</span> Pontos Arena.
+                  </p>
+                </div>
+                {currentRank && (
+                  <div className="flex items-center gap-3 rounded-2xl bg-primary px-6 py-3 text-white shadow-lg">
+                    <Star className="h-6 w-6 fill-current" />
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">Patente Atual</p>
+                      <p className="text-xl font-black">{currentRank.name}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-8 space-y-3">
+                <div className="flex justify-between text-sm font-medium">
+                  <span className="text-muted-foreground">Próxima meta: <span className="text-foreground">{nextRank.name}</span></span>
+                  <span>{progress.toFixed(0)}%</span>
+                </div>
+                <Progress value={progress} className="h-3" />
+                <div className="flex justify-between text-[11px] text-muted-foreground">
+                  <span>{formatPoints(currentPoints)} pontos</span>
+                  <span>{formatPoints(nextRank.points)} pontos</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid gap-6 lg:grid-cols-3">
+            <Card className="lg:col-span-2 shadow-card">
+              <CardContent className="p-0">
+                <div className="flex items-center justify-between border-b p-6">
+                  <h3 className="font-bold">Ranks e Recompensas</h3>
+                  <div className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold text-primary uppercase">
+                    Bônus Mensal
+                  </div>
+                </div>
+                <div className="divide-y overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead className="bg-muted/50 text-[11px] font-bold uppercase text-muted-foreground">
+                      <tr>
+                        <th className="px-6 py-3">Rank</th>
+                        <th className="px-6 py-3">Pontos</th>
+                        <th className="px-6 py-3">Requisitos</th>
+                        <th className="px-6 py-3 text-right">Bônus</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y text-sm">
+                      {careerRanks.map((rank) => (
+                        <tr 
+                          key={rank.name} 
+                          className={cn(
+                            "transition-colors hover:bg-muted/30",
+                            currentRank?.name === rank.name && "bg-primary/5 font-bold"
+                          )}
+                        >
+                          <td className="whitespace-nowrap px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              {currentPoints >= rank.points ? (
+                                <Star className="h-4 w-4 fill-primary text-primary" />
+                              ) : (
+                                <Star className="h-4 w-4 text-muted-foreground" />
+                              )}
+                              {rank.name}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-muted-foreground">{formatPoints(rank.points)}</td>
+                          <td className="px-6 py-4 text-xs text-muted-foreground">{rank.req || "Apenas Pontos"}</td>
+                          <td className="px-6 py-4 text-right font-bold text-primary">R$ {rank.bonus.toLocaleString('pt-BR')}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-card border-primary/10">
+              <CardContent className="p-6">
+                <h3 className="mb-4 font-bold">Como ganhar pontos?</h3>
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <ChevronRight className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">Seus Depósitos</p>
+                      <p className="text-xs text-muted-foreground">Cada R$ 50,00 investidos em planos Arena rendem 5 Pontos Arena.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <ChevronRight className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">Indicações Diretas</p>
+                      <p className="text-xs text-muted-foreground">Quando um indicado do seu 1º nível ativa um plano, você ganha pontos na mesma proporção (R$ 50 = 5 pts).</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 rounded-xl bg-muted p-4">
+                  <p className="text-[11px] font-bold uppercase text-muted-foreground">Visão Geral do Plano</p>
+                  <img 
+                    src={careerPlanAsset.url} 
+                    alt="Plano de Carreira Arena Saúde" 
+                    className="mt-4 rounded-lg shadow-sm"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="rede" className="space-y-6">
+          <Card className="shadow-card">
+            <CardContent className="flex flex-col gap-3 p-6 sm:flex-row sm:items-center">
+              <div className="min-w-0 flex-1 rounded-xl bg-muted p-3">
+                <p className="break-all text-xs text-muted-foreground">
+                  {link || "—"}
+                </p>
+              </div>
+              <Button
+                className="shrink-0"
+                disabled={!link}
+                onClick={async () => {
+                  await navigator.clipboard.writeText(link);
+                  toast.success("Link copiado!");
+                }}
+              >
+                <Copy className="mr-2 h-4 w-4" /> Copiar link
+              </Button>
+            </CardContent>
+          </Card>
+
+          {isLoading ? (
+            <TableSkeleton />
+          ) : isError ? (
+            <ErrorState onRetry={() => refetch()} />
+          ) : (data?.length ?? 0) === 0 ? (
+            <Card className="shadow-card">
+              <CardContent className="p-12">
+                <EmptyState
+                  icon={Users}
+                  title="Você ainda não tem indicados"
+                  description="Compartilhe seu link e comece a construir sua rede."
+                />
+              </CardContent>
+            </Card>
+          ) : (
+            <Tabs defaultValue="1" className="w-full">
+
           <TabsList className="mb-6 flex w-full justify-start overflow-x-auto bg-transparent p-0">
             {Object.keys(groupedReferrals).map((level) => (
               <TabsTrigger
