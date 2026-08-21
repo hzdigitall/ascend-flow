@@ -43,15 +43,17 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+interface WithdrawalDialogProps {
+  earningsBalance?: number | undefined;
+  referralBalance?: number | undefined;
+  onSuccess?: () => void;
+}
+
 export function WithdrawalDialog({ 
   earningsBalance = 0, 
   referralBalance = 0,
   onSuccess 
-}: { 
-  earningsBalance?: number | undefined; 
-  referralBalance?: number | undefined;
-  onSuccess?: () => void;
-}) {
+}: WithdrawalDialogProps) {
   const [open, setOpen] = useState(false);
   const requestWd = useServerFn(requestWithdrawal);
 
@@ -66,7 +68,7 @@ export function WithdrawalDialog({
   });
 
   const selectedWallet = form.watch("wallet");
-  const currentBalance = selectedWallet === "earnings" ? earningsBalance : referralBalance;
+  const currentBalance = (selectedWallet === "earnings" ? earningsBalance : referralBalance) ?? 0;
 
   // Client-side window check (Brasília Time)
   const checkWindow = (wallet: "earnings" | "referral") => {
