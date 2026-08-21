@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemo, useState } from "react";
 import careerPlanAsset from "@/assets/career-plan.png.asset.json";
 import { Progress } from "@/components/ui/progress";
-import { formatPoints } from "@/lib/format";
+import { pts as formatPoints } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -90,9 +90,10 @@ function Page() {
   ];
 
   const currentPoints = wallet?.points_balance || 0;
-  const nextRank = careerRanks.find(r => r.points > currentPoints) || careerRanks[careerRanks.length - 1];
-  const currentRank = [...careerRanks].reverse().find(r => r.points <= currentPoints) || null;
-  const progress = Math.min((currentPoints / nextRank.points) * 100, 100);
+  const careerRanksSorted = careerRanks.sort((a, b) => a.points - b.points);
+  const nextRank = careerRanksSorted.find(r => r.points > currentPoints) || careerRanksSorted[careerRanksSorted.length - 1];
+  const currentRank = [...careerRanksSorted].reverse().find(r => r.points <= currentPoints) || null;
+  const progress = nextRank ? Math.min((currentPoints / nextRank.points) * 100, 100) : 100;
 
   return (
     <UserShell>
@@ -133,13 +134,13 @@ function Page() {
 
               <div className="mt-8 space-y-3">
                 <div className="flex justify-between text-sm font-medium">
-                  <span className="text-muted-foreground">Próxima meta: <span className="text-foreground">{nextRank.name}</span></span>
+                  <span className="text-muted-foreground">Próxima meta: <span className="text-foreground">{nextRank?.name || "Titan"}</span></span>
                   <span>{progress.toFixed(0)}%</span>
                 </div>
                 <Progress value={progress} className="h-3" />
                 <div className="flex justify-between text-[11px] text-muted-foreground">
                   <span>{formatPoints(currentPoints)} pontos</span>
-                  <span>{formatPoints(nextRank.points)} pontos</span>
+                  <span>{formatPoints(nextRank?.points || currentPoints)} pontos</span>
                 </div>
               </div>
             </CardContent>
