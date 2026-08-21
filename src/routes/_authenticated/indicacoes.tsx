@@ -5,11 +5,13 @@ import { UserShell } from "@/components/layout/UserShell";
 import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, Copy } from "lucide-react";
+import { Users, Copy, UserCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { dateBR } from "@/lib/format";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useMemo } from "react";
 
 export const Route = createFileRoute("/_authenticated/indicacoes")({
   head: () => ({
