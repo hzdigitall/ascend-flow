@@ -4,14 +4,15 @@ import { PageHeader } from "@/components/states";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { maskCPF, maskPhone } from "@/lib/format";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useServerFn } from "@tanstack/react-start";
 import { updateProfile } from "@/lib/app.functions";
 import { toast } from "sonner";
-import { Loader2, User, Phone, CreditCard, Mail, Key } from "lucide-react";
+import { Loader2, User, Phone, CreditCard, Mail, Key, Camera, Trash2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/conta")({
   head: () => ({
