@@ -48,8 +48,8 @@ export function WithdrawalDialog({
   referralBalance = 0,
   onSuccess 
 }: { 
-  earningsBalance?: number; 
-  referralBalance?: number;
+  earningsBalance?: number | undefined; 
+  referralBalance?: number | undefined;
   onSuccess?: () => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -98,7 +98,7 @@ export function WithdrawalDialog({
     }
 
     try {
-      await requestWd(values);
+      await requestWd({ data: values });
       toast.success("Solicitação de saque enviada com sucesso!");
       setOpen(false);
       form.reset();
