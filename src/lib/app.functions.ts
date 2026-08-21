@@ -197,3 +197,32 @@ export const claimFirstAdmin = createServerFn({ method: "POST" })
     });
     return { ok: true };
   });
+
+export const updateProfile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (data: { full_name?: string; phone?: string; cpf?: string }) =>
+      z
+        .object({
+          full_name: z.string().trim().min(3).max(120).optional(),
+          phone: z.string().trim().min(10).max(15).optional(),
+          cpf: z.string().trim().min(11).max(14).optional(),
+        })
+        .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    
+    const updateData: any = {};
+    if (data.full_name) updateData.full_name = data.full_name;
+    if (data.phone) updateData.phone = data.phone.replace(/\D/g, "");
+    if (data.cpf) updateData.cpf = data.cpf.replace(/\D/g, "");
+
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update(updateData)
+      .eq("id", context.userId);
+
+    if (error) throw new Error(error.message);
+    return { success: true };
+  });
