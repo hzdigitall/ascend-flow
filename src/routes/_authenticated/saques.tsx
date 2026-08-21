@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { UserShell } from "@/components/layout/UserShell";
 import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Banknote } from "lucide-react";
 import { brl, dateTimeBR } from "@/lib/format";
+import { WithdrawalDialog } from "@/components/finance/WithdrawalDialog";
 
 export const Route = createFileRoute("/_authenticated/saques")({
   head: () => ({
@@ -21,6 +23,8 @@ export const Route = createFileRoute("/_authenticated/saques")({
 });
 
 function Page() {
+  const { wallet } = useAuth();
+
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["withdrawals"],
     queryFn: async () => {
@@ -35,7 +39,17 @@ function Page() {
 
   return (
     <UserShell>
-      <PageHeader title="Saques" description="Acompanhe suas solicitações de saque via PIX. Rendimentos: Segundas (10h-17h). Bônus: Diariamente (09h-17h). Taxa de 2%." />
+      <PageHeader 
+        title="Saques" 
+        description="Acompanhe suas solicitações de saque via PIX. Rendimentos: Segundas (10h-17h). Bônus: Diariamente (09h-17h). Taxa de 2%." 
+        action={
+          <WithdrawalDialog 
+            earningsBalance={wallet?.earnings_balance} 
+            referralBalance={wallet?.referral_balance}
+            onSuccess={() => refetch()} 
+          />
+        }
+      />
       <Card className="shadow-card">
         <CardContent className="p-4 sm:p-6">
           {isLoading ? (
