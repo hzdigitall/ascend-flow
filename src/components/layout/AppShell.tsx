@@ -247,6 +247,7 @@ export function AppShell({
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 rounded-xl px-2 py-1.5 transition-colors hover:bg-muted">
                   <Avatar className="h-9 w-9">
+                    <AvatarImage src={profile?.avatar_url ?? undefined} />
                     <AvatarFallback className="bg-gradient-brand text-xs text-primary-foreground">
                       {initials(profile?.full_name)}
                     </AvatarFallback>
