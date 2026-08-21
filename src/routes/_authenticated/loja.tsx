@@ -62,7 +62,12 @@ function Page() {
               <CardContent className="p-5">
                 <h2 className="truncate text-base font-bold">{p.name}</h2>
                 <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{p.description}</p>
-                <p className="mt-3 text-lg font-extrabold text-primary">{pts(p.points_cost)}</p>
+                <div className="mt-3 flex items-center justify-between">
+                  <p className="text-lg font-extrabold text-primary">{pts(p.points_cost)}</p>
+                  <Button size="sm" className="rounded-full px-4" disabled={p.stock <= 0}>
+                    Resgatar
+                  </Button>
+                </div>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {p.stock > 0 ? `${p.stock} em estoque` : "Sem estoque"}
                 </p>
