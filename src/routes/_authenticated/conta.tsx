@@ -207,13 +207,7 @@ function Page() {
                 <div className="flex items-start gap-1 p-2 rounded bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50">
                   <AlertCircle className="w-3 h-3 mt-0.5 shrink-0" />
                   <p className="text-[9px] leading-tight">
-                    Implementar validação de tipo e tamanho do arquivo da foto de perfil antes do upload e exibir mensagens de erro claras quando houver problemas.
-                  </p>
-                </div>
-                <div className="flex items-start gap-1 p-2 rounded bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50">
-                  <AlertCircle className="w-3 h-3 mt-0.5 shrink-0" />
-                  <p className="text-[9px] leading-tight">
-                    Configure no meu Supabase Storage e nas policies RLS para garantir que cada usuário só possa ler e atualizar a própria foto de perfil.
+                    Remova em perfil para adicionar de foto de perfil.
                   </p>
                 </div>
               </div>
