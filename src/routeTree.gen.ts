@@ -20,6 +20,7 @@ import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
 import { Route as AuthenticatedContaRouteImport } from './routes/_authenticated/conta'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDepositarRouteImport } from './routes/_authenticated/depositar'
 import { Route as AuthenticatedIndicacoesRouteImport } from './routes/_authenticated/indicacoes'
 import { Route as AuthenticatedLojaRouteImport } from './routes/_authenticated/loja'
 import { Route as AuthenticatedNotificacoesRouteImport } from './routes/_authenticated/notificacoes'
@@ -96,6 +97,11 @@ const AuthenticatedContaRoute = AuthenticatedContaRouteImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDepositarRoute = AuthenticatedDepositarRouteImport.update({
+  id: '/depositar',
+  path: '/depositar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedIndicacoesRoute = AuthenticatedIndicacoesRouteImport.update({
@@ -240,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/carteira': typeof AuthenticatedCarteiraRoute
   '/conta': typeof AuthenticatedContaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/depositar': typeof AuthenticatedDepositarRoute
   '/indicacoes': typeof AuthenticatedIndicacoesRoute
   '/loja': typeof AuthenticatedLojaRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
@@ -275,6 +282,7 @@ export interface FileRoutesByTo {
   '/carteira': typeof AuthenticatedCarteiraRoute
   '/conta': typeof AuthenticatedContaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/depositar': typeof AuthenticatedDepositarRoute
   '/indicacoes': typeof AuthenticatedIndicacoesRoute
   '/loja': typeof AuthenticatedLojaRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
@@ -312,6 +320,7 @@ export interface FileRoutesById {
   '/_authenticated/carteira': typeof AuthenticatedCarteiraRoute
   '/_authenticated/conta': typeof AuthenticatedContaRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/depositar': typeof AuthenticatedDepositarRoute
   '/_authenticated/indicacoes': typeof AuthenticatedIndicacoesRoute
   '/_authenticated/loja': typeof AuthenticatedLojaRoute
   '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
@@ -349,6 +358,7 @@ export interface FileRouteTypes {
     | '/carteira'
     | '/conta'
     | '/dashboard'
+    | '/depositar'
     | '/indicacoes'
     | '/loja'
     | '/notificacoes'
@@ -384,6 +394,7 @@ export interface FileRouteTypes {
     | '/carteira'
     | '/conta'
     | '/dashboard'
+    | '/depositar'
     | '/indicacoes'
     | '/loja'
     | '/notificacoes'
@@ -420,6 +431,7 @@ export interface FileRouteTypes {
     | '/_authenticated/carteira'
     | '/_authenticated/conta'
     | '/_authenticated/dashboard'
+    | '/_authenticated/depositar'
     | '/_authenticated/indicacoes'
     | '/_authenticated/loja'
     | '/_authenticated/notificacoes'
@@ -538,6 +550,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/depositar': {
+      id: '/_authenticated/depositar'
+      path: '/depositar'
+      fullPath: '/depositar'
+      preLoaderRoute: typeof AuthenticatedDepositarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/indicacoes': {
@@ -708,6 +727,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCarteiraRoute: typeof AuthenticatedCarteiraRoute
   AuthenticatedContaRoute: typeof AuthenticatedContaRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDepositarRoute: typeof AuthenticatedDepositarRoute
   AuthenticatedIndicacoesRoute: typeof AuthenticatedIndicacoesRoute
   AuthenticatedLojaRoute: typeof AuthenticatedLojaRoute
   AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
@@ -732,6 +752,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCarteiraRoute: AuthenticatedCarteiraRoute,
   AuthenticatedContaRoute: AuthenticatedContaRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDepositarRoute: AuthenticatedDepositarRoute,
   AuthenticatedIndicacoesRoute: AuthenticatedIndicacoesRoute,
   AuthenticatedLojaRoute: AuthenticatedLojaRoute,
   AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
