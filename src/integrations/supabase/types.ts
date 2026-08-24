@@ -1279,6 +1279,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_adjust_balance: {
+        Args: {
+          _admin: string
+          _amount: number
+          _reason: string
+          _user: string
+          _wallet: string
+        }
+        Returns: boolean
+      }
+      admin_delete_user_data: {
+        Args: { _admin: string; _user: string }
+        Returns: boolean
+      }
+      admin_grant_plan: {
+        Args: { _admin: string; _plan: string; _reason: string; _user: string }
+        Returns: string
+      }
       confirm_payment: {
         Args: { _payload: Json; _payment: string }
         Returns: boolean
