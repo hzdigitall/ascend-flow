@@ -27,6 +27,7 @@ import { Route as AuthenticatedPedidosRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedPlanosRouteImport } from './routes/_authenticated/planos'
 import { Route as AuthenticatedPontosRouteImport } from './routes/_authenticated/pontos'
 import { Route as AuthenticatedSaquesRouteImport } from './routes/_authenticated/saques'
+import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
 import { Route as AuthenticatedAdminConfiguracoesRouteImport } from './routes/_authenticated/admin/configuracoes'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
 import { Route as AuthenticatedAdminPlanosRouteImport } from './routes/_authenticated/admin/planos'
@@ -127,6 +128,12 @@ const AuthenticatedSaquesRoute = AuthenticatedSaquesRouteImport.update({
   path: '/saques',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminBannersRoute =
+  AuthenticatedAdminBannersRouteImport.update({
+    id: '/admin/banners',
+    path: '/admin/banners',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminConfiguracoesRoute =
   AuthenticatedAdminConfiguracoesRouteImport.update({
     id: '/admin/configuracoes',
@@ -198,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/planos': typeof AuthenticatedPlanosRoute
   '/pontos': typeof AuthenticatedPontosRoute
   '/saques': typeof AuthenticatedSaquesRoute
+  '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/planos': typeof AuthenticatedAdminPlanosRoute
@@ -226,6 +234,7 @@ export interface FileRoutesByTo {
   '/planos': typeof AuthenticatedPlanosRoute
   '/pontos': typeof AuthenticatedPontosRoute
   '/saques': typeof AuthenticatedSaquesRoute
+  '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/planos': typeof AuthenticatedAdminPlanosRoute
@@ -256,6 +265,7 @@ export interface FileRoutesById {
   '/_authenticated/planos': typeof AuthenticatedPlanosRoute
   '/_authenticated/pontos': typeof AuthenticatedPontosRoute
   '/_authenticated/saques': typeof AuthenticatedSaquesRoute
+  '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/planos': typeof AuthenticatedAdminPlanosRoute
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
     | '/planos'
     | '/pontos'
     | '/saques'
+    | '/admin/banners'
     | '/admin/configuracoes'
     | '/admin/dashboard'
     | '/admin/planos'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/planos'
     | '/pontos'
     | '/saques'
+    | '/admin/banners'
     | '/admin/configuracoes'
     | '/admin/dashboard'
     | '/admin/planos'
@@ -343,6 +355,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planos'
     | '/_authenticated/pontos'
     | '/_authenticated/saques'
+    | '/_authenticated/admin/banners'
     | '/_authenticated/admin/configuracoes'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/planos'
@@ -495,6 +508,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSaquesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/banners': {
+      id: '/_authenticated/admin/banners'
+      path: '/admin/banners'
+      fullPath: '/admin/banners'
+      preLoaderRoute: typeof AuthenticatedAdminBannersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/configuracoes': {
       id: '/_authenticated/admin/configuracoes'
       path: '/admin/configuracoes'
@@ -572,6 +592,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlanosRoute: typeof AuthenticatedPlanosRoute
   AuthenticatedPontosRoute: typeof AuthenticatedPontosRoute
   AuthenticatedSaquesRoute: typeof AuthenticatedSaquesRoute
+  AuthenticatedAdminBannersRoute: typeof AuthenticatedAdminBannersRoute
   AuthenticatedAdminConfiguracoesRoute: typeof AuthenticatedAdminConfiguracoesRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminPlanosRoute: typeof AuthenticatedAdminPlanosRoute
@@ -592,6 +613,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlanosRoute: AuthenticatedPlanosRoute,
   AuthenticatedPontosRoute: AuthenticatedPontosRoute,
   AuthenticatedSaquesRoute: AuthenticatedSaquesRoute,
+  AuthenticatedAdminBannersRoute: AuthenticatedAdminBannersRoute,
   AuthenticatedAdminConfiguracoesRoute: AuthenticatedAdminConfiguracoesRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
   AuthenticatedAdminPlanosRoute: AuthenticatedAdminPlanosRoute,
