@@ -90,7 +90,21 @@ function WalletPage() {
           icon={Users}
           tone="secondary"
         />
+        <StatCard
+          label="Saldo USDT (BEP20)"
+          value={`${Number((wallet as { usdt_balance?: number } | null)?.usdt_balance ?? 0).toFixed(2)} USDT`}
+          icon={Wallet}
+        />
       </div>
+
+      {Number((wallet as { reserved_balance?: number } | null)?.reserved_balance ?? 0) > 0 ||
+      Number((wallet as { usdt_reserved?: number } | null)?.usdt_reserved ?? 0) > 0 ? (
+        <p className="text-xs text-muted-foreground">
+          Valores reservados em saques pendentes:{" "}
+          {brl(Number((wallet as { reserved_balance?: number } | null)?.reserved_balance ?? 0))} ·{" "}
+          {Number((wallet as { usdt_reserved?: number } | null)?.usdt_reserved ?? 0).toFixed(2)} USDT
+        </p>
+      ) : null}
 
       <Tabs defaultValue="extrato">
         <TabsList>
