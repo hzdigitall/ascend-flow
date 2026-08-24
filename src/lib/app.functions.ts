@@ -88,6 +88,27 @@ export const createPlanPayment = createServerFn({ method: "POST" })
     }
   });
 
+export const purchasePlanWithBalance = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { planId: string; wallet: string }) =>
+    z
+      .object({
+        planId: z.string().uuid(),
+        wallet: z.enum(["main", "earnings", "referral"]),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: userPlanId, error } = await supabaseAdmin.rpc("purchase_plan_with_balance", {
+      _user: context.userId,
+      _plan: data.planId,
+      _wallet: data.wallet,
+    });
+    if (error) throw new Error(error.message);
+    return { userPlanId: userPlanId as string };
+  });
+
 export const requestWithdrawal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
