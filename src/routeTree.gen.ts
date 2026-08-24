@@ -38,6 +38,7 @@ import { Route as AuthenticatedAdminPlanosRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminProdutosRouteImport } from './routes/_authenticated/admin/produtos'
 import { Route as AuthenticatedAdminSaquesRouteImport } from './routes/_authenticated/admin/saques'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
+import { Route as AuthenticatedDepositoDepositIdRouteImport } from './routes/_authenticated/deposito.$depositId'
 import { Route as AuthenticatedPagamentoPaymentIdRouteImport } from './routes/_authenticated/pagamento.$paymentId'
 import { Route as ApiPublicCronRoiRouteImport } from './routes/api/public/cron/roi'
 import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/webhooks/pix'
@@ -200,6 +201,12 @@ const AuthenticatedAdminUsuariosRoute =
     path: '/admin/usuarios',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedDepositoDepositIdRoute =
+  AuthenticatedDepositoDepositIdRouteImport.update({
+    id: '/deposito/$depositId',
+    path: '/deposito/$depositId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPagamentoPaymentIdRoute =
   AuthenticatedPagamentoPaymentIdRouteImport.update({
     id: '/pagamento/$paymentId',
@@ -264,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/admin/produtos': typeof AuthenticatedAdminProdutosRoute
   '/admin/saques': typeof AuthenticatedAdminSaquesRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/deposito/$depositId': typeof AuthenticatedDepositoDepositIdRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
@@ -300,6 +308,7 @@ export interface FileRoutesByTo {
   '/admin/produtos': typeof AuthenticatedAdminProdutosRoute
   '/admin/saques': typeof AuthenticatedAdminSaquesRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/deposito/$depositId': typeof AuthenticatedDepositoDepositIdRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
@@ -338,6 +347,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/produtos': typeof AuthenticatedAdminProdutosRoute
   '/_authenticated/admin/saques': typeof AuthenticatedAdminSaquesRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/_authenticated/deposito/$depositId': typeof AuthenticatedDepositoDepositIdRoute
   '/_authenticated/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
@@ -376,6 +386,7 @@ export interface FileRouteTypes {
     | '/admin/produtos'
     | '/admin/saques'
     | '/admin/usuarios'
+    | '/deposito/$depositId'
     | '/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
@@ -412,6 +423,7 @@ export interface FileRouteTypes {
     | '/admin/produtos'
     | '/admin/saques'
     | '/admin/usuarios'
+    | '/deposito/$depositId'
     | '/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
@@ -449,6 +461,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/produtos'
     | '/_authenticated/admin/saques'
     | '/_authenticated/admin/usuarios'
+    | '/_authenticated/deposito/$depositId'
     | '/_authenticated/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
@@ -678,6 +691,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/deposito/$depositId': {
+      id: '/_authenticated/deposito/$depositId'
+      path: '/deposito/$depositId'
+      fullPath: '/deposito/$depositId'
+      preLoaderRoute: typeof AuthenticatedDepositoDepositIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/pagamento/$paymentId': {
       id: '/_authenticated/pagamento/$paymentId'
       path: '/pagamento/$paymentId'
@@ -745,6 +765,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminProdutosRoute: typeof AuthenticatedAdminProdutosRoute
   AuthenticatedAdminSaquesRoute: typeof AuthenticatedAdminSaquesRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
+  AuthenticatedDepositoDepositIdRoute: typeof AuthenticatedDepositoDepositIdRoute
   AuthenticatedPagamentoPaymentIdRoute: typeof AuthenticatedPagamentoPaymentIdRoute
 }
 
@@ -770,6 +791,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminProdutosRoute: AuthenticatedAdminProdutosRoute,
   AuthenticatedAdminSaquesRoute: AuthenticatedAdminSaquesRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
+  AuthenticatedDepositoDepositIdRoute: AuthenticatedDepositoDepositIdRoute,
   AuthenticatedPagamentoPaymentIdRoute: AuthenticatedPagamentoPaymentIdRoute,
 }
 
