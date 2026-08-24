@@ -36,7 +36,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { currencyBR, dateTimeBR } from "@/lib/format";
+import { brl, dateTimeBR } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin/usuarios")({
@@ -182,11 +182,9 @@ function UsersPage() {
   const savePlan = useMutation({
     mutationFn: () =>
       grantPlan({
-        data: {
-          userId: planTarget!.id,
-          planId,
-          reason: planReason.trim() || undefined,
-        },
+        data: planReason.trim()
+          ? { userId: planTarget!.id, planId, reason: planReason.trim() }
+          : { userId: planTarget!.id, planId },
       }),
     onSuccess: () => {
       toast.success("Plano ativado manualmente (sem geração de comissões).");
@@ -267,9 +265,9 @@ function UsersPage() {
                         </p>
                       </td>
                       <td className="px-6 py-4 text-xs text-muted-foreground">
-                        <p>Principal: {currencyBR(Number(u.wallet?.main_balance ?? 0))}</p>
-                        <p>Rend.: {currencyBR(Number(u.wallet?.earnings_balance ?? 0))}</p>
-                        <p>Bônus: {currencyBR(Number(u.wallet?.referral_balance ?? 0))}</p>
+                        <p>Principal: {brl(Number(u.wallet?.main_balance ?? 0))}</p>
+                        <p>Rend.: {brl(Number(u.wallet?.earnings_balance ?? 0))}</p>
+                        <p>Bônus: {brl(Number(u.wallet?.referral_balance ?? 0))}</p>
                         <p>USDT: {Number(u.wallet?.usdt_balance ?? 0).toFixed(2)}</p>
                         <p>Pontos: {Number(u.wallet?.points_balance ?? 0)}</p>
                       </td>
@@ -485,7 +483,7 @@ function UsersPage() {
                 <SelectContent>
                   {(plans ?? []).map((p) => (
                     <SelectItem key={p.id} value={p.id}>
-                      {p.name} — {currencyBR(Number(p.price))}
+                      {p.name} — {brl(Number(p.price))}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -502,7 +500,7 @@ function UsersPage() {
             </div>
             {selectedPlan ? (
               <p className="text-xs text-muted-foreground">
-                Valor de referência: {currencyBR(Number(selectedPlan.price))}
+                Valor de referência: {brl(Number(selectedPlan.price))}
               </p>
             ) : null}
           </div>
