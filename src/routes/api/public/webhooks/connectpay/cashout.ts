@@ -65,7 +65,7 @@ export const Route = createFileRoute("/api/public/webhooks/connectpay/cashout")(
           if (status === "approved") {
             await supabaseAdmin.rpc("withdrawal_complete", {
               _wid: w.id,
-              _provider_tx: txId,
+              _provider_tx: txId ?? "",
               _tx_hash: null as unknown as string,
               _payload: { provider_status: status, source: "webhook" } as never,
             });
@@ -79,7 +79,7 @@ export const Route = createFileRoute("/api/public/webhooks/connectpay/cashout")(
           } else {
             await supabaseAdmin.rpc("withdrawal_mark_processing", {
               _wid: w.id,
-              _provider_tx: txId,
+              _provider_tx: txId ?? "",
               _payload: { provider_status: status, source: "webhook" } as never,
             });
           }
