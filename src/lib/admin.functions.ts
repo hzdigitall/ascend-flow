@@ -1,13 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { Database } from "@/integrations/supabase/types";
+import { assertAdmin } from "@/lib/admin-guard.server";
 
-async function assertAdmin(supabase: SupabaseClient<Database>) {
-  const { data } = await supabase.rpc("is_admin");
-  if (data !== true) throw new Error("Acesso restrito a administradores.");
-}
 
 export const adminConfirmPayment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
