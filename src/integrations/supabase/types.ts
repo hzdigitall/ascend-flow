@@ -1028,6 +1028,10 @@ export type Database = {
         Args: { _action: string; _admin: string; _reason: string; _wid: string }
         Returns: boolean
       }
+      purchase_plan_with_balance: {
+        Args: { _plan: string; _user: string; _wallet: string }
+        Returns: string
+      }
       redeem_product: {
         Args: { _addr: Json; _product: string; _user: string }
         Returns: string
