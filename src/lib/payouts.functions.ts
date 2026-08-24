@@ -158,13 +158,7 @@ export const adminApproveWithdrawal = createServerFn({ method: "POST" })
       gateway = active.gateway;
       secret = active.secret;
     } catch {
-      await supabaseAdmin.rpc("withdrawal_release", {
-        _wid: withdrawal.id,
-        _status: "pending",
-        _reason: null as unknown as string,
-        _payload: {} as never,
-      });
-      // Volta para pendente sem liberar saldo: gateway indisponível.
+      // Volta para pendente mantendo o saldo reservado: gateway indisponível.
       await supabaseAdmin
         .from("withdrawals")
         .update({ status: "pending", released_at: null })
