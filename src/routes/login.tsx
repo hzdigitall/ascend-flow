@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import especialistaAsset from "@/assets/arena-especialista.png.asset.json";
+import especialistaAsset from "@/assets/arena-especialista-2.png.asset.json";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
