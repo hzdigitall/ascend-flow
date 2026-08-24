@@ -39,6 +39,7 @@ import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authen
 import { Route as AuthenticatedPagamentoPaymentIdRouteImport } from './routes/_authenticated/pagamento.$paymentId'
 import { Route as ApiPublicCronRoiRouteImport } from './routes/api/public/cron/roi'
 import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/webhooks/pix'
+import { Route as ApiPublicWebhooksConnectpayPixRouteImport } from './routes/api/public/webhooks/connectpay/pix'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -200,6 +201,12 @@ const ApiPublicWebhooksPixRoute = ApiPublicWebhooksPixRouteImport.update({
   path: '/api/public/webhooks/pix',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWebhooksConnectpayPixRoute =
+  ApiPublicWebhooksConnectpayPixRouteImport.update({
+    id: '/api/public/webhooks/connectpay/pix',
+    path: '/api/public/webhooks/connectpay/pix',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -231,6 +238,7 @@ export interface FileRoutesByFullPath {
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
+  '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -262,6 +270,7 @@ export interface FileRoutesByTo {
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
+  '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -295,6 +304,7 @@ export interface FileRoutesById {
   '/_authenticated/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
+  '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -328,6 +338,7 @@ export interface FileRouteTypes {
     | '/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
+    | '/api/public/webhooks/connectpay/pix'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -359,6 +370,7 @@ export interface FileRouteTypes {
     | '/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
+    | '/api/public/webhooks/connectpay/pix'
   id:
     | '__root__'
     | '/'
@@ -391,6 +403,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
+    | '/api/public/webhooks/connectpay/pix'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -404,6 +417,7 @@ export interface RootRouteChildren {
   TermosRoute: typeof TermosRoute
   ApiPublicCronRoiRoute: typeof ApiPublicCronRoiRoute
   ApiPublicWebhooksPixRoute: typeof ApiPublicWebhooksPixRoute
+  ApiPublicWebhooksConnectpayPixRoute: typeof ApiPublicWebhooksConnectpayPixRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -618,6 +632,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksPixRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/webhooks/connectpay/pix': {
+      id: '/api/public/webhooks/connectpay/pix'
+      path: '/api/public/webhooks/connectpay/pix'
+      fullPath: '/api/public/webhooks/connectpay/pix'
+      preLoaderRoute: typeof ApiPublicWebhooksConnectpayPixRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -681,6 +702,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermosRoute: TermosRoute,
   ApiPublicCronRoiRoute: ApiPublicCronRoiRoute,
   ApiPublicWebhooksPixRoute: ApiPublicWebhooksPixRoute,
+  ApiPublicWebhooksConnectpayPixRoute: ApiPublicWebhooksConnectpayPixRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
