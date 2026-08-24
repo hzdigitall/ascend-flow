@@ -17,7 +17,7 @@ export const adminSavePlan = createServerFn({ method: "POST" })
         benefits: z.array(z.string().trim().min(1)).max(20),
         sort_order: z.number().int().min(0).max(999),
         active: z.boolean(),
-        purchase_blocked: z.boolean().optional(),
+        purchase_blocked: z.boolean().default(false),
         image_url: z.string().trim().max(500).nullable().optional(),
       })
       .parse(data),
