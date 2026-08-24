@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
+import especialistaAsset from "@/assets/arena-especialista.png.asset.json";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -71,6 +72,12 @@ function LoginPage() {
           </p>
         </div>
         <p className="text-sm text-white/70">© {new Date().getFullYear()} Arena Saúde</p>
+        <img
+          src={especialistaAsset.url}
+          alt="Especialista Arena Saúde"
+          loading="lazy"
+          className="pointer-events-none absolute bottom-0 right-0 h-[85%] w-auto max-w-[55%] translate-x-1/4 object-contain object-bottom drop-shadow-2xl"
+        />
       </div>
 
       <div className="flex items-center justify-center px-4 py-12 bg-background">
