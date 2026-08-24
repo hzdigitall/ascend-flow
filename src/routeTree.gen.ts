@@ -30,6 +30,7 @@ import { Route as AuthenticatedSaquesRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
 import { Route as AuthenticatedAdminConfiguracoesRouteImport } from './routes/_authenticated/admin/configuracoes'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
+import { Route as AuthenticatedAdminPedidosRouteImport } from './routes/_authenticated/admin/pedidos'
 import { Route as AuthenticatedAdminPlanosRouteImport } from './routes/_authenticated/admin/planos'
 import { Route as AuthenticatedAdminProdutosRouteImport } from './routes/_authenticated/admin/produtos'
 import { Route as AuthenticatedAdminSaquesRouteImport } from './routes/_authenticated/admin/saques'
@@ -146,6 +147,12 @@ const AuthenticatedAdminDashboardRoute =
     path: '/admin/dashboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminPedidosRoute =
+  AuthenticatedAdminPedidosRouteImport.update({
+    id: '/admin/pedidos',
+    path: '/admin/pedidos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminPlanosRoute =
   AuthenticatedAdminPlanosRouteImport.update({
     id: '/admin/planos',
@@ -208,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
   '/admin/planos': typeof AuthenticatedAdminPlanosRoute
   '/admin/produtos': typeof AuthenticatedAdminProdutosRoute
   '/admin/saques': typeof AuthenticatedAdminSaquesRoute
@@ -237,6 +245,7 @@ export interface FileRoutesByTo {
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
   '/admin/planos': typeof AuthenticatedAdminPlanosRoute
   '/admin/produtos': typeof AuthenticatedAdminProdutosRoute
   '/admin/saques': typeof AuthenticatedAdminSaquesRoute
@@ -268,6 +277,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/_authenticated/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
   '/_authenticated/admin/planos': typeof AuthenticatedAdminPlanosRoute
   '/_authenticated/admin/produtos': typeof AuthenticatedAdminProdutosRoute
   '/_authenticated/admin/saques': typeof AuthenticatedAdminSaquesRoute
@@ -299,6 +309,7 @@ export interface FileRouteTypes {
     | '/admin/banners'
     | '/admin/configuracoes'
     | '/admin/dashboard'
+    | '/admin/pedidos'
     | '/admin/planos'
     | '/admin/produtos'
     | '/admin/saques'
@@ -328,6 +339,7 @@ export interface FileRouteTypes {
     | '/admin/banners'
     | '/admin/configuracoes'
     | '/admin/dashboard'
+    | '/admin/pedidos'
     | '/admin/planos'
     | '/admin/produtos'
     | '/admin/saques'
@@ -358,6 +370,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/banners'
     | '/_authenticated/admin/configuracoes'
     | '/_authenticated/admin/dashboard'
+    | '/_authenticated/admin/pedidos'
     | '/_authenticated/admin/planos'
     | '/_authenticated/admin/produtos'
     | '/_authenticated/admin/saques'
@@ -529,6 +542,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/pedidos': {
+      id: '/_authenticated/admin/pedidos'
+      path: '/admin/pedidos'
+      fullPath: '/admin/pedidos'
+      preLoaderRoute: typeof AuthenticatedAdminPedidosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/planos': {
       id: '/_authenticated/admin/planos'
       path: '/admin/planos'
@@ -595,6 +615,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminBannersRoute: typeof AuthenticatedAdminBannersRoute
   AuthenticatedAdminConfiguracoesRoute: typeof AuthenticatedAdminConfiguracoesRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
+  AuthenticatedAdminPedidosRoute: typeof AuthenticatedAdminPedidosRoute
   AuthenticatedAdminPlanosRoute: typeof AuthenticatedAdminPlanosRoute
   AuthenticatedAdminProdutosRoute: typeof AuthenticatedAdminProdutosRoute
   AuthenticatedAdminSaquesRoute: typeof AuthenticatedAdminSaquesRoute
@@ -616,6 +637,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminBannersRoute: AuthenticatedAdminBannersRoute,
   AuthenticatedAdminConfiguracoesRoute: AuthenticatedAdminConfiguracoesRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
+  AuthenticatedAdminPedidosRoute: AuthenticatedAdminPedidosRoute,
   AuthenticatedAdminPlanosRoute: AuthenticatedAdminPlanosRoute,
   AuthenticatedAdminProdutosRoute: AuthenticatedAdminProdutosRoute,
   AuthenticatedAdminSaquesRoute: AuthenticatedAdminSaquesRoute,
