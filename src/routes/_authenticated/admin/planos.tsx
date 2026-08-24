@@ -46,6 +46,7 @@ type PlanForm = {
   benefits: string;
   sort_order: string;
   active: boolean;
+  purchase_blocked: boolean;
   image_url: string;
 };
 
@@ -58,6 +59,7 @@ const emptyPlan: PlanForm = {
   benefits: "",
   sort_order: "0",
   active: true,
+  purchase_blocked: false,
   image_url: "",
 };
 
@@ -96,6 +98,7 @@ function AdminPlansPage() {
             .filter(Boolean),
           sort_order: Number(form.sort_order),
           active: form.active,
+          purchase_blocked: form.purchase_blocked,
           image_url: form.image_url || null,
         },
       }),
@@ -162,6 +165,7 @@ function AdminPlansPage() {
                     <th className="px-6 py-4">Pontos</th>
                     <th className="px-6 py-4">Validade</th>
                     <th className="px-6 py-4">Ativo</th>
+                    <th className="px-6 py-4">Aquisição</th>
                     <th className="px-6 py-4 text-right">Ações</th>
                   </tr>
                 </thead>
@@ -181,6 +185,17 @@ function AdminPlansPage() {
                           onCheckedChange={(v) => toggleActive.mutate({ id: p.id, active: v })}
                         />
                       </td>
+                      <td className="px-6 py-4">
+                        {p.purchase_blocked ? (
+                          <span className="rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-semibold text-destructive">
+                            Bloqueada
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
+                            Liberada
+                          </span>
+                        )}
+                      </td>
                       <td className="px-6 py-4 text-right">
                         <Button
                           variant="outline"
@@ -196,6 +211,7 @@ function AdminPlansPage() {
                               benefits: (p.benefits ?? []).join("\n"),
                               sort_order: String(p.sort_order),
                               active: p.active,
+                              purchase_blocked: p.purchase_blocked ?? false,
                               image_url: p.image_url ?? "",
                             });
                             setOpen(true);
@@ -297,6 +313,19 @@ function AdminPlansPage() {
                 id="plan-active"
                 checked={form.active}
                 onCheckedChange={(v) => setForm({ ...form, active: v })}
+              />
+            </div>
+            <div className="flex items-center justify-between rounded-lg border p-3">
+              <div>
+                <Label htmlFor="plan-blocked">Bloquear aquisição</Label>
+                <p className="text-xs text-muted-foreground">
+                  Exibe “Indisponível para aquisição no momento” para o usuário.
+                </p>
+              </div>
+              <Switch
+                id="plan-blocked"
+                checked={form.purchase_blocked}
+                onCheckedChange={(v) => setForm({ ...form, purchase_blocked: v })}
               />
             </div>
           </div>

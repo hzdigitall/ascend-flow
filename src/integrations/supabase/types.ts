@@ -486,6 +486,7 @@ export type Database = {
           name: string
           points: number
           price: number
+          purchase_blocked: boolean
           sort_order: number
           updated_at: string
           validity_days: number
@@ -500,6 +501,7 @@ export type Database = {
           name: string
           points?: number
           price: number
+          purchase_blocked?: boolean
           sort_order?: number
           updated_at?: string
           validity_days?: number
@@ -514,6 +516,7 @@ export type Database = {
           name?: string
           points?: number
           price?: number
+          purchase_blocked?: boolean
           sort_order?: number
           updated_at?: string
           validity_days?: number
