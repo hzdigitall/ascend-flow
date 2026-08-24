@@ -14,13 +14,12 @@ export const getGatewayOverview = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { loadGateway, webhookUrls, maskFromGateway } = await import(
-      "./connectpay-admin.server"
-    );
+    const { loadGateway, webhookUrls } = await import("./connectpay.server");
+    const { maskSecret } = await import("./gateway-vault.server");
     const gateway = await loadGateway(supabaseAdmin);
     return {
       gateway,
-      masked: maskFromGateway(gateway),
+      masked: gateway?.credential_last_four ? maskSecret(gateway.credential_last_four) : null,
       webhooks: webhookUrls(gateway),
     };
   });
