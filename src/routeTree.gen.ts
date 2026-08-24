@@ -40,6 +40,7 @@ import { Route as AuthenticatedPagamentoPaymentIdRouteImport } from './routes/_a
 import { Route as ApiPublicCronRoiRouteImport } from './routes/api/public/cron/roi'
 import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/webhooks/pix'
 import { Route as ApiPublicWebhooksConnectpayCashoutRouteImport } from './routes/api/public/webhooks/connectpay/cashout'
+import { Route as ApiPublicWebhooksConnectpayCryptoRouteImport } from './routes/api/public/webhooks/connectpay/crypto'
 import { Route as ApiPublicWebhooksConnectpayPixRouteImport } from './routes/api/public/webhooks/connectpay/pix'
 
 const IndexRoute = IndexRouteImport.update({
@@ -208,6 +209,12 @@ const ApiPublicWebhooksConnectpayCashoutRoute =
     path: '/api/public/webhooks/connectpay/cashout',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicWebhooksConnectpayCryptoRoute =
+  ApiPublicWebhooksConnectpayCryptoRouteImport.update({
+    id: '/api/public/webhooks/connectpay/crypto',
+    path: '/api/public/webhooks/connectpay/crypto',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicWebhooksConnectpayPixRoute =
   ApiPublicWebhooksConnectpayPixRouteImport.update({
     id: '/api/public/webhooks/connectpay/pix',
@@ -246,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
   '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
+  '/api/public/webhooks/connectpay/crypto': typeof ApiPublicWebhooksConnectpayCryptoRoute
   '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
 }
 export interface FileRoutesByTo {
@@ -279,6 +287,7 @@ export interface FileRoutesByTo {
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
   '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
+  '/api/public/webhooks/connectpay/crypto': typeof ApiPublicWebhooksConnectpayCryptoRoute
   '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
 }
 export interface FileRoutesById {
@@ -314,6 +323,7 @@ export interface FileRoutesById {
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
   '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
+  '/api/public/webhooks/connectpay/crypto': typeof ApiPublicWebhooksConnectpayCryptoRoute
   '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
 }
 export interface FileRouteTypes {
@@ -349,6 +359,7 @@ export interface FileRouteTypes {
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
     | '/api/public/webhooks/connectpay/cashout'
+    | '/api/public/webhooks/connectpay/crypto'
     | '/api/public/webhooks/connectpay/pix'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -382,6 +393,7 @@ export interface FileRouteTypes {
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
     | '/api/public/webhooks/connectpay/cashout'
+    | '/api/public/webhooks/connectpay/crypto'
     | '/api/public/webhooks/connectpay/pix'
   id:
     | '__root__'
@@ -416,6 +428,7 @@ export interface FileRouteTypes {
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
     | '/api/public/webhooks/connectpay/cashout'
+    | '/api/public/webhooks/connectpay/crypto'
     | '/api/public/webhooks/connectpay/pix'
   fileRoutesById: FileRoutesById
 }
@@ -431,6 +444,7 @@ export interface RootRouteChildren {
   ApiPublicCronRoiRoute: typeof ApiPublicCronRoiRoute
   ApiPublicWebhooksPixRoute: typeof ApiPublicWebhooksPixRoute
   ApiPublicWebhooksConnectpayCashoutRoute: typeof ApiPublicWebhooksConnectpayCashoutRoute
+  ApiPublicWebhooksConnectpayCryptoRoute: typeof ApiPublicWebhooksConnectpayCryptoRoute
   ApiPublicWebhooksConnectpayPixRoute: typeof ApiPublicWebhooksConnectpayPixRoute
 }
 
@@ -653,6 +667,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksConnectpayCashoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/webhooks/connectpay/crypto': {
+      id: '/api/public/webhooks/connectpay/crypto'
+      path: '/api/public/webhooks/connectpay/crypto'
+      fullPath: '/api/public/webhooks/connectpay/crypto'
+      preLoaderRoute: typeof ApiPublicWebhooksConnectpayCryptoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/connectpay/pix': {
       id: '/api/public/webhooks/connectpay/pix'
       path: '/api/public/webhooks/connectpay/pix'
@@ -725,6 +746,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicWebhooksPixRoute: ApiPublicWebhooksPixRoute,
   ApiPublicWebhooksConnectpayCashoutRoute:
     ApiPublicWebhooksConnectpayCashoutRoute,
+  ApiPublicWebhooksConnectpayCryptoRoute:
+    ApiPublicWebhooksConnectpayCryptoRoute,
   ApiPublicWebhooksConnectpayPixRoute: ApiPublicWebhooksConnectpayPixRoute,
 }
 export const routeTree = rootRouteImport
