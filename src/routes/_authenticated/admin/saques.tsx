@@ -52,7 +52,7 @@ type Row = {
   wallet_type: string;
   pix_key_type: string | null;
   pix_key_value: string | null;
-  crypto_address: string | null;
+  wallet_address: string | null;
   provider_transaction_id: string | null;
   tx_hash: string | null;
   reject_reason: string | null;
@@ -173,7 +173,7 @@ function WithdrawalsPage() {
                                 USDT {w.network ?? "BEP20"}
                               </p>
                               <p className="break-all text-xs text-muted-foreground">
-                                {w.crypto_address}
+                                {w.wallet_address}
                               </p>
                             </>
                           ) : (
