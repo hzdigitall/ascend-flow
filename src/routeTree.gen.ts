@@ -30,6 +30,7 @@ import { Route as AuthenticatedSaquesRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
 import { Route as AuthenticatedAdminConfiguracoesRouteImport } from './routes/_authenticated/admin/configuracoes'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
+import { Route as AuthenticatedAdminGatewaysRouteImport } from './routes/_authenticated/admin/gateways'
 import { Route as AuthenticatedAdminPagamentosRouteImport } from './routes/_authenticated/admin/pagamentos'
 import { Route as AuthenticatedAdminPedidosRouteImport } from './routes/_authenticated/admin/pedidos'
 import { Route as AuthenticatedAdminPlanosRouteImport } from './routes/_authenticated/admin/planos'
@@ -39,6 +40,9 @@ import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authen
 import { Route as AuthenticatedPagamentoPaymentIdRouteImport } from './routes/_authenticated/pagamento.$paymentId'
 import { Route as ApiPublicCronRoiRouteImport } from './routes/api/public/cron/roi'
 import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/webhooks/pix'
+import { Route as ApiPublicWebhooksConnectpayCashoutRouteImport } from './routes/api/public/webhooks/connectpay/cashout'
+import { Route as ApiPublicWebhooksConnectpayCryptoRouteImport } from './routes/api/public/webhooks/connectpay/crypto'
+import { Route as ApiPublicWebhooksConnectpayPixRouteImport } from './routes/api/public/webhooks/connectpay/pix'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -148,6 +152,12 @@ const AuthenticatedAdminDashboardRoute =
     path: '/admin/dashboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminGatewaysRoute =
+  AuthenticatedAdminGatewaysRouteImport.update({
+    id: '/admin/gateways',
+    path: '/admin/gateways',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminPagamentosRoute =
   AuthenticatedAdminPagamentosRouteImport.update({
     id: '/admin/pagamentos',
@@ -200,6 +210,24 @@ const ApiPublicWebhooksPixRoute = ApiPublicWebhooksPixRouteImport.update({
   path: '/api/public/webhooks/pix',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWebhooksConnectpayCashoutRoute =
+  ApiPublicWebhooksConnectpayCashoutRouteImport.update({
+    id: '/api/public/webhooks/connectpay/cashout',
+    path: '/api/public/webhooks/connectpay/cashout',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicWebhooksConnectpayCryptoRoute =
+  ApiPublicWebhooksConnectpayCryptoRouteImport.update({
+    id: '/api/public/webhooks/connectpay/crypto',
+    path: '/api/public/webhooks/connectpay/crypto',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicWebhooksConnectpayPixRoute =
+  ApiPublicWebhooksConnectpayPixRouteImport.update({
+    id: '/api/public/webhooks/connectpay/pix',
+    path: '/api/public/webhooks/connectpay/pix',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -222,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/gateways': typeof AuthenticatedAdminGatewaysRoute
   '/admin/pagamentos': typeof AuthenticatedAdminPagamentosRoute
   '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
   '/admin/planos': typeof AuthenticatedAdminPlanosRoute
@@ -231,6 +260,9 @@ export interface FileRoutesByFullPath {
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
+  '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
+  '/api/public/webhooks/connectpay/crypto': typeof ApiPublicWebhooksConnectpayCryptoRoute
+  '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -253,6 +285,7 @@ export interface FileRoutesByTo {
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/gateways': typeof AuthenticatedAdminGatewaysRoute
   '/admin/pagamentos': typeof AuthenticatedAdminPagamentosRoute
   '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
   '/admin/planos': typeof AuthenticatedAdminPlanosRoute
@@ -262,6 +295,9 @@ export interface FileRoutesByTo {
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
+  '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
+  '/api/public/webhooks/connectpay/crypto': typeof ApiPublicWebhooksConnectpayCryptoRoute
+  '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -286,6 +322,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/_authenticated/admin/gateways': typeof AuthenticatedAdminGatewaysRoute
   '/_authenticated/admin/pagamentos': typeof AuthenticatedAdminPagamentosRoute
   '/_authenticated/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
   '/_authenticated/admin/planos': typeof AuthenticatedAdminPlanosRoute
@@ -295,6 +332,9 @@ export interface FileRoutesById {
   '/_authenticated/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
+  '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
+  '/api/public/webhooks/connectpay/crypto': typeof ApiPublicWebhooksConnectpayCryptoRoute
+  '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -319,6 +359,7 @@ export interface FileRouteTypes {
     | '/admin/banners'
     | '/admin/configuracoes'
     | '/admin/dashboard'
+    | '/admin/gateways'
     | '/admin/pagamentos'
     | '/admin/pedidos'
     | '/admin/planos'
@@ -328,6 +369,9 @@ export interface FileRouteTypes {
     | '/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
+    | '/api/public/webhooks/connectpay/cashout'
+    | '/api/public/webhooks/connectpay/crypto'
+    | '/api/public/webhooks/connectpay/pix'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -350,6 +394,7 @@ export interface FileRouteTypes {
     | '/admin/banners'
     | '/admin/configuracoes'
     | '/admin/dashboard'
+    | '/admin/gateways'
     | '/admin/pagamentos'
     | '/admin/pedidos'
     | '/admin/planos'
@@ -359,6 +404,9 @@ export interface FileRouteTypes {
     | '/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
+    | '/api/public/webhooks/connectpay/cashout'
+    | '/api/public/webhooks/connectpay/crypto'
+    | '/api/public/webhooks/connectpay/pix'
   id:
     | '__root__'
     | '/'
@@ -382,6 +430,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/banners'
     | '/_authenticated/admin/configuracoes'
     | '/_authenticated/admin/dashboard'
+    | '/_authenticated/admin/gateways'
     | '/_authenticated/admin/pagamentos'
     | '/_authenticated/admin/pedidos'
     | '/_authenticated/admin/planos'
@@ -391,6 +440,9 @@ export interface FileRouteTypes {
     | '/_authenticated/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
+    | '/api/public/webhooks/connectpay/cashout'
+    | '/api/public/webhooks/connectpay/crypto'
+    | '/api/public/webhooks/connectpay/pix'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -404,6 +456,9 @@ export interface RootRouteChildren {
   TermosRoute: typeof TermosRoute
   ApiPublicCronRoiRoute: typeof ApiPublicCronRoiRoute
   ApiPublicWebhooksPixRoute: typeof ApiPublicWebhooksPixRoute
+  ApiPublicWebhooksConnectpayCashoutRoute: typeof ApiPublicWebhooksConnectpayCashoutRoute
+  ApiPublicWebhooksConnectpayCryptoRoute: typeof ApiPublicWebhooksConnectpayCryptoRoute
+  ApiPublicWebhooksConnectpayPixRoute: typeof ApiPublicWebhooksConnectpayPixRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -555,6 +610,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/gateways': {
+      id: '/_authenticated/admin/gateways'
+      path: '/admin/gateways'
+      fullPath: '/admin/gateways'
+      preLoaderRoute: typeof AuthenticatedAdminGatewaysRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/pagamentos': {
       id: '/_authenticated/admin/pagamentos'
       path: '/admin/pagamentos'
@@ -618,6 +680,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksPixRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/webhooks/connectpay/cashout': {
+      id: '/api/public/webhooks/connectpay/cashout'
+      path: '/api/public/webhooks/connectpay/cashout'
+      fullPath: '/api/public/webhooks/connectpay/cashout'
+      preLoaderRoute: typeof ApiPublicWebhooksConnectpayCashoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhooks/connectpay/crypto': {
+      id: '/api/public/webhooks/connectpay/crypto'
+      path: '/api/public/webhooks/connectpay/crypto'
+      fullPath: '/api/public/webhooks/connectpay/crypto'
+      preLoaderRoute: typeof ApiPublicWebhooksConnectpayCryptoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhooks/connectpay/pix': {
+      id: '/api/public/webhooks/connectpay/pix'
+      path: '/api/public/webhooks/connectpay/pix'
+      fullPath: '/api/public/webhooks/connectpay/pix'
+      preLoaderRoute: typeof ApiPublicWebhooksConnectpayPixRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -635,6 +718,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminBannersRoute: typeof AuthenticatedAdminBannersRoute
   AuthenticatedAdminConfiguracoesRoute: typeof AuthenticatedAdminConfiguracoesRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
+  AuthenticatedAdminGatewaysRoute: typeof AuthenticatedAdminGatewaysRoute
   AuthenticatedAdminPagamentosRoute: typeof AuthenticatedAdminPagamentosRoute
   AuthenticatedAdminPedidosRoute: typeof AuthenticatedAdminPedidosRoute
   AuthenticatedAdminPlanosRoute: typeof AuthenticatedAdminPlanosRoute
@@ -658,6 +742,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminBannersRoute: AuthenticatedAdminBannersRoute,
   AuthenticatedAdminConfiguracoesRoute: AuthenticatedAdminConfiguracoesRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
+  AuthenticatedAdminGatewaysRoute: AuthenticatedAdminGatewaysRoute,
   AuthenticatedAdminPagamentosRoute: AuthenticatedAdminPagamentosRoute,
   AuthenticatedAdminPedidosRoute: AuthenticatedAdminPedidosRoute,
   AuthenticatedAdminPlanosRoute: AuthenticatedAdminPlanosRoute,
@@ -681,6 +766,11 @@ const rootRouteChildren: RootRouteChildren = {
   TermosRoute: TermosRoute,
   ApiPublicCronRoiRoute: ApiPublicCronRoiRoute,
   ApiPublicWebhooksPixRoute: ApiPublicWebhooksPixRoute,
+  ApiPublicWebhooksConnectpayCashoutRoute:
+    ApiPublicWebhooksConnectpayCashoutRoute,
+  ApiPublicWebhooksConnectpayCryptoRoute:
+    ApiPublicWebhooksConnectpayCryptoRoute,
+  ApiPublicWebhooksConnectpayPixRoute: ApiPublicWebhooksConnectpayPixRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -187,6 +187,130 @@ export type Database = {
           },
         ]
       }
+      deposits: {
+        Row: {
+          amount: number
+          created_at: string
+          credited_at: string | null
+          currency: string
+          deposit_address: string | null
+          expires_at: string | null
+          external_id: string
+          failure_reason: string | null
+          gateway_fee: number
+          id: string
+          idempotency_key: string | null
+          metadata: Json
+          method: string
+          net_amount: number | null
+          network: string | null
+          pix_payload: string | null
+          provider: string
+          provider_transaction_id: string | null
+          qr_code: string | null
+          status: string
+          tx_hash: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          credited_at?: string | null
+          currency: string
+          deposit_address?: string | null
+          expires_at?: string | null
+          external_id: string
+          failure_reason?: string | null
+          gateway_fee?: number
+          id?: string
+          idempotency_key?: string | null
+          metadata?: Json
+          method: string
+          net_amount?: number | null
+          network?: string | null
+          pix_payload?: string | null
+          provider?: string
+          provider_transaction_id?: string | null
+          qr_code?: string | null
+          status?: string
+          tx_hash?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          credited_at?: string | null
+          currency?: string
+          deposit_address?: string | null
+          expires_at?: string | null
+          external_id?: string
+          failure_reason?: string | null
+          gateway_fee?: number
+          id?: string
+          idempotency_key?: string | null
+          metadata?: Json
+          method?: string
+          net_amount?: number | null
+          network?: string | null
+          pix_payload?: string | null
+          provider?: string
+          provider_transaction_id?: string | null
+          qr_code?: string | null
+          status?: string
+          tx_hash?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deposits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gateway_credentials: {
+        Row: {
+          ciphertext: string
+          created_at: string
+          iv: string
+          last_four: string
+          provider: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          ciphertext: string
+          created_at?: string
+          iv: string
+          last_four: string
+          provider: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          ciphertext?: string
+          created_at?: string
+          iv?: string
+          last_four?: string
+          provider?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gateway_credentials_provider_fkey"
+            columns: ["provider"]
+            isOneToOne: true
+            referencedRelation: "payment_gateways"
+            referencedColumns: ["provider"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string
@@ -366,6 +490,108 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      payment_gateways: {
+        Row: {
+          active: boolean
+          base_url: string
+          connection_status: string
+          created_at: string
+          credential_last_four: string | null
+          credentials_configured: boolean
+          environment: string
+          id: string
+          last_connection_test: string | null
+          last_error: string | null
+          pix_cashin_enabled: boolean
+          pix_cashout_enabled: boolean
+          provider: string
+          updated_at: string
+          usdt_deposit_enabled: boolean
+          usdt_withdraw_enabled: boolean
+          webhook_base_url: string | null
+        }
+        Insert: {
+          active?: boolean
+          base_url?: string
+          connection_status?: string
+          created_at?: string
+          credential_last_four?: string | null
+          credentials_configured?: boolean
+          environment?: string
+          id?: string
+          last_connection_test?: string | null
+          last_error?: string | null
+          pix_cashin_enabled?: boolean
+          pix_cashout_enabled?: boolean
+          provider: string
+          updated_at?: string
+          usdt_deposit_enabled?: boolean
+          usdt_withdraw_enabled?: boolean
+          webhook_base_url?: string | null
+        }
+        Update: {
+          active?: boolean
+          base_url?: string
+          connection_status?: string
+          created_at?: string
+          credential_last_four?: string | null
+          credentials_configured?: boolean
+          environment?: string
+          id?: string
+          last_connection_test?: string | null
+          last_error?: string | null
+          pix_cashin_enabled?: boolean
+          pix_cashout_enabled?: boolean
+          provider?: string
+          updated_at?: string
+          usdt_deposit_enabled?: boolean
+          usdt_withdraw_enabled?: boolean
+          webhook_base_url?: string | null
+        }
+        Relationships: []
+      }
+      payment_webhook_events: {
+        Row: {
+          error_message: string | null
+          event_type: string
+          external_id: string | null
+          id: string
+          payload: Json
+          processed_at: string | null
+          processing_status: string
+          provider: string
+          provider_transaction_id: string | null
+          received_at: string
+          status: string | null
+        }
+        Insert: {
+          error_message?: string | null
+          event_type: string
+          external_id?: string | null
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          processing_status?: string
+          provider?: string
+          provider_transaction_id?: string | null
+          received_at?: string
+          status?: string | null
+        }
+        Update: {
+          error_message?: string | null
+          event_type?: string
+          external_id?: string | null
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          processing_status?: string
+          provider?: string
+          provider_transaction_id?: string | null
+          received_at?: string
+          status?: string | null
+        }
+        Relationships: []
       }
       payments: {
         Row: {
@@ -842,10 +1068,14 @@ export type Database = {
           balance_before: number
           category: Database["public"]["Enums"]["tx_category"]
           created_at: string
+          currency: string
           description: string
           direction: Database["public"]["Enums"]["tx_direction"]
           id: string
+          metadata: Json
+          provider: string | null
           reference_id: string | null
+          reference_type: string | null
           status: Database["public"]["Enums"]["tx_status"]
           user_id: string
           wallet_type: Database["public"]["Enums"]["wallet_type"]
@@ -856,10 +1086,14 @@ export type Database = {
           balance_before?: number
           category: Database["public"]["Enums"]["tx_category"]
           created_at?: string
+          currency?: string
           description?: string
           direction: Database["public"]["Enums"]["tx_direction"]
           id?: string
+          metadata?: Json
+          provider?: string | null
           reference_id?: string | null
+          reference_type?: string | null
           status?: Database["public"]["Enums"]["tx_status"]
           user_id: string
           wallet_type: Database["public"]["Enums"]["wallet_type"]
@@ -870,10 +1104,14 @@ export type Database = {
           balance_before?: number
           category?: Database["public"]["Enums"]["tx_category"]
           created_at?: string
+          currency?: string
           description?: string
           direction?: Database["public"]["Enums"]["tx_direction"]
           id?: string
+          metadata?: Json
+          provider?: string | null
           reference_id?: string | null
+          reference_type?: string | null
           status?: Database["public"]["Enums"]["tx_status"]
           user_id?: string
           wallet_type?: Database["public"]["Enums"]["wallet_type"]
@@ -894,7 +1132,10 @@ export type Database = {
           main_balance: number
           points_balance: number
           referral_balance: number
+          reserved_balance: number
           updated_at: string
+          usdt_balance: number
+          usdt_reserved: number
           user_id: string
         }
         Insert: {
@@ -902,7 +1143,10 @@ export type Database = {
           main_balance?: number
           points_balance?: number
           referral_balance?: number
+          reserved_balance?: number
           updated_at?: string
+          usdt_balance?: number
+          usdt_reserved?: number
           user_id: string
         }
         Update: {
@@ -910,7 +1154,10 @@ export type Database = {
           main_balance?: number
           points_balance?: number
           referral_balance?: number
+          reserved_balance?: number
           updated_at?: string
+          usdt_balance?: number
+          usdt_reserved?: number
           user_id?: string
         }
         Relationships: [
@@ -926,47 +1173,95 @@ export type Database = {
       withdrawals: {
         Row: {
           amount: number
+          completed_at: string | null
           created_at: string
+          currency: string
+          external_id: string | null
+          failure_reason: string | null
           fee: number
           id: string
+          idempotency_key: string | null
+          metadata: Json
+          method: string
           net_amount: number
-          pix_key_type: Database["public"]["Enums"]["pix_key_type"]
-          pix_key_value: string
+          network: string | null
+          pix_key_type: Database["public"]["Enums"]["pix_key_type"] | null
+          pix_key_value: string | null
           processed_at: string | null
+          provider: string | null
+          provider_transaction_id: string | null
           reject_reason: string | null
+          released_at: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           status: Database["public"]["Enums"]["withdrawal_status"]
+          submitted_at: string | null
+          tx_hash: string | null
           updated_at: string
           user_id: string
+          wallet_address: string | null
           wallet_type: Database["public"]["Enums"]["wallet_type"]
         }
         Insert: {
           amount: number
+          completed_at?: string | null
           created_at?: string
+          currency?: string
+          external_id?: string | null
+          failure_reason?: string | null
           fee?: number
           id?: string
+          idempotency_key?: string | null
+          metadata?: Json
+          method?: string
           net_amount: number
-          pix_key_type: Database["public"]["Enums"]["pix_key_type"]
-          pix_key_value: string
+          network?: string | null
+          pix_key_type?: Database["public"]["Enums"]["pix_key_type"] | null
+          pix_key_value?: string | null
           processed_at?: string | null
+          provider?: string | null
+          provider_transaction_id?: string | null
           reject_reason?: string | null
+          released_at?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           status?: Database["public"]["Enums"]["withdrawal_status"]
+          submitted_at?: string | null
+          tx_hash?: string | null
           updated_at?: string
           user_id: string
+          wallet_address?: string | null
           wallet_type: Database["public"]["Enums"]["wallet_type"]
         }
         Update: {
           amount?: number
+          completed_at?: string | null
           created_at?: string
+          currency?: string
+          external_id?: string | null
+          failure_reason?: string | null
           fee?: number
           id?: string
+          idempotency_key?: string | null
+          metadata?: Json
+          method?: string
           net_amount?: number
-          pix_key_type?: Database["public"]["Enums"]["pix_key_type"]
-          pix_key_value?: string
+          network?: string | null
+          pix_key_type?: Database["public"]["Enums"]["pix_key_type"] | null
+          pix_key_value?: string | null
           processed_at?: string | null
+          provider?: string | null
+          provider_transaction_id?: string | null
           reject_reason?: string | null
+          released_at?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           status?: Database["public"]["Enums"]["withdrawal_status"]
+          submitted_at?: string | null
+          tx_hash?: string | null
           updated_at?: string
           user_id?: string
+          wallet_address?: string | null
           wallet_type?: Database["public"]["Enums"]["wallet_type"]
         }
         Relationships: [
@@ -991,6 +1286,10 @@ export type Database = {
       create_plan_payment: {
         Args: { _plan: string; _user: string }
         Returns: string
+      }
+      credit_deposit: {
+        Args: { _deposit: string; _payload: Json }
+        Returns: boolean
       }
       credit_points: {
         Args: {
@@ -1046,6 +1345,81 @@ export type Database = {
         }
         Returns: string
       }
+      request_withdrawal_v2: {
+        Args: {
+          _address: string
+          _amount: number
+          _currency: string
+          _key: string
+          _key_type: string
+          _method: string
+          _network: string
+          _user: string
+          _wallet: string
+        }
+        Returns: string
+      }
+      withdrawal_begin_submission: {
+        Args: { _admin: string; _wid: string }
+        Returns: {
+          amount: number
+          completed_at: string | null
+          created_at: string
+          currency: string
+          external_id: string | null
+          failure_reason: string | null
+          fee: number
+          id: string
+          idempotency_key: string | null
+          metadata: Json
+          method: string
+          net_amount: number
+          network: string | null
+          pix_key_type: Database["public"]["Enums"]["pix_key_type"] | null
+          pix_key_value: string | null
+          processed_at: string | null
+          provider: string | null
+          provider_transaction_id: string | null
+          reject_reason: string | null
+          released_at: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["withdrawal_status"]
+          submitted_at: string | null
+          tx_hash: string | null
+          updated_at: string
+          user_id: string
+          wallet_address: string | null
+          wallet_type: Database["public"]["Enums"]["wallet_type"]
+        }
+        SetofOptions: {
+          from: "*"
+          to: "withdrawals"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      withdrawal_complete: {
+        Args: {
+          _payload: Json
+          _provider_tx: string
+          _tx_hash: string
+          _wid: string
+        }
+        Returns: boolean
+      }
+      withdrawal_mark_processing: {
+        Args: { _payload: Json; _provider_tx: string; _wid: string }
+        Returns: boolean
+      }
+      withdrawal_reject_admin: {
+        Args: { _admin: string; _reason: string; _wid: string }
+        Returns: boolean
+      }
+      withdrawal_release: {
+        Args: { _payload: Json; _reason: string; _status: string; _wid: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "user" | "admin"
@@ -1066,10 +1440,12 @@ export type Database = {
         | "adjustment"
         | "redeem"
         | "bonus"
+        | "deposit"
+        | "reversal"
       tx_direction: "in" | "out"
       tx_status: "pending" | "completed" | "failed" | "cancelled"
       user_plan_status: "pending" | "active" | "expired" | "cancelled"
-      wallet_type: "main" | "earnings" | "referral" | "points"
+      wallet_type: "main" | "earnings" | "referral" | "points" | "usdt"
       withdrawal_status:
         | "pending"
         | "reviewing"
@@ -1077,6 +1453,8 @@ export type Database = {
         | "paid"
         | "rejected"
         | "cancelled"
+        | "submitting"
+        | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1223,11 +1601,13 @@ export const Constants = {
         "adjustment",
         "redeem",
         "bonus",
+        "deposit",
+        "reversal",
       ],
       tx_direction: ["in", "out"],
       tx_status: ["pending", "completed", "failed", "cancelled"],
       user_plan_status: ["pending", "active", "expired", "cancelled"],
-      wallet_type: ["main", "earnings", "referral", "points"],
+      wallet_type: ["main", "earnings", "referral", "points", "usdt"],
       withdrawal_status: [
         "pending",
         "reviewing",
@@ -1235,6 +1615,8 @@ export const Constants = {
         "paid",
         "rejected",
         "cancelled",
+        "submitting",
+        "failed",
       ],
     },
   },
