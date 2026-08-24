@@ -24,9 +24,10 @@ export const adminSavePlan = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const payload = { ...data, image_url: data.image_url || null, updated_at: new Date().toISOString() };
-    const { error } = data.id
-      ? await supabaseAdmin.from("plans").update(payload).eq("id", data.id)
+    const { id, ...rest } = data;
+    const payload = { ...rest, image_url: data.image_url || null, updated_at: new Date().toISOString() };
+    const { error } = id
+      ? await supabaseAdmin.from("plans").update(payload).eq("id", id)
       : await supabaseAdmin.from("plans").insert(payload);
     if (error) throw new Error(error.message);
     await supabaseAdmin.from("admin_logs").insert({
@@ -58,14 +59,15 @@ export const adminSaveProduct = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { id, ...rest } = data;
     const payload = {
-      ...data,
+      ...rest,
       sku: data.sku || null,
       image_url: data.image_url || null,
       updated_at: new Date().toISOString(),
     };
-    const { error } = data.id
-      ? await supabaseAdmin.from("products").update(payload).eq("id", data.id)
+    const { error } = id
+      ? await supabaseAdmin.from("products").update(payload).eq("id", id)
       : await supabaseAdmin.from("products").insert(payload);
     if (error) throw new Error(error.message);
     await supabaseAdmin.from("admin_logs").insert({
@@ -97,15 +99,16 @@ export const adminSaveBanner = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { id, ...rest } = data;
     const payload = {
-      ...data,
+      ...rest,
       image_url: data.image_url || null,
       button_label: data.button_label || null,
       button_url: data.button_url || null,
       updated_at: new Date().toISOString(),
     };
-    const { error } = data.id
-      ? await supabaseAdmin.from("banners").update(payload).eq("id", data.id)
+    const { error } = id
+      ? await supabaseAdmin.from("banners").update(payload).eq("id", id)
       : await supabaseAdmin.from("banners").insert(payload);
     if (error) throw new Error(error.message);
     await supabaseAdmin.from("admin_logs").insert({
