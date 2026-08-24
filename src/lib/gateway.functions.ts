@@ -200,9 +200,22 @@ export const setGatewayFeatures = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { PROVIDER } = await import("./connectpay.server");
-    const patch = Object.fromEntries(
-      Object.entries(data).filter(([, v]) => v !== undefined),
-    ) as Record<string, boolean | string>;
+    const patch: {
+      pix_cashin_enabled?: boolean;
+      pix_cashout_enabled?: boolean;
+      usdt_deposit_enabled?: boolean;
+      usdt_withdraw_enabled?: boolean;
+      webhook_base_url?: string;
+    } = {};
+    if (data.pix_cashin_enabled !== undefined) patch.pix_cashin_enabled = data.pix_cashin_enabled;
+    if (data.pix_cashout_enabled !== undefined)
+      patch.pix_cashout_enabled = data.pix_cashout_enabled;
+    if (data.usdt_deposit_enabled !== undefined)
+      patch.usdt_deposit_enabled = data.usdt_deposit_enabled;
+    if (data.usdt_withdraw_enabled !== undefined)
+      patch.usdt_withdraw_enabled = data.usdt_withdraw_enabled;
+    if (data.webhook_base_url !== undefined) patch.webhook_base_url = data.webhook_base_url;
+
     const { error } = await supabaseAdmin
       .from("payment_gateways")
       .update(patch)
