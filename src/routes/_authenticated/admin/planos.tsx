@@ -315,6 +315,19 @@ function AdminPlansPage() {
                 onCheckedChange={(v) => setForm({ ...form, active: v })}
               />
             </div>
+            <div className="flex items-center justify-between rounded-lg border p-3">
+              <div>
+                <Label htmlFor="plan-blocked">Bloquear aquisição</Label>
+                <p className="text-xs text-muted-foreground">
+                  Exibe “Indisponível para aquisição no momento” para o usuário.
+                </p>
+              </div>
+              <Switch
+                id="plan-blocked"
+                checked={form.purchase_blocked}
+                onCheckedChange={(v) => setForm({ ...form, purchase_blocked: v })}
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
