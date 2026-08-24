@@ -200,9 +200,12 @@ export const setGatewayFeatures = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { PROVIDER } = await import("./connectpay.server");
+    const patch = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== undefined),
+    ) as Record<string, boolean | string>;
     const { error } = await supabaseAdmin
       .from("payment_gateways")
-      .update(data)
+      .update(patch)
       .eq("provider", PROVIDER);
     if (error) throw new Error(error.message);
     await supabaseAdmin.from("admin_logs").insert({
