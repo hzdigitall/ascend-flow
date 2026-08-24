@@ -65,13 +65,18 @@ function WalletPage() {
         title="Carteira"
         description="Todos os créditos e débitos da sua conta."
         action={
-          <Button asChild>
-            <Link to="/saques">Solicitar saque</Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="outline">
+              <Link to="/depositar">Depositar</Link>
+            </Button>
+            <Button asChild>
+              <Link to="/saques">Solicitar saque</Link>
+            </Button>
+          </div>
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Saldo principal" value={brl(wallet?.main_balance)} icon={Wallet} />
         <StatCard
           label="Ganhos"
