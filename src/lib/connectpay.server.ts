@@ -24,6 +24,8 @@ export type GatewayRow = {
   credentials_configured: boolean;
   credential_last_four: string | null;
   connection_status: string;
+  last_connection_test?: string | null;
+  last_error?: string | null;
   pix_cashin_enabled: boolean;
   pix_cashout_enabled: boolean;
   usdt_deposit_enabled: boolean;

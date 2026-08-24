@@ -20,6 +20,7 @@ import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
 import { Route as AuthenticatedContaRouteImport } from './routes/_authenticated/conta'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDepositarRouteImport } from './routes/_authenticated/depositar'
 import { Route as AuthenticatedIndicacoesRouteImport } from './routes/_authenticated/indicacoes'
 import { Route as AuthenticatedLojaRouteImport } from './routes/_authenticated/loja'
 import { Route as AuthenticatedNotificacoesRouteImport } from './routes/_authenticated/notificacoes'
@@ -37,6 +38,7 @@ import { Route as AuthenticatedAdminPlanosRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminProdutosRouteImport } from './routes/_authenticated/admin/produtos'
 import { Route as AuthenticatedAdminSaquesRouteImport } from './routes/_authenticated/admin/saques'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
+import { Route as AuthenticatedDepositoDepositIdRouteImport } from './routes/_authenticated/deposito.$depositId'
 import { Route as AuthenticatedPagamentoPaymentIdRouteImport } from './routes/_authenticated/pagamento.$paymentId'
 import { Route as ApiPublicCronRoiRouteImport } from './routes/api/public/cron/roi'
 import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/webhooks/pix'
@@ -96,6 +98,11 @@ const AuthenticatedContaRoute = AuthenticatedContaRouteImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDepositarRoute = AuthenticatedDepositarRouteImport.update({
+  id: '/depositar',
+  path: '/depositar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedIndicacoesRoute = AuthenticatedIndicacoesRouteImport.update({
@@ -194,6 +201,12 @@ const AuthenticatedAdminUsuariosRoute =
     path: '/admin/usuarios',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedDepositoDepositIdRoute =
+  AuthenticatedDepositoDepositIdRouteImport.update({
+    id: '/deposito/$depositId',
+    path: '/deposito/$depositId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPagamentoPaymentIdRoute =
   AuthenticatedPagamentoPaymentIdRouteImport.update({
     id: '/pagamento/$paymentId',
@@ -240,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/carteira': typeof AuthenticatedCarteiraRoute
   '/conta': typeof AuthenticatedContaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/depositar': typeof AuthenticatedDepositarRoute
   '/indicacoes': typeof AuthenticatedIndicacoesRoute
   '/loja': typeof AuthenticatedLojaRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
@@ -257,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/admin/produtos': typeof AuthenticatedAdminProdutosRoute
   '/admin/saques': typeof AuthenticatedAdminSaquesRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/deposito/$depositId': typeof AuthenticatedDepositoDepositIdRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
@@ -275,6 +290,7 @@ export interface FileRoutesByTo {
   '/carteira': typeof AuthenticatedCarteiraRoute
   '/conta': typeof AuthenticatedContaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/depositar': typeof AuthenticatedDepositarRoute
   '/indicacoes': typeof AuthenticatedIndicacoesRoute
   '/loja': typeof AuthenticatedLojaRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
@@ -292,6 +308,7 @@ export interface FileRoutesByTo {
   '/admin/produtos': typeof AuthenticatedAdminProdutosRoute
   '/admin/saques': typeof AuthenticatedAdminSaquesRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/deposito/$depositId': typeof AuthenticatedDepositoDepositIdRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
@@ -312,6 +329,7 @@ export interface FileRoutesById {
   '/_authenticated/carteira': typeof AuthenticatedCarteiraRoute
   '/_authenticated/conta': typeof AuthenticatedContaRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/depositar': typeof AuthenticatedDepositarRoute
   '/_authenticated/indicacoes': typeof AuthenticatedIndicacoesRoute
   '/_authenticated/loja': typeof AuthenticatedLojaRoute
   '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
@@ -329,6 +347,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/produtos': typeof AuthenticatedAdminProdutosRoute
   '/_authenticated/admin/saques': typeof AuthenticatedAdminSaquesRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/_authenticated/deposito/$depositId': typeof AuthenticatedDepositoDepositIdRoute
   '/_authenticated/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
@@ -349,6 +368,7 @@ export interface FileRouteTypes {
     | '/carteira'
     | '/conta'
     | '/dashboard'
+    | '/depositar'
     | '/indicacoes'
     | '/loja'
     | '/notificacoes'
@@ -366,6 +386,7 @@ export interface FileRouteTypes {
     | '/admin/produtos'
     | '/admin/saques'
     | '/admin/usuarios'
+    | '/deposito/$depositId'
     | '/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
@@ -384,6 +405,7 @@ export interface FileRouteTypes {
     | '/carteira'
     | '/conta'
     | '/dashboard'
+    | '/depositar'
     | '/indicacoes'
     | '/loja'
     | '/notificacoes'
@@ -401,6 +423,7 @@ export interface FileRouteTypes {
     | '/admin/produtos'
     | '/admin/saques'
     | '/admin/usuarios'
+    | '/deposito/$depositId'
     | '/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
@@ -420,6 +443,7 @@ export interface FileRouteTypes {
     | '/_authenticated/carteira'
     | '/_authenticated/conta'
     | '/_authenticated/dashboard'
+    | '/_authenticated/depositar'
     | '/_authenticated/indicacoes'
     | '/_authenticated/loja'
     | '/_authenticated/notificacoes'
@@ -437,6 +461,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/produtos'
     | '/_authenticated/admin/saques'
     | '/_authenticated/admin/usuarios'
+    | '/_authenticated/deposito/$depositId'
     | '/_authenticated/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
@@ -538,6 +563,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/depositar': {
+      id: '/_authenticated/depositar'
+      path: '/depositar'
+      fullPath: '/depositar'
+      preLoaderRoute: typeof AuthenticatedDepositarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/indicacoes': {
@@ -659,6 +691,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/deposito/$depositId': {
+      id: '/_authenticated/deposito/$depositId'
+      path: '/deposito/$depositId'
+      fullPath: '/deposito/$depositId'
+      preLoaderRoute: typeof AuthenticatedDepositoDepositIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/pagamento/$paymentId': {
       id: '/_authenticated/pagamento/$paymentId'
       path: '/pagamento/$paymentId'
@@ -708,6 +747,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCarteiraRoute: typeof AuthenticatedCarteiraRoute
   AuthenticatedContaRoute: typeof AuthenticatedContaRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDepositarRoute: typeof AuthenticatedDepositarRoute
   AuthenticatedIndicacoesRoute: typeof AuthenticatedIndicacoesRoute
   AuthenticatedLojaRoute: typeof AuthenticatedLojaRoute
   AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
@@ -725,6 +765,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminProdutosRoute: typeof AuthenticatedAdminProdutosRoute
   AuthenticatedAdminSaquesRoute: typeof AuthenticatedAdminSaquesRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
+  AuthenticatedDepositoDepositIdRoute: typeof AuthenticatedDepositoDepositIdRoute
   AuthenticatedPagamentoPaymentIdRoute: typeof AuthenticatedPagamentoPaymentIdRoute
 }
 
@@ -732,6 +773,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCarteiraRoute: AuthenticatedCarteiraRoute,
   AuthenticatedContaRoute: AuthenticatedContaRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDepositarRoute: AuthenticatedDepositarRoute,
   AuthenticatedIndicacoesRoute: AuthenticatedIndicacoesRoute,
   AuthenticatedLojaRoute: AuthenticatedLojaRoute,
   AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
@@ -749,6 +791,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminProdutosRoute: AuthenticatedAdminProdutosRoute,
   AuthenticatedAdminSaquesRoute: AuthenticatedAdminSaquesRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
+  AuthenticatedDepositoDepositIdRoute: AuthenticatedDepositoDepositIdRoute,
   AuthenticatedPagamentoPaymentIdRoute: AuthenticatedPagamentoPaymentIdRoute,
 }
 

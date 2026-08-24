@@ -65,13 +65,18 @@ function WalletPage() {
         title="Carteira"
         description="Todos os créditos e débitos da sua conta."
         action={
-          <Button asChild>
-            <Link to="/saques">Solicitar saque</Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="outline">
+              <Link to="/depositar">Depositar</Link>
+            </Button>
+            <Button asChild>
+              <Link to="/saques">Solicitar saque</Link>
+            </Button>
+          </div>
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Saldo principal" value={brl(wallet?.main_balance)} icon={Wallet} />
         <StatCard
           label="Ganhos"
@@ -85,7 +90,21 @@ function WalletPage() {
           icon={Users}
           tone="secondary"
         />
+        <StatCard
+          label="Saldo USDT (BEP20)"
+          value={`${Number((wallet as { usdt_balance?: number } | null)?.usdt_balance ?? 0).toFixed(2)} USDT`}
+          icon={Wallet}
+        />
       </div>
+
+      {Number((wallet as { reserved_balance?: number } | null)?.reserved_balance ?? 0) > 0 ||
+      Number((wallet as { usdt_reserved?: number } | null)?.usdt_reserved ?? 0) > 0 ? (
+        <p className="text-xs text-muted-foreground">
+          Valores reservados em saques pendentes:{" "}
+          {brl(Number((wallet as { reserved_balance?: number } | null)?.reserved_balance ?? 0))} ·{" "}
+          {Number((wallet as { usdt_reserved?: number } | null)?.usdt_reserved ?? 0).toFixed(2)} USDT
+        </p>
+      ) : null}
 
       <Tabs defaultValue="extrato">
         <TabsList>

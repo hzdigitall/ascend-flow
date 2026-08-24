@@ -5,7 +5,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Banknote, Clock, AlertCircle } from "lucide-react";
-import { requestWithdrawal } from "@/lib/app.functions";
+import { requestPixWithdrawal } from "@/lib/payouts.functions";
 import { brl } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,7 +55,7 @@ export function WithdrawalDialog({
   onSuccess 
 }: WithdrawalDialogProps) {
   const [open, setOpen] = useState(false);
-  const requestWd = useServerFn(requestWithdrawal);
+  const requestWd = useServerFn(requestPixWithdrawal);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
