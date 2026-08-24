@@ -121,16 +121,20 @@ function AdminPlansPage() {
 
   return (
     <AppShell items={adminNav} variant="admin">
-      <PageHeader title="Planos" description="Cadastre e edite os planos vendidos na plataforma.">
-        <Button
-          onClick={() => {
-            setForm(emptyPlan);
-            setOpen(true);
-          }}
-        >
-          <Plus className="mr-2 size-4" /> Novo plano
-        </Button>
-      </PageHeader>
+      <PageHeader
+        title="Planos"
+        description="Cadastre e edite os planos vendidos na plataforma."
+        action={
+          <Button
+            onClick={() => {
+              setForm(emptyPlan);
+              setOpen(true);
+            }}
+          >
+            <Plus className="mr-2 size-4" /> Novo plano
+          </Button>
+        }
+      />
 
       <Card className="shadow-card">
         <CardContent className="p-0">
