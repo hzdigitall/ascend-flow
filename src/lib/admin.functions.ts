@@ -241,3 +241,70 @@ export const adminStats = createServerFn({ method: "POST" })
       series: [...byDay.values()].sort((a, b) => a.day.localeCompare(b.day)),
     };
   });
+
+export const adminAdjustBalance = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { userId: string; wallet: string; amount: number; reason: string }) =>
+    z
+      .object({
+        userId: z.string().uuid(),
+        wallet: z.enum(["main", "earnings", "referral", "usdt"]),
+        amount: z.number().refine((v) => v !== 0, "Informe um valor diferente de zero"),
+        reason: z.string().trim().min(3).max(200),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.rpc("admin_adjust_balance", {
+      _admin: context.userId,
+      _user: data.userId,
+      _wallet: data.wallet,
+      _amount: data.amount,
+      _reason: data.reason,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminGrantPlan = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { userId: string; planId: string; reason?: string }) =>
+    z
+      .object({
+        userId: z.string().uuid(),
+        planId: z.string().uuid(),
+        reason: z.string().trim().max(200).optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.rpc("admin_grant_plan", {
+      _admin: context.userId,
+      _user: data.userId,
+      _plan: data.planId,
+      _reason: data.reason ?? "Liberação manual",
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminDeleteUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { userId: string }) => z.object({ userId: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase);
+    if (data.userId === context.userId) throw new Error("Você não pode excluir a própria conta.");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.rpc("admin_delete_user_data", {
+      _admin: context.userId,
+      _user: data.userId,
+    });
+    if (error) throw new Error(error.message);
+    const del = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (del.error) throw new Error(del.error.message);
+    return { ok: true };
+  });
