@@ -61,9 +61,9 @@ function LoginPage() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="relative hidden overflow-hidden bg-primary p-12 lg:flex lg:flex-col lg:items-center lg:justify-between">
+      <div className="relative hidden overflow-hidden bg-primary px-12 pb-16 pt-12 lg:flex lg:flex-col lg:items-center">
         <Logo className="self-start text-white" />
-        <div className="relative z-10 max-w-md text-center text-white">
+        <div className="mt-auto max-w-md text-center text-white">
           <h2 className="text-4xl font-extrabold leading-tight">
             Seu futuro, nosso propósito.
           </h2>
@@ -75,12 +75,13 @@ function LoginPage() {
           src={especialistaAsset.url}
           alt="Especialista Arena Saúde"
           loading="lazy"
-          className="pointer-events-none absolute bottom-14 left-1/2 h-[52%] w-auto -translate-x-1/2 object-contain object-bottom drop-shadow-2xl"
+          className="pointer-events-none mt-6 h-auto w-auto max-h-[46%] max-w-[68%] object-contain object-bottom drop-shadow-2xl"
         />
-        <p className="relative z-10 self-start text-sm text-white/70">
+        <p className="absolute bottom-6 left-12 text-sm text-white/70">
           © {new Date().getFullYear()} Arena Saúde
         </p>
       </div>
+
 
 
       <div className="flex items-center justify-center px-4 py-12 bg-background">
