@@ -17,6 +17,7 @@ const items: NavItem[] = [
   { label: "Início", to: "/dashboard", icon: LayoutDashboard, section: "Painel" },
   { label: "Planos", to: "/planos", icon: Sparkles, section: "Painel" },
   { label: "Meus pontos", to: "/pontos", icon: Coins, section: "Painel" },
+  { label: "Depositar", to: "/depositar", icon: Wallet, section: "Financeiro" },
   { label: "Carteira", to: "/carteira", icon: Wallet, section: "Financeiro" },
   { label: "Saques", to: "/saques", icon: Gift, section: "Financeiro" },
   { label: "Indicações", to: "/indicacoes", icon: Users, section: "Rede" },
