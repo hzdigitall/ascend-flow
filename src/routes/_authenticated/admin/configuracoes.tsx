@@ -15,6 +15,7 @@ import {
   Gift,
   ShoppingCart,
   Image,
+  PlugZap,
 } from "lucide-react";
 import { brl, dateTimeBR } from "@/lib/format";
 
@@ -27,6 +28,7 @@ const items: NavItem[] = [
   { label: "Produtos", to: "/admin/produtos", icon: Package, section: "Loja" },
   { label: "Pedidos", to: "/admin/pedidos", icon: ShoppingCart, section: "Loja" },
   { label: "Banners", to: "/admin/banners", icon: Image, section: "Site" },
+  { label: "Gateways", to: "/admin/gateways", icon: PlugZap, section: "Financeiro" },
   { label: "Configurações", to: "/admin/configuracoes", icon: Settings, section: "Sistema" },
 ];
 
