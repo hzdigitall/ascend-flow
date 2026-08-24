@@ -137,21 +137,21 @@ function DepositDetailPage() {
                     Outros ativos ou redes não são creditados.
                   </AlertDescription>
                 </Alert>
-                {data.crypto_address ? (
+                {data.deposit_address ? (
                   <>
                     <div className="flex justify-center rounded-xl border bg-white p-4">
-                      <QRCodeCanvas value={data.crypto_address} size={180} />
+                      <QRCodeCanvas value={data.deposit_address} size={180} />
                     </div>
                     <div className="space-y-2">
                       <p className="text-xs font-medium text-muted-foreground">Endereço BEP20</p>
                       <div className="flex items-center gap-2">
                         <code className="flex-1 break-all rounded bg-muted px-2 py-2 text-xs">
-                          {data.crypto_address}
+                          {data.deposit_address}
                         </code>
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => copy(data.crypto_address!, "Endereço")}
+                          onClick={() => copy(data.deposit_address!, "Endereço")}
                         >
                           <Copy className="h-3.5 w-3.5" />
                         </Button>
@@ -166,35 +166,35 @@ function DepositDetailPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {data.pix_qr_code ? (
+                {data.qr_code ? (
                   <div className="flex justify-center rounded-xl border bg-white p-4">
                     <img
                       src={
-                        data.pix_qr_code.startsWith("data:")
-                          ? data.pix_qr_code
-                          : `data:image/png;base64,${data.pix_qr_code}`
+                        data.qr_code.startsWith("data:")
+                          ? data.qr_code
+                          : `data:image/png;base64,${data.qr_code}`
                       }
                       alt="QR Code PIX do depósito"
                       className="h-44 w-44 object-contain"
                     />
                   </div>
-                ) : data.pix_copy_paste ? (
+                ) : data.pix_payload ? (
                   <div className="flex justify-center rounded-xl border bg-white p-4">
-                    <QRCodeCanvas value={data.pix_copy_paste} size={180} />
+                    <QRCodeCanvas value={data.pix_payload} size={180} />
                   </div>
                 ) : null}
 
-                {data.pix_copy_paste ? (
+                {data.pix_payload ? (
                   <div className="space-y-2">
                     <p className="text-xs font-medium text-muted-foreground">PIX copia e cola</p>
                     <div className="flex items-center gap-2">
                       <code className="flex-1 break-all rounded bg-muted px-2 py-2 text-xs">
-                        {data.pix_copy_paste}
+                        {data.pix_payload}
                       </code>
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => copy(data.pix_copy_paste!, "Código PIX")}
+                        onClick={() => copy(data.pix_payload!, "Código PIX")}
                       >
                         <Copy className="h-3.5 w-3.5" />
                       </Button>
