@@ -29,6 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { NowPaymentsCard } from "@/components/admin/NowPaymentsCard";
 import { dateTimeBR } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/admin/gateways")({
@@ -37,7 +38,8 @@ export const Route = createFileRoute("/_authenticated/admin/gateways")({
       { title: "Gateways de pagamento — Arena Saúde" },
       {
         name: "description",
-        content: "Configure, teste e ative a gateway ConnectPay para PIX e USDT BEP20.",
+        content:
+          "Configure, teste e ative a ConnectPay (PIX) e a NOWPayments (USDT BEP20).",
       },
     ],
   }),
@@ -135,7 +137,7 @@ function GatewaysPage() {
     <AppShell items={adminNav} variant="admin">
       <PageHeader
         title="Gateways de pagamento"
-        description="Configuração da gateway ConnectPay (PIX e USDT BEP20)."
+        description="ConnectPay processa exclusivamente PIX (BRL). NOWPayments processa exclusivamente USDT BEP20 (USDTBSC)."
       />
 
       {isLoading ? (
@@ -143,7 +145,7 @@ function GatewaysPage() {
       ) : isError ? (
         <ErrorState onRetry={() => refetch()} />
       ) : (
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
+        <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]" id="connectpay">
           <Card className="shadow-card">
             <CardHeader className="flex flex-row items-center justify-between gap-3">
               <CardTitle className="flex items-center gap-2">
@@ -200,8 +202,6 @@ function GatewaysPage() {
                   [
                     ["pix_cashin_enabled", "PIX Cash-in"],
                     ["pix_cashout_enabled", "PIX Cash-out"],
-                    ["usdt_deposit_enabled", "USDT BEP20 Deposit"],
-                    ["usdt_withdraw_enabled", "USDT BEP20 Withdraw"],
                   ] as const
                 ).map(([key, label]) => (
                   <div key={key} className="flex items-center justify-between gap-3">
