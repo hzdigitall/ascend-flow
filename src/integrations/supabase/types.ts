@@ -191,8 +191,11 @@ export type Database = {
         Row: {
           actually_paid: number
           amount: number
+          brl_amount: number | null
+          conversion_rate: number | null
           created_at: string
           credited_at: string | null
+          crypto_amount: number | null
           currency: string
           deposit_address: string | null
           expected_amount: number | null
@@ -208,8 +211,11 @@ export type Database = {
           network: string | null
           order_id: string | null
           pay_address: string | null
+          payment_id: string | null
+          payment_purpose: string
           payment_status: string | null
           pix_payload: string | null
+          plan_id: string | null
           provider: string
           provider_transaction_id: string | null
           purchase_id: string | null
@@ -222,8 +228,11 @@ export type Database = {
         Insert: {
           actually_paid?: number
           amount: number
+          brl_amount?: number | null
+          conversion_rate?: number | null
           created_at?: string
           credited_at?: string | null
+          crypto_amount?: number | null
           currency: string
           deposit_address?: string | null
           expected_amount?: number | null
@@ -239,8 +248,11 @@ export type Database = {
           network?: string | null
           order_id?: string | null
           pay_address?: string | null
+          payment_id?: string | null
+          payment_purpose?: string
           payment_status?: string | null
           pix_payload?: string | null
+          plan_id?: string | null
           provider?: string
           provider_transaction_id?: string | null
           purchase_id?: string | null
@@ -253,8 +265,11 @@ export type Database = {
         Update: {
           actually_paid?: number
           amount?: number
+          brl_amount?: number | null
+          conversion_rate?: number | null
           created_at?: string
           credited_at?: string | null
+          crypto_amount?: number | null
           currency?: string
           deposit_address?: string | null
           expected_amount?: number | null
@@ -270,8 +285,11 @@ export type Database = {
           network?: string | null
           order_id?: string | null
           pay_address?: string | null
+          payment_id?: string | null
+          payment_purpose?: string
           payment_status?: string | null
           pix_payload?: string | null
+          plan_id?: string | null
           provider?: string
           provider_transaction_id?: string | null
           purchase_id?: string | null
@@ -282,6 +300,20 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "deposits_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deposits_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "deposits_user_id_fkey"
             columns: ["user_id"]
@@ -1255,7 +1287,9 @@ export type Database = {
           amount: number
           batch_withdrawal_id: string | null
           completed_at: string | null
+          conversion_rate: number | null
           created_at: string
+          crypto_amount: number | null
           currency: string
           external_id: string | null
           failure_reason: string | null
@@ -1289,7 +1323,9 @@ export type Database = {
           amount: number
           batch_withdrawal_id?: string | null
           completed_at?: string | null
+          conversion_rate?: number | null
           created_at?: string
+          crypto_amount?: number | null
           currency?: string
           external_id?: string | null
           failure_reason?: string | null
@@ -1323,7 +1359,9 @@ export type Database = {
           amount?: number
           batch_withdrawal_id?: string | null
           completed_at?: string | null
+          conversion_rate?: number | null
           created_at?: string
+          crypto_amount?: number | null
           currency?: string
           external_id?: string | null
           failure_reason?: string | null
@@ -1389,6 +1427,15 @@ export type Database = {
       confirm_payment: {
         Args: { _payload: Json; _payment: string }
         Returns: boolean
+      }
+      create_plan_checkout: {
+        Args: { _plan: string; _provider: string; _user: string }
+        Returns: {
+          payment_id: string
+          plan_name: string
+          price: number
+          user_plan_id: string
+        }[]
       }
       create_plan_payment: {
         Args: { _plan: string; _user: string }
@@ -1474,13 +1521,16 @@ export type Database = {
         }
         Returns: string
       }
+      usdt_brl_rate: { Args: never; Returns: number }
       withdrawal_begin_submission: {
         Args: { _admin: string; _wid: string }
         Returns: {
           amount: number
           batch_withdrawal_id: string | null
           completed_at: string | null
+          conversion_rate: number | null
           created_at: string
+          crypto_amount: number | null
           currency: string
           external_id: string | null
           failure_reason: string | null
