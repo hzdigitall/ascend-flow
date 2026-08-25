@@ -53,6 +53,7 @@ type Row = {
   pix_key_type: string | null;
   pix_key_value: string | null;
   wallet_address: string | null;
+  provider: string | null;
   provider_transaction_id: string | null;
   tx_hash: string | null;
   reject_reason: string | null;
@@ -174,6 +175,9 @@ function WithdrawalsPage() {
                               </p>
                               <p className="break-all text-xs text-muted-foreground">
                                 {w.wallet_address}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {w.provider === "nowpayments" ? "NOWPayments" : "ConnectPay (legado)"}
                               </p>
                             </>
                           ) : (
