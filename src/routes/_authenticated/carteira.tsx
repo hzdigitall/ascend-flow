@@ -17,6 +17,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { brl, dateTimeBR } from "@/lib/format";
+import { useUsdtRate } from "@/hooks/useUsdtRate";
+import { brlToUsdt, fmtUsdt } from "@/lib/usdt";
 
 export const Route = createFileRoute("/_authenticated/carteira")({
   head: () => ({
@@ -91,8 +93,15 @@ function WalletPage() {
           tone="secondary"
         />
         <StatCard
-          label="Saldo USDT (BEP20)"
-          value={`${Number((wallet as { usdt_balance?: number } | null)?.usdt_balance ?? 0).toFixed(2)} USDT`}
+          label="Equivalente em USDT (BEP20)"
+          value={fmtUsdt(
+            brlToUsdt(
+              Number(wallet?.main_balance ?? 0) +
+                Number(wallet?.earnings_balance ?? 0) +
+                Number(wallet?.referral_balance ?? 0),
+              usdtRate,
+            ),
+          )}
           icon={Wallet}
         />
       </div>
