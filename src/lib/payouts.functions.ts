@@ -101,6 +101,11 @@ export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const np = await import("./nowpayments.server");
+    const gateway = await np.loadGateway(supabaseAdmin);
+    if (!gateway?.active || !gateway.usdt_withdraw_enabled) {
+      throw new Error("Saques em USDT estão temporariamente indisponíveis.");
+    }
     const { data: id, error } = await supabaseAdmin.rpc("request_withdrawal_v2", {
       _user: context.userId,
       _amount: data.amount,
@@ -128,9 +133,8 @@ export const adminApproveWithdrawal = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const cp = await import("./connectpay.server");
 
-    // Trava atômica contra duplo clique: pending -> submitting.
+    // Trava atômica contra duplo clique/duplo admin: pending -> submitting.
     const { data: w, error: lockError } = await supabaseAdmin.rpc("withdrawal_begin_submission", {
       _admin: context.userId,
       _wid: data.withdrawalId,
@@ -142,23 +146,178 @@ export const adminApproveWithdrawal = createServerFn({ method: "POST" })
       net_amount: number;
       currency: string;
       method: string;
+      provider: string | null;
       network: string | null;
       pix_key_type: string | null;
       pix_key_value: string | null;
       wallet_address: string | null;
       external_id: string | null;
+      unique_external_id: string | null;
       idempotency_key: string | null;
     };
 
-    const feature = withdrawal.currency === "USDT" ? "usdt_withdraw" : "pix_cashout";
+    /* ---------------- USDT BEP20 -> NOWPayments ---------------- */
+    if (withdrawal.currency === "USDT") {
+      const np = await import("./nowpayments.server");
+
+      let gateway: Awaited<ReturnType<typeof np.loadGateway>>;
+      let apiKey: string;
+      try {
+        const active = await np.requireActiveGateway(supabaseAdmin, "usdt_withdraw");
+        gateway = active.gateway;
+        apiKey = active.apiKey;
+      } catch {
+        await supabaseAdmin
+          .from("withdrawals")
+          .update({ status: "pending" })
+          .eq("id", withdrawal.id);
+        throw new Error(
+          "NOWPayments indisponível para payout: verifique credenciais, conexão e a ativação de saques USDT.",
+        );
+      }
+
+      if ((withdrawal.network ?? "") !== "BEP20" || !withdrawal.wallet_address) {
+        await supabaseAdmin
+          .from("withdrawals")
+          .update({ status: "failed", failure_reason: "Saque USDT inválido (rede/carteira)." })
+          .eq("id", withdrawal.id);
+        throw new Error("Saque USDT inválido (rede/carteira).");
+      }
+
+      // Saldo permanece reservado em qualquer falha desta etapa (nunca é liberado aqui).
+      const fail = async (reason: string) => {
+        await supabaseAdmin
+          .from("withdrawals")
+          .update({ status: "failed", failure_reason: reason })
+          .eq("id", withdrawal.id);
+        await supabaseAdmin.from("admin_logs").insert({
+          admin_id: context.userId,
+          action: "withdrawal_payout_blocked",
+          table_name: "withdrawals",
+          record_id: withdrawal.id,
+          new_value: { reason },
+        });
+        throw new Error(reason);
+      };
+
+      // 1) Validação oficial do endereço para USDTBSC.
+      try {
+        await np.validateAddress(apiKey, gateway.base_url, withdrawal.wallet_address);
+      } catch (err) {
+        const status = err instanceof np.NowPaymentsError ? err.status : 500;
+        await fail(
+          status === 400
+            ? "Carteira inválida para USDTBSC."
+            : `Não foi possível validar a carteira: ${np.friendlyMessage(status)}`,
+        );
+      }
+
+      // 2) JWT de curta duração (nunca persistido).
+      let jwt: string;
+      try {
+        jwt = await np.getJwt(supabaseAdmin, gateway.base_url);
+      } catch {
+        await fail("Falha de autenticação de payout NOWPayments.");
+        return { ok: false as const, message: "Falha de autenticação de payout NOWPayments." };
+      }
+
+      // 3) Criação do payout (amount com no máximo 6 casas decimais).
+      const uniqueExternalId = withdrawal.unique_external_id ?? `arena-payout-${withdrawal.id}`;
+      const payoutAmount = Number(Number(withdrawal.net_amount).toFixed(6));
+      const urls = np.webhookUrls(gateway);
+      let batch: Awaited<ReturnType<typeof np.createPayout>>;
+      try {
+        batch = await np.createPayout(apiKey, jwt, gateway.base_url, {
+          ipn_callback_url: urls.payout,
+          withdrawals: [
+            {
+              address: withdrawal.wallet_address,
+              currency: np.PAY_CURRENCY,
+              amount: payoutAmount,
+              ipn_callback_url: urls.payout,
+              unique_external_id: uniqueExternalId,
+            },
+          ],
+        });
+      } catch (err) {
+        const status = err instanceof np.NowPaymentsError ? err.status : 500;
+        await fail(
+          status === 403
+            ? "Payout bloqueado pela whitelist da NOWPayments. Verifique as configurações da conta."
+            : `Falha ao criar o payout na NOWPayments: ${np.friendlyMessage(status)}`,
+        );
+        return { ok: false as const, message: "Falha ao criar o payout." };
+      }
+
+      const { extractPayoutItems, applyPayoutStatus } = await import(
+        "./nowpayments-settle.server"
+      );
+      const items = extractPayoutItems(batch);
+      const first = items[0];
+      const batchId = batch.id === undefined || batch.id === null ? null : String(batch.id);
+
+      await supabaseAdmin
+        .from("withdrawals")
+        .update({
+          provider: np.PROVIDER,
+          unique_external_id: uniqueExternalId,
+          batch_withdrawal_id: first?.batchId ?? batchId,
+          provider_payout_id: first?.payoutId ?? null,
+          provider_transaction_id: first?.payoutId ?? batchId,
+          submitted_at: new Date().toISOString(),
+        })
+        .eq("id", withdrawal.id);
+
+      await supabaseAdmin.rpc("withdrawal_mark_processing", {
+        _wid: withdrawal.id,
+        _provider_tx: first?.payoutId ?? batchId ?? "",
+        _payload: { provider: np.PROVIDER, provider_status: first?.status ?? null } as never,
+      });
+
+      // 4) Verificação 2FA obrigatória do payout.
+      const totpSecret = await np.loadSecretValue(supabaseAdmin, "totp_secret");
+      const verifyTarget = first?.batchId ?? batchId;
+      let message = "Payout criado — aguardando verificação 2FA NOWPayments.";
+      if (totpSecret && verifyTarget) {
+        try {
+          const code = await np.generateTotp(totpSecret);
+          await np.verifyPayout(apiKey, jwt, gateway.base_url, verifyTarget, code);
+          message = "Payout criado e verificado (2FA). Envio em processamento na NOWPayments.";
+        } catch (err) {
+          const status = err instanceof np.NowPaymentsError ? err.status : 500;
+          await supabaseAdmin
+            .from("withdrawals")
+            .update({
+              failure_reason: `Payout criado, mas a verificação 2FA falhou: ${np.friendlyMessage(status)}`,
+            })
+            .eq("id", withdrawal.id);
+          message = "Payout criado — verificação 2FA falhou. Verifique o 2FA na NOWPayments.";
+        }
+      }
+
+      if (items.length > 0 && first) {
+        await applyPayoutStatus(supabaseAdmin, first, "payout_create");
+      }
+
+      await supabaseAdmin.from("admin_logs").insert({
+        admin_id: context.userId,
+        action: "withdrawal_sent_to_gateway",
+        table_name: "withdrawals",
+        record_id: withdrawal.id,
+        new_value: { provider: np.PROVIDER, currency: "USDT", network: "BEP20" },
+      });
+      return { ok: true as const, message };
+    }
+
+    /* ---------------- PIX -> ConnectPay (fluxo original) ---------------- */
+    const cp = await import("./connectpay.server");
     let gateway: Awaited<ReturnType<typeof cp.loadGateway>>;
     let secret: string;
     try {
-      const active = await cp.requireActiveGateway(supabaseAdmin, feature);
+      const active = await cp.requireActiveGateway(supabaseAdmin, "pix_cashout");
       gateway = active.gateway;
       secret = active.secret;
     } catch {
-      // Volta para pendente mantendo o saldo reservado: gateway indisponível.
       await supabaseAdmin
         .from("withdrawals")
         .update({ status: "pending", released_at: null })
@@ -172,51 +331,27 @@ export const adminApproveWithdrawal = createServerFn({ method: "POST" })
     const idempotencyKey = withdrawal.idempotency_key ?? `connectpay-withdraw-${withdrawal.id}`;
 
     try {
-      if (withdrawal.currency === "USDT") {
-        if ((withdrawal.network ?? "") !== "BEP20" || !withdrawal.wallet_address) {
-          throw new cp.GatewayError("Saque USDT inválido (rede/carteira).", 400);
-        }
-        const response = await cp.createCryptoWithdraw(
-          secret,
-          gateway!.base_url,
-          {
-            asset: cp.USDT_ASSET,
-            chain: cp.USDT_CHAIN,
-            amount: Number(withdrawal.net_amount).toString(),
-            wallet: withdrawal.wallet_address,
-            webhook_url: urls.crypto,
-          },
-          idempotencyKey,
-        );
-        await supabaseAdmin.rpc("withdrawal_mark_processing", {
-          _wid: withdrawal.id,
-          _provider_tx: String(response.transaction_id ?? response.id ?? ""),
-          _payload: { provider_status: response.status ?? null } as never,
-        });
-      } else {
-        const pixType =
-          PIX_TYPE_MAP[(withdrawal.pix_key_type ?? "cpf") as keyof typeof PIX_TYPE_MAP];
-        if (!withdrawal.pix_key_value) {
-          throw new cp.GatewayError("Saque PIX sem chave cadastrada.", 400);
-        }
-        const response = await cp.createPixCashout(
-          secret,
-          gateway!.base_url,
-          {
-            external_id: withdrawal.external_id ?? withdrawal.id,
-            pix_key: withdrawal.pix_key_value,
-            pix_type: pixType,
-            amount: Number(Number(withdrawal.net_amount).toFixed(2)),
-            webhook_url: urls.pixCashOut,
-          },
-          idempotencyKey,
-        );
-        await supabaseAdmin.rpc("withdrawal_mark_processing", {
-          _wid: withdrawal.id,
-          _provider_tx: String(response.id ?? response.cashout_id ?? ""),
-          _payload: { provider_status: response.status ?? null } as never,
-        });
+      const pixType = PIX_TYPE_MAP[(withdrawal.pix_key_type ?? "cpf") as keyof typeof PIX_TYPE_MAP];
+      if (!withdrawal.pix_key_value) {
+        throw new cp.GatewayError("Saque PIX sem chave cadastrada.", 400);
       }
+      const response = await cp.createPixCashout(
+        secret,
+        gateway!.base_url,
+        {
+          external_id: withdrawal.external_id ?? withdrawal.id,
+          pix_key: withdrawal.pix_key_value,
+          pix_type: pixType,
+          amount: Number(Number(withdrawal.net_amount).toFixed(2)),
+          webhook_url: urls.pixCashOut,
+        },
+        idempotencyKey,
+      );
+      await supabaseAdmin.rpc("withdrawal_mark_processing", {
+        _wid: withdrawal.id,
+        _provider_tx: String(response.id ?? response.cashout_id ?? ""),
+        _payload: { provider_status: response.status ?? null } as never,
+      });
 
       await supabaseAdmin.from("admin_logs").insert({
         admin_id: context.userId,
@@ -245,6 +380,7 @@ export const adminApproveWithdrawal = createServerFn({ method: "POST" })
       throw new Error(detail);
     }
   });
+
 
 export const adminRejectWithdrawal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -278,14 +414,51 @@ export const adminReconcileWithdrawal = createServerFn({ method: "POST" })
 
     const { data: w } = await supabaseAdmin
       .from("withdrawals")
-      .select("id, currency, provider_transaction_id, status")
+      .select(
+        "id, currency, provider, provider_transaction_id, provider_payout_id, batch_withdrawal_id, status",
+      )
       .eq("id", data.withdrawalId)
       .maybeSingle();
     if (!w) throw new Error("Saque não encontrado.");
+
+    // USDT novo (NOWPayments): consulta GET /v1/payout/:id — nunca cria payout.
+    if (w.provider === "nowpayments") {
+      const np = await import("./nowpayments.server");
+      const payoutId = w.provider_payout_id ?? w.batch_withdrawal_id;
+      if (!payoutId) {
+        return { ok: false as const, message: "Este saque ainda não foi enviado à NOWPayments." };
+      }
+      const gateway = await np.loadGateway(supabaseAdmin);
+      const apiKey = await np.requireApiKey(supabaseAdmin);
+      const batch = await np.getPayout(apiKey, gateway?.base_url, payoutId);
+      const { extractPayoutItems, applyPayoutStatus } = await import(
+        "./nowpayments-settle.server"
+      );
+      const items = extractPayoutItems(batch);
+      const reasons: string[] = [];
+      for (const item of items) {
+        const r = await applyPayoutStatus(supabaseAdmin, item, "admin_reconcile");
+        reasons.push(`${item.status || "?"}:${r.reason}`);
+      }
+      await supabaseAdmin.from("admin_logs").insert({
+        admin_id: context.userId,
+        action: "withdrawal_reconciled",
+        table_name: "withdrawals",
+        record_id: w.id,
+        new_value: { provider: "nowpayments", reasons },
+      });
+      return {
+        ok: true as const,
+        message: `Status na NOWPayments: ${reasons.join(", ") || "desconhecido"}`,
+      };
+    }
+
+    // USDT histórico da ConnectPay continua sendo reconciliado pelo webhook crypto.
     if (w.currency === "USDT") {
       return {
         ok: false as const,
-        message: "Saques USDT são atualizados automaticamente pelo webhook crypto da ConnectPay.",
+        message:
+          "Saque USDT antigo (ConnectPay): reconciliação automática pelo webhook crypto do provedor original.",
       };
     }
     if (!w.provider_transaction_id) {

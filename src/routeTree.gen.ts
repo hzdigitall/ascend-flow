@@ -45,6 +45,8 @@ import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/we
 import { Route as ApiPublicWebhooksConnectpayCashoutRouteImport } from './routes/api/public/webhooks/connectpay/cashout'
 import { Route as ApiPublicWebhooksConnectpayCryptoRouteImport } from './routes/api/public/webhooks/connectpay/crypto'
 import { Route as ApiPublicWebhooksConnectpayPixRouteImport } from './routes/api/public/webhooks/connectpay/pix'
+import { Route as ApiPublicWebhooksNowpaymentsPaymentRouteImport } from './routes/api/public/webhooks/nowpayments/payment'
+import { Route as ApiPublicWebhooksNowpaymentsPayoutRouteImport } from './routes/api/public/webhooks/nowpayments/payout'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -241,6 +243,18 @@ const ApiPublicWebhooksConnectpayPixRoute =
     path: '/api/public/webhooks/connectpay/pix',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicWebhooksNowpaymentsPaymentRoute =
+  ApiPublicWebhooksNowpaymentsPaymentRouteImport.update({
+    id: '/api/public/webhooks/nowpayments/payment',
+    path: '/api/public/webhooks/nowpayments/payment',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicWebhooksNowpaymentsPayoutRoute =
+  ApiPublicWebhooksNowpaymentsPayoutRouteImport.update({
+    id: '/api/public/webhooks/nowpayments/payout',
+    path: '/api/public/webhooks/nowpayments/payout',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -278,6 +292,8 @@ export interface FileRoutesByFullPath {
   '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
   '/api/public/webhooks/connectpay/crypto': typeof ApiPublicWebhooksConnectpayCryptoRoute
   '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
+  '/api/public/webhooks/nowpayments/payment': typeof ApiPublicWebhooksNowpaymentsPaymentRoute
+  '/api/public/webhooks/nowpayments/payout': typeof ApiPublicWebhooksNowpaymentsPayoutRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -315,6 +331,8 @@ export interface FileRoutesByTo {
   '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
   '/api/public/webhooks/connectpay/crypto': typeof ApiPublicWebhooksConnectpayCryptoRoute
   '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
+  '/api/public/webhooks/nowpayments/payment': typeof ApiPublicWebhooksNowpaymentsPaymentRoute
+  '/api/public/webhooks/nowpayments/payout': typeof ApiPublicWebhooksNowpaymentsPayoutRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -354,6 +372,8 @@ export interface FileRoutesById {
   '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
   '/api/public/webhooks/connectpay/crypto': typeof ApiPublicWebhooksConnectpayCryptoRoute
   '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
+  '/api/public/webhooks/nowpayments/payment': typeof ApiPublicWebhooksNowpaymentsPaymentRoute
+  '/api/public/webhooks/nowpayments/payout': typeof ApiPublicWebhooksNowpaymentsPayoutRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -393,6 +413,8 @@ export interface FileRouteTypes {
     | '/api/public/webhooks/connectpay/cashout'
     | '/api/public/webhooks/connectpay/crypto'
     | '/api/public/webhooks/connectpay/pix'
+    | '/api/public/webhooks/nowpayments/payment'
+    | '/api/public/webhooks/nowpayments/payout'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -430,6 +452,8 @@ export interface FileRouteTypes {
     | '/api/public/webhooks/connectpay/cashout'
     | '/api/public/webhooks/connectpay/crypto'
     | '/api/public/webhooks/connectpay/pix'
+    | '/api/public/webhooks/nowpayments/payment'
+    | '/api/public/webhooks/nowpayments/payout'
   id:
     | '__root__'
     | '/'
@@ -468,6 +492,8 @@ export interface FileRouteTypes {
     | '/api/public/webhooks/connectpay/cashout'
     | '/api/public/webhooks/connectpay/crypto'
     | '/api/public/webhooks/connectpay/pix'
+    | '/api/public/webhooks/nowpayments/payment'
+    | '/api/public/webhooks/nowpayments/payout'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -484,6 +510,8 @@ export interface RootRouteChildren {
   ApiPublicWebhooksConnectpayCashoutRoute: typeof ApiPublicWebhooksConnectpayCashoutRoute
   ApiPublicWebhooksConnectpayCryptoRoute: typeof ApiPublicWebhooksConnectpayCryptoRoute
   ApiPublicWebhooksConnectpayPixRoute: typeof ApiPublicWebhooksConnectpayPixRoute
+  ApiPublicWebhooksNowpaymentsPaymentRoute: typeof ApiPublicWebhooksNowpaymentsPaymentRoute
+  ApiPublicWebhooksNowpaymentsPayoutRoute: typeof ApiPublicWebhooksNowpaymentsPayoutRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -740,6 +768,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksConnectpayPixRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/webhooks/nowpayments/payment': {
+      id: '/api/public/webhooks/nowpayments/payment'
+      path: '/api/public/webhooks/nowpayments/payment'
+      fullPath: '/api/public/webhooks/nowpayments/payment'
+      preLoaderRoute: typeof ApiPublicWebhooksNowpaymentsPaymentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhooks/nowpayments/payout': {
+      id: '/api/public/webhooks/nowpayments/payout'
+      path: '/api/public/webhooks/nowpayments/payout'
+      fullPath: '/api/public/webhooks/nowpayments/payout'
+      preLoaderRoute: typeof ApiPublicWebhooksNowpaymentsPayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -814,6 +856,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicWebhooksConnectpayCryptoRoute:
     ApiPublicWebhooksConnectpayCryptoRoute,
   ApiPublicWebhooksConnectpayPixRoute: ApiPublicWebhooksConnectpayPixRoute,
+  ApiPublicWebhooksNowpaymentsPaymentRoute:
+    ApiPublicWebhooksNowpaymentsPaymentRoute,
+  ApiPublicWebhooksNowpaymentsPayoutRoute:
+    ApiPublicWebhooksNowpaymentsPayoutRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
