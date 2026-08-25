@@ -5,7 +5,11 @@ import { useState } from "react";
 import { Check, Clock, Coins, Loader2, Sparkles, TrendingUp, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { createPlanPayment, purchasePlanWithBalance } from "@/lib/app.functions";
+import { purchasePlanWithBalance } from "@/lib/app.functions";
+import { createPlanCheckout } from "@/lib/plan-checkout.functions";
+import { useUsdtRate } from "@/hooks/useUsdtRate";
+import { brlToUsdt, fmtUsdt } from "@/lib/usdt";
+import { Bitcoin } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { UserShell } from "@/components/layout/UserShell";
 import { PageHeader, EmptyState, ErrorState } from "@/components/states";
@@ -60,7 +64,8 @@ type WalletKey = "main" | "earnings" | "referral";
 function PlansPage() {
   const navigate = useNavigate();
   const { wallet, refresh } = useAuth();
-  const createPayment = useServerFn(createPlanPayment);
+  const startCheckout = useServerFn(createPlanCheckout);
+  const usdtRate = useUsdtRate();
   const buyWithBalance = useServerFn(purchasePlanWithBalance);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [balancePlan, setBalancePlan] = useState<{ id: string; name: string; price: number } | null>(
@@ -135,12 +140,12 @@ function PlansPage() {
     },
   });
 
-  const buy = async (planId: string) => {
+  // Compra direta do plano: o pagamento é aplicado no plano, sem creditar saldo livre.
+  const buy = async (planId: string, method: "pix" | "usdt") => {
     setPendingId(planId);
     try {
-      const result = await createPayment({ data: { planId } });
-      if (result.message) toast.info(result.message);
-      navigate({ to: "/pagamento/$paymentId", params: { paymentId: result.paymentId } });
+      const result = await startCheckout({ data: { planId, method } });
+      navigate({ to: "/deposito/$depositId", params: { depositId: result.depositId } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Não foi possível iniciar o pagamento.");
     } finally {
@@ -260,13 +265,23 @@ function PlansPage() {
                       <Button
                         className="mt-6 w-full"
                         size="lg"
-                        onClick={() => buy(plan.id)}
+                        onClick={() => void buy(plan.id, "pix")}
                         disabled={pendingId !== null || blocked}
                       >
                         {pendingId === plan.id ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : null}
                         {blocked ? "Indisponível para aquisição no momento" : "Pagar com PIX"}
+                      </Button>
+                      <Button
+                        className="mt-2 w-full"
+                        size="lg"
+                        variant="outline"
+                        disabled={pendingId !== null || blocked}
+                        onClick={() => void buy(plan.id, "usdt")}
+                      >
+                        <Bitcoin className="mr-2 h-4 w-4" /> Pagar com USDT (
+                        {fmtUsdt(brlToUsdt(Number(plan.price), usdtRate))})
                       </Button>
                       <Button
                         className="mt-2 w-full"
