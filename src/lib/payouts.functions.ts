@@ -101,6 +101,11 @@ export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const np = await import("./nowpayments.server");
+    const gateway = await np.loadGateway(supabaseAdmin);
+    if (!gateway?.active || !gateway.usdt_withdraw_enabled) {
+      throw new Error("Saques em USDT estão temporariamente indisponíveis.");
+    }
     const { data: id, error } = await supabaseAdmin.rpc("request_withdrawal_v2", {
       _user: context.userId,
       _amount: data.amount,
