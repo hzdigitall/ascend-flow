@@ -409,14 +409,51 @@ export const adminReconcileWithdrawal = createServerFn({ method: "POST" })
 
     const { data: w } = await supabaseAdmin
       .from("withdrawals")
-      .select("id, currency, provider_transaction_id, status")
+      .select(
+        "id, currency, provider, provider_transaction_id, provider_payout_id, batch_withdrawal_id, status",
+      )
       .eq("id", data.withdrawalId)
       .maybeSingle();
     if (!w) throw new Error("Saque não encontrado.");
+
+    // USDT novo (NOWPayments): consulta GET /v1/payout/:id — nunca cria payout.
+    if (w.provider === "nowpayments") {
+      const np = await import("./nowpayments.server");
+      const payoutId = w.provider_payout_id ?? w.batch_withdrawal_id;
+      if (!payoutId) {
+        return { ok: false as const, message: "Este saque ainda não foi enviado à NOWPayments." };
+      }
+      const gateway = await np.loadGateway(supabaseAdmin);
+      const apiKey = await np.requireApiKey(supabaseAdmin);
+      const batch = await np.getPayout(apiKey, gateway?.base_url, payoutId);
+      const { extractPayoutItems, applyPayoutStatus } = await import(
+        "./nowpayments-settle.server"
+      );
+      const items = extractPayoutItems(batch);
+      const reasons: string[] = [];
+      for (const item of items) {
+        const r = await applyPayoutStatus(supabaseAdmin, item, "admin_reconcile");
+        reasons.push(`${item.status || "?"}:${r.reason}`);
+      }
+      await supabaseAdmin.from("admin_logs").insert({
+        admin_id: context.userId,
+        action: "withdrawal_reconciled",
+        table_name: "withdrawals",
+        record_id: w.id,
+        new_value: { provider: "nowpayments", reasons },
+      });
+      return {
+        ok: true as const,
+        message: `Status na NOWPayments: ${reasons.join(", ") || "desconhecido"}`,
+      };
+    }
+
+    // USDT histórico da ConnectPay continua sendo reconciliado pelo webhook crypto.
     if (w.currency === "USDT") {
       return {
         ok: false as const,
-        message: "Saques USDT são atualizados automaticamente pelo webhook crypto da ConnectPay.",
+        message:
+          "Saque USDT antigo (ConnectPay): reconciliação automática pelo webhook crypto do provedor original.",
       };
     }
     if (!w.provider_transaction_id) {
