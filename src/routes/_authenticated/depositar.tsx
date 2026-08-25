@@ -13,6 +13,9 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createPixDeposit, createUsdtDeposit, getDepositMethods } from "@/lib/deposits.functions";
+import { useUsdtRate } from "@/hooks/useUsdtRate";
+import { brlToUsdt, fmtRate, fmtUsdt } from "@/lib/usdt";
+import { brl } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/depositar")({
   head: () => ({
@@ -40,6 +43,8 @@ function DepositPage() {
 
   const [amount, setAmount] = useState("");
   const [usdtAmount, setUsdtAmount] = useState("");
+  const rate = useUsdtRate();
+  const usdtValue = Number(usdtAmount.replace(",", ".")) || 0;
 
   const { data: methods, isLoading } = useQuery({
     queryKey: ["deposit", "methods"],
@@ -53,7 +58,7 @@ function DepositPage() {
   });
 
   const usdt = useMutation({
-    mutationFn: () => usdtFn({ data: { amount: Number(usdtAmount.replace(",", ".")) } }),
+    mutationFn: () => usdtFn({ data: { brlAmount: usdtValue } }),
     onSuccess: (res) => navigate({ to: "/deposito/$depositId", params: { depositId: res.depositId } }),
     onError: (err: Error) => toast.error(err.message),
   });
@@ -114,15 +119,32 @@ function DepositPage() {
               {methods?.usdt ? (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="usdtAmount">Valor do depósito (USDT)</Label>
+                    <Label htmlFor="usdtAmount">Valor a creditar no saldo (R$)</Label>
                     <Input
                       id="usdtAmount"
                       inputMode="decimal"
-                      placeholder="0.00"
+                      placeholder="0,00"
                       value={usdtAmount}
                       onChange={(e) => setUsdtAmount(e.target.value.replace(/[^\d.,]/g, ""))}
                     />
+                    <p className="text-xs text-muted-foreground">Cotação interna: {fmtRate(rate)}</p>
                   </div>
+
+                  {usdtValue > 0 && (
+                    <div className="space-y-1 rounded-lg border bg-muted/40 p-3 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Saldo creditado</span>
+                        <span className="font-medium">{brl(usdtValue)}</span>
+                      </div>
+                      <div className="flex justify-between border-t pt-1">
+                        <span className="text-muted-foreground">Você deve enviar</span>
+                        <span className="font-semibold text-primary">
+                          {fmtUsdt(brlToUsdt(usdtValue, rate))}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
                   <Alert>
                     <AlertDescription>
                       Envie exclusivamente USDT na rede BEP20 (USDTBSC). Envios em outra rede ou
@@ -131,7 +153,7 @@ function DepositPage() {
                   </Alert>
                   <Button
                     className="w-full"
-                    disabled={usdt.isPending || !(Number(usdtAmount.replace(",", ".")) > 0)}
+                    disabled={usdt.isPending || !(usdtValue > 0)}
                     onClick={() => usdt.mutate()}
                   >
                     Gerar endereço de depósito
@@ -144,6 +166,7 @@ function DepositPage() {
               )}
             </CardContent>
           </Card>
+
         </div>
       )}
     </UserShell>

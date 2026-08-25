@@ -86,11 +86,18 @@ export const requestPixWithdrawal = createServerFn({ method: "POST" })
     return { withdrawalId: id as string };
   });
 
+/**
+ * Saque em USDT BEP20.
+ * O usuário informa o valor EM REAIS a debitar do saldo; o backend aplica a
+ * taxa existente e converte o líquido para USDT pela cotação vigente,
+ * congelando a taxa na solicitação.
+ */
 export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { amount: number; address: string }) =>
+  .inputValidator((data: { wallet: string; amount: number; address: string }) =>
     z
       .object({
+        wallet: z.enum(["earnings", "referral"]),
         amount: z.number().positive().max(1_000_000),
         address: z
           .string()
@@ -100,6 +107,22 @@ export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
+    // Janelas existentes preservadas (horário de Brasília).
+    const nowBR = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+    const day = nowBR.getDay();
+    const hour = nowBR.getHours();
+    if (data.wallet === "earnings") {
+      if (day !== 1) {
+        throw new Error("Saques de rendimentos são permitidos apenas às segundas-feiras.");
+      }
+      if (hour < 10 || hour >= 17) {
+        throw new Error("Saques de rendimentos são permitidos apenas entre 10h e 17h.");
+      }
+    }
+    if (data.wallet === "referral" && (hour < 9 || hour >= 17)) {
+      throw new Error("Saques de bônus são permitidos apenas entre 09h e 17h.");
+    }
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const np = await import("./nowpayments.server");
     const gateway = await np.loadGateway(supabaseAdmin);
@@ -109,7 +132,7 @@ export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
     const { data: id, error } = await supabaseAdmin.rpc("request_withdrawal_v2", {
       _user: context.userId,
       _amount: data.amount,
-      _wallet: "usdt",
+      _wallet: data.wallet,
       _method: "crypto",
       _currency: "USDT",
       _network: "BEP20",
@@ -120,6 +143,7 @@ export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { withdrawalId: id as string };
   });
+
 
 /* ------------------------------------------------------------------ */
 /* Administração                                                       */
@@ -154,6 +178,8 @@ export const adminApproveWithdrawal = createServerFn({ method: "POST" })
       external_id: string | null;
       unique_external_id: string | null;
       idempotency_key: string | null;
+      conversion_rate: number | null;
+      crypto_amount: number | null;
     };
 
     /* ---------------- USDT BEP20 -> NOWPayments ---------------- */
@@ -223,7 +249,12 @@ export const adminApproveWithdrawal = createServerFn({ method: "POST" })
 
       // 3) Criação do payout (amount com no máximo 6 casas decimais).
       const uniqueExternalId = withdrawal.unique_external_id ?? `arena-payout-${withdrawal.id}`;
-      const payoutAmount = Number(Number(withdrawal.net_amount).toFixed(6));
+      // Valor em USDT congelado no momento da solicitação (nunca recalculado).
+      const frozen = withdrawal.crypto_amount;
+      if (frozen === null || Number(frozen) <= 0) {
+        await fail("Saque USDT sem valor convertido registrado. Rejeite e solicite novamente.");
+      }
+      const payoutAmount = Number(Number(frozen).toFixed(6));
       const urls = np.webhookUrls(gateway);
       let batch: Awaited<ReturnType<typeof np.createPayout>>;
       try {

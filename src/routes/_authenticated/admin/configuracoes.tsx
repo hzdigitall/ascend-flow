@@ -18,6 +18,8 @@ import {
   PlugZap,
 } from "lucide-react";
 import { brl, dateTimeBR } from "@/lib/format";
+import { UsdtRateCard } from "@/components/admin/UsdtRateCard";
+import { normalizeRate } from "@/lib/usdt";
 
 const items: NavItem[] = [
   { label: "Visão geral", to: "/admin/dashboard", icon: LayoutDashboard, section: "Administração" },
@@ -55,10 +57,14 @@ function SettingsPage() {
     },
   });
 
+  const rateValue = data?.find((s) => s.key === "usdt_brl_rate")?.value;
+
   return (
     <AppShell items={items} variant="admin">
       <PageHeader title="Configurações" description="Ajuste as variáveis globais do sistema." />
+      <UsdtRateCard currentRate={normalizeRate(rateValue)} onSaved={() => void refetch()} />
       <Card className="shadow-card">
+
         <CardContent className="p-0">
           {isLoading ? (
             <TableSkeleton />

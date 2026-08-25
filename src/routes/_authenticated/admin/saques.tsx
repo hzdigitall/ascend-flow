@@ -57,12 +57,19 @@ type Row = {
   provider_transaction_id: string | null;
   tx_hash: string | null;
   reject_reason: string | null;
+  conversion_rate: number | null;
+  crypto_amount: number | null;
   created_at: string;
   profiles: { full_name: string; email: string } | null;
 };
 
+/**
+ * Saques novos são registrados em BRL (com o valor em USDT congelado em
+ * `crypto_amount`). Saques USDT legados guardavam o valor direto em USDT.
+ */
 function money(row: Row, value: number) {
-  return row.currency === "USDT" ? `${value.toFixed(2)} USDT` : brl(value);
+  const legacyUsdt = row.currency === "USDT" && row.crypto_amount === null;
+  return legacyUsdt ? `${value.toFixed(2)} USDT` : brl(value);
 }
 
 function WithdrawalsPage() {
@@ -179,6 +186,12 @@ function WithdrawalsPage() {
                               <p className="text-xs text-muted-foreground">
                                 {w.provider === "nowpayments" ? "NOWPayments" : "ConnectPay (legado)"}
                               </p>
+                              {w.crypto_amount !== null && (
+                                <p className="text-xs font-medium">
+                                  Envio: {Number(w.crypto_amount).toFixed(6)} USDT · cotação R${" "}
+                                  {Number(w.conversion_rate ?? 0).toFixed(2)}
+                                </p>
+                              )}
                             </>
                           ) : (
                             <>

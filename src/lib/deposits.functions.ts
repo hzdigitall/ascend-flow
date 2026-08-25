@@ -14,6 +14,7 @@ export const getDepositMethods = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { loadGateway } = await import("./connectpay.server");
     const np = await import("./nowpayments.server");
+    const { currentUsdtRate } = await import("./usdt.server");
 
     const cpGateway = await loadGateway(supabaseAdmin);
     const cpReady = Boolean(cpGateway?.active && cpGateway.credentials_configured);
@@ -26,9 +27,11 @@ export const getDepositMethods = createServerFn({ method: "POST" })
       usdt: npReady && Boolean(npGateway?.usdt_deposit_enabled),
       usdtTicker: np.PAY_CURRENCY_LABEL,
       usdtNetwork: np.NETWORK_LABEL,
+      usdtRate: await currentUsdtRate(supabaseAdmin),
       unavailableMessage: "Método de pagamento temporariamente indisponível.",
     };
   });
+
 
 export const createPixDeposit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -143,33 +146,50 @@ export const createPixDeposit = createServerFn({ method: "POST" })
     }
   });
 
-/** Depósito USDT BEP20 — NOWPayments (ticker USDTBSC). */
+/**
+ * Depósito USDT BEP20 — NOWPayments (ticker USDTBSC).
+ * O usuário informa quanto quer ADICIONAR AO SALDO EM REAIS; o backend converte
+ * pela cotação interna vigente e congela a taxa no registro do depósito.
+ */
 export const createUsdtDeposit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { amount: number }) =>
-    z.object({ amount: z.number().positive().max(1_000_000) }).parse(data),
+  .inputValidator((data: { brlAmount: number }) =>
+    z.object({ brlAmount: z.number().positive().max(1_000_000) }).parse(data),
   )
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const np = await import("./nowpayments.server");
+    const { currentUsdtRate, toUsdt } = await import("./usdt.server");
 
     const { gateway, apiKey } = await np.requireActiveGateway(supabaseAdmin, "usdt_deposit");
 
-    // Limite interno existente.
+    // Limites em BRL (mesmas configurações do PIX).
     const { data: minSetting } = await supabaseAdmin.rpc("get_setting", {
-      _key: "usdt_deposit_min",
-      _default: 10 as unknown as never,
+      _key: "deposit_min",
+      _default: 20 as unknown as never,
     });
-    const min = Number(minSetting ?? 10);
-    if (data.amount < min) throw new Error(`Valor mínimo de depósito: ${min} USDT`);
+    const { data: maxSetting } = await supabaseAdmin.rpc("get_setting", {
+      _key: "deposit_max",
+      _default: 50000 as unknown as never,
+    });
+    const minBrl = Number(minSetting ?? 20);
+    const maxBrl = Number(maxSetting ?? 50000);
+    const brlAmount = Number(data.brlAmount.toFixed(2));
+    if (brlAmount < minBrl) throw new Error(`Valor mínimo de depósito: R$ ${minBrl.toFixed(2)}`);
+    if (brlAmount > maxBrl) throw new Error(`Valor máximo de depósito: R$ ${maxBrl.toFixed(2)}`);
 
-    // Mínimo oficial do par (nunca inventamos conversão).
+    // Conversão SEMPRE calculada no backend com a cotação vigente.
+    const rate = await currentUsdtRate(supabaseAdmin);
+    const amount = toUsdt(brlAmount, rate);
+    if (amount <= 0) throw new Error("Valor convertido em USDT inválido.");
+
+    // Mínimo oficial do par.
     try {
       const official = await np.getMinAmount(apiKey, gateway.base_url, "usdt", np.PAY_CURRENCY);
       const officialMin = Number(official.min_amount ?? 0);
-      if (officialMin > 0 && data.amount < officialMin) {
+      if (officialMin > 0 && amount < officialMin) {
         throw new np.NowPaymentsError(
-          `Valor mínimo aceito pela NOWPayments: ${officialMin} USDT.`,
+          `Valor mínimo aceito pela NOWPayments: ${officialMin} USDT (R$ ${(officialMin * rate).toFixed(2)}).`,
           400,
         );
       }
@@ -179,7 +199,6 @@ export const createUsdtDeposit = createServerFn({ method: "POST" })
     }
 
     const depositId = crypto.randomUUID();
-    const amount = Number(data.amount.toFixed(8));
 
     // 1) Registro interno ANTES de chamar a NOWPayments (order_id = id do depósito).
     const { data: deposit, error } = await supabaseAdmin
@@ -192,6 +211,10 @@ export const createUsdtDeposit = createServerFn({ method: "POST" })
         network: np.NETWORK,
         amount,
         expected_amount: amount,
+        crypto_amount: amount,
+        conversion_rate: rate,
+        brl_amount: brlAmount,
+        payment_purpose: "wallet_deposit",
         external_id: depositId,
         order_id: depositId,
         idempotency_key: `nowpayments-deposit-${depositId}`,
@@ -201,6 +224,7 @@ export const createUsdtDeposit = createServerFn({ method: "POST" })
       .select("*")
       .single();
     if (error) throw new Error("Não foi possível registrar o depósito.");
+
 
     try {
       const response = await np.createPayment(apiKey, gateway.base_url, {

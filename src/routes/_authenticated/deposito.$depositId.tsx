@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { CheckCircle2, Clock, Copy, RefreshCw, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserShell } from "@/components/layout/UserShell";
+import { fmtRate, fmtUsdt } from "@/lib/usdt";
 import { PageHeader, ErrorState } from "@/components/states";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -86,13 +87,26 @@ function DepositDetailPage() {
   const failed = data.status === "failed" || data.status === "expired";
   const usdtAddress = data.pay_address ?? data.deposit_address;
   const exactAmount = Number(data.expected_amount ?? data.amount);
-  const amountLabel = isUsdt ? `${exactAmount} USDT` : brl(Number(data.amount));
+  const brlAmount = Number(data.brl_amount ?? data.amount);
+  const rate = Number(data.conversion_rate ?? 1);
+  const isPlanPurchase = data.payment_purpose === "plan_purchase";
+  const amountLabel = isUsdt
+    ? `${exactAmount} USDT (${brl(brlAmount)})`
+    : brl(Number(data.amount));
   const isNowPayments = data.provider === "nowpayments";
 
   return (
     <UserShell>
       <PageHeader
-        title={isUsdt ? "Depósito USDT (BEP20)" : "Depósito PIX"}
+        title={
+          isPlanPurchase
+            ? isUsdt
+              ? "Pagamento do plano em USDT (BEP20)"
+              : "Pagamento do plano via PIX"
+            : isUsdt
+              ? "Depósito USDT (BEP20)"
+              : "Depósito PIX"
+        }
         description={`Valor solicitado: ${amountLabel}`}
         action={
           <Button variant="outline" onClick={() => refresh.mutate()} disabled={refresh.isPending}>
@@ -120,10 +134,38 @@ function DepositDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
+            {isUsdt && (
+              <div className="space-y-1 rounded-lg border bg-muted/40 p-3 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Cotação congelada</span>
+                  <span className="font-medium">{fmtRate(rate)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Valor em USDT</span>
+                  <span className="font-medium">{fmtUsdt(exactAmount)}</span>
+                </div>
+                <div className="flex justify-between border-t pt-1">
+                  <span className="text-muted-foreground">
+                    {isPlanPurchase ? "Valor do plano" : "Saldo a creditar"}
+                  </span>
+                  <span className="font-semibold text-primary">{brl(brlAmount)}</span>
+                </div>
+              </div>
+            )}
+            {isPlanPurchase && !credited && (
+              <Alert>
+                <AlertDescription>
+                  Este pagamento é destinado à aquisição do plano. Após a confirmação, o plano é
+                  ativado automaticamente e o valor não é creditado como saldo livre.
+                </AlertDescription>
+              </Alert>
+            )}
             {credited ? (
               <Alert>
                 <AlertDescription>
-                  Seu saldo já foi atualizado. Confira em Carteira.
+                  {isPlanPurchase
+                    ? "Pagamento confirmado. Seu plano foi ativado — confira em Planos."
+                    : "Seu saldo já foi atualizado. Confira em Carteira."}
                 </AlertDescription>
               </Alert>
             ) : failed ? (
