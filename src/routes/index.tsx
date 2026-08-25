@@ -12,6 +12,7 @@ import {
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import OrbitalSphereBackground from "@/components/ui/orbital-sphere";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -97,7 +98,9 @@ function Landing() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-6xl px-4 py-14 text-center sm:py-20">
+      <section className="relative isolate overflow-hidden">
+        <OrbitalSphereBackground className="opacity-70" />
+        <div className="relative mx-auto max-w-6xl px-4 py-14 text-center sm:py-20">
         <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
           <Sparkles className="h-3.5 w-3.5" /> Saúde · Bem Estar · Resultados
         </span>
