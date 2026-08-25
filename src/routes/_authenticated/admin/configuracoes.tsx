@@ -55,10 +55,14 @@ function SettingsPage() {
     },
   });
 
+  const rateValue = data?.find((s) => s.key === "usdt_brl_rate")?.value;
+
   return (
     <AppShell items={items} variant="admin">
       <PageHeader title="Configurações" description="Ajuste as variáveis globais do sistema." />
+      <UsdtRateCard currentRate={normalizeRate(rateValue)} onSaved={() => void refetch()} />
       <Card className="shadow-card">
+
         <CardContent className="p-0">
           {isLoading ? (
             <TableSkeleton />
