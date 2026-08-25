@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { dateTimeBR } from "@/lib/format";
 
-export function NotificationsBell({ userId }: { userId?: string }) {
+export function NotificationsBell({ userId }: { userId?: string | undefined }) {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
 
