@@ -366,41 +366,87 @@ function PlansPage() {
         </TabsContent>
       </Tabs>
 
-      <Dialog open={balancePlan !== null} onOpenChange={(open) => (!open ? setBalancePlan(null) : null)}>
+      <Dialog
+        open={balancePlan !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setBalancePlan(null);
+            setMethod(null);
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Comprar com saldo</DialogTitle>
+            <DialogTitle>Adquirir plano</DialogTitle>
             <DialogDescription>
               {balancePlan
-                ? `Plano ${balancePlan.name} · ${brl(balancePlan.price)}. Escolha a carteira de origem.`
+                ? `Plano ${balancePlan.name} · ${brl(balancePlan.price)}. Escolha a forma de pagamento.`
                 : ""}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3">
-            <Select value={sourceWallet} onValueChange={(v) => setSourceWallet(v as WalletKey)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione a carteira" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="referral">
-                  Bônus de indicação ({brl(balances.referral)})
-                </SelectItem>
-                <SelectItem value="earnings">Rendimentos ({brl(balances.earnings)})</SelectItem>
-                <SelectItem value="main">Saldo principal ({brl(balances.main)})</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              O valor é debitado na hora e o plano é ativado imediatamente. O primeiro rendimento é
-              creditado 24h após a ativação.
-            </p>
-            <Button className="w-full" size="lg" onClick={confirmBalancePurchase} disabled={buying}>
-              {buying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Confirmar compra
-            </Button>
-          </div>
+          {method === "balance" ? (
+            <div className="space-y-3">
+              <Select value={sourceWallet} onValueChange={(v) => setSourceWallet(v as WalletKey)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a carteira" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="referral">
+                    Bônus de indicação ({brl(balances.referral)})
+                  </SelectItem>
+                  <SelectItem value="earnings">Rendimentos ({brl(balances.earnings)})</SelectItem>
+                  <SelectItem value="main">Saldo principal ({brl(balances.main)})</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                O valor é debitado na hora e o plano é ativado imediatamente. O primeiro rendimento é
+                creditado 24h após a ativação.
+              </p>
+              <Button className="w-full" size="lg" onClick={confirmBalancePurchase} disabled={buying}>
+                {buying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Confirmar compra
+              </Button>
+              <Button variant="ghost" className="w-full" onClick={() => setMethod(null)}>
+                Voltar
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Button
+                className="w-full"
+                size="lg"
+                disabled={pendingId !== null}
+                onClick={() => balancePlan && void buy(balancePlan.id, "pix")}
+              >
+                {pendingId !== null ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Pagar com PIX
+              </Button>
+              <Button
+                className="w-full"
+                size="lg"
+                variant="outline"
+                disabled={pendingId !== null}
+                onClick={() => balancePlan && void buy(balancePlan.id, "usdt")}
+              >
+                <Bitcoin className="mr-2 h-4 w-4" /> Pagar com USDT
+                {balancePlan
+                  ? ` (${fmtUsdt(brlToUsdt(balancePlan.price, usdtRate))})`
+                  : ""}
+              </Button>
+              <Button
+                className="w-full"
+                size="lg"
+                variant="outline"
+                onClick={() => setMethod("balance")}
+              >
+                <Wallet className="mr-2 h-4 w-4" /> Comprar com saldo
+              </Button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
+
     </UserShell>
   );
 }
