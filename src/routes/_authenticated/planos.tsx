@@ -265,29 +265,7 @@ function PlansPage() {
                       <Button
                         className="mt-6 w-full"
                         size="lg"
-                        onClick={() => void buy(plan.id, "pix")}
                         disabled={pendingId !== null || blocked}
-                      >
-                        {pendingId === plan.id ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : null}
-                        {blocked ? "Indisponível para aquisição no momento" : "Pagar com PIX"}
-                      </Button>
-                      <Button
-                        className="mt-2 w-full"
-                        size="lg"
-                        variant="outline"
-                        disabled={pendingId !== null || blocked}
-                        onClick={() => void buy(plan.id, "usdt")}
-                      >
-                        <Bitcoin className="mr-2 h-4 w-4" /> Pagar com USDT (
-                        {fmtUsdt(brlToUsdt(Number(plan.price), usdtRate))})
-                      </Button>
-                      <Button
-                        className="mt-2 w-full"
-                        size="lg"
-                        variant="outline"
-                        disabled={blocked}
                         onClick={() => {
                           const price = Number(plan.price);
                           setSourceWallet(
@@ -297,11 +275,16 @@ function PlansPage() {
                                 ? "earnings"
                                 : "main",
                           );
+                          setMethod(null);
                           setBalancePlan({ id: plan.id, name: plan.name, price });
                         }}
                       >
-                        <Wallet className="mr-2 h-4 w-4" /> Comprar com saldo
+                        {pendingId === plan.id ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : null}
+                        {blocked ? "Indisponível para aquisição no momento" : "Adquirir plano"}
                       </Button>
+
                     </CardContent>
                   </Card>
                 );
