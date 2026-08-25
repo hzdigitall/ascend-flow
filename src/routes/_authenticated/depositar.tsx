@@ -13,6 +13,9 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createPixDeposit, createUsdtDeposit, getDepositMethods } from "@/lib/deposits.functions";
+import { useUsdtRate } from "@/hooks/useUsdtRate";
+import { brlToUsdt, fmtRate, fmtUsdt } from "@/lib/usdt";
+import { brl } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/depositar")({
   head: () => ({
@@ -40,6 +43,8 @@ function DepositPage() {
 
   const [amount, setAmount] = useState("");
   const [usdtAmount, setUsdtAmount] = useState("");
+  const rate = useUsdtRate();
+  const usdtValue = Number(usdtAmount.replace(",", ".")) || 0;
 
   const { data: methods, isLoading } = useQuery({
     queryKey: ["deposit", "methods"],
@@ -53,7 +58,7 @@ function DepositPage() {
   });
 
   const usdt = useMutation({
-    mutationFn: () => usdtFn({ data: { amount: Number(usdtAmount.replace(",", ".")) } }),
+    mutationFn: () => usdtFn({ data: { brlAmount: usdtValue } }),
     onSuccess: (res) => navigate({ to: "/deposito/$depositId", params: { depositId: res.depositId } }),
     onError: (err: Error) => toast.error(err.message),
   });
