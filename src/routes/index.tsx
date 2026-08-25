@@ -127,6 +127,7 @@ function Landing() {
             apenas R$ 20 no primeiro aporte.
           </p>
         </div>
+        </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-16">
