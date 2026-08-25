@@ -189,11 +189,13 @@ export type Database = {
       }
       deposits: {
         Row: {
+          actually_paid: number
           amount: number
           created_at: string
           credited_at: string | null
           currency: string
           deposit_address: string | null
+          expected_amount: number | null
           expires_at: string | null
           external_id: string
           failure_reason: string | null
@@ -204,9 +206,13 @@ export type Database = {
           method: string
           net_amount: number | null
           network: string | null
+          order_id: string | null
+          pay_address: string | null
+          payment_status: string | null
           pix_payload: string | null
           provider: string
           provider_transaction_id: string | null
+          purchase_id: string | null
           qr_code: string | null
           status: string
           tx_hash: string | null
@@ -214,11 +220,13 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          actually_paid?: number
           amount: number
           created_at?: string
           credited_at?: string | null
           currency: string
           deposit_address?: string | null
+          expected_amount?: number | null
           expires_at?: string | null
           external_id: string
           failure_reason?: string | null
@@ -229,9 +237,13 @@ export type Database = {
           method: string
           net_amount?: number | null
           network?: string | null
+          order_id?: string | null
+          pay_address?: string | null
+          payment_status?: string | null
           pix_payload?: string | null
           provider?: string
           provider_transaction_id?: string | null
+          purchase_id?: string | null
           qr_code?: string | null
           status?: string
           tx_hash?: string | null
@@ -239,11 +251,13 @@ export type Database = {
           user_id: string
         }
         Update: {
+          actually_paid?: number
           amount?: number
           created_at?: string
           credited_at?: string | null
           currency?: string
           deposit_address?: string | null
+          expected_amount?: number | null
           expires_at?: string | null
           external_id?: string
           failure_reason?: string | null
@@ -254,9 +268,13 @@ export type Database = {
           method?: string
           net_amount?: number | null
           network?: string | null
+          order_id?: string | null
+          pay_address?: string | null
+          payment_status?: string | null
           pix_payload?: string | null
           provider?: string
           provider_transaction_id?: string | null
+          purchase_id?: string | null
           qr_code?: string | null
           status?: string
           tx_hash?: string | null
@@ -306,6 +324,47 @@ export type Database = {
             foreignKeyName: "gateway_credentials_provider_fkey"
             columns: ["provider"]
             isOneToOne: true
+            referencedRelation: "payment_gateways"
+            referencedColumns: ["provider"]
+          },
+        ]
+      }
+      gateway_secrets: {
+        Row: {
+          ciphertext: string
+          created_at: string
+          iv: string
+          key_name: string
+          last_four: string
+          provider: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          ciphertext: string
+          created_at?: string
+          iv: string
+          key_name: string
+          last_four?: string
+          provider: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          ciphertext?: string
+          created_at?: string
+          iv?: string
+          key_name?: string
+          last_four?: string
+          provider?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gateway_secrets_provider_fkey"
+            columns: ["provider"]
+            isOneToOne: false
             referencedRelation: "payment_gateways"
             referencedColumns: ["provider"]
           },
@@ -494,18 +553,24 @@ export type Database = {
       payment_gateways: {
         Row: {
           active: boolean
+          asset_available: boolean
+          balance_snapshot: Json
           base_url: string
           connection_status: string
           created_at: string
           credential_last_four: string | null
           credentials_configured: boolean
+          display_name: string
           environment: string
           id: string
+          ipn_configured: boolean
           last_connection_test: string | null
           last_error: string | null
+          payout_auth_configured: boolean
           pix_cashin_enabled: boolean
           pix_cashout_enabled: boolean
           provider: string
+          totp_configured: boolean
           updated_at: string
           usdt_deposit_enabled: boolean
           usdt_withdraw_enabled: boolean
@@ -513,18 +578,24 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          asset_available?: boolean
+          balance_snapshot?: Json
           base_url?: string
           connection_status?: string
           created_at?: string
           credential_last_four?: string | null
           credentials_configured?: boolean
+          display_name?: string
           environment?: string
           id?: string
+          ipn_configured?: boolean
           last_connection_test?: string | null
           last_error?: string | null
+          payout_auth_configured?: boolean
           pix_cashin_enabled?: boolean
           pix_cashout_enabled?: boolean
           provider: string
+          totp_configured?: boolean
           updated_at?: string
           usdt_deposit_enabled?: boolean
           usdt_withdraw_enabled?: boolean
@@ -532,18 +603,24 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          asset_available?: boolean
+          balance_snapshot?: Json
           base_url?: string
           connection_status?: string
           created_at?: string
           credential_last_four?: string | null
           credentials_configured?: boolean
+          display_name?: string
           environment?: string
           id?: string
+          ipn_configured?: boolean
           last_connection_test?: string | null
           last_error?: string | null
+          payout_auth_configured?: boolean
           pix_cashin_enabled?: boolean
           pix_cashout_enabled?: boolean
           provider?: string
+          totp_configured?: boolean
           updated_at?: string
           usdt_deposit_enabled?: boolean
           usdt_withdraw_enabled?: boolean
@@ -563,6 +640,7 @@ export type Database = {
           provider: string
           provider_transaction_id: string | null
           received_at: string
+          signature_valid: boolean | null
           status: string | null
         }
         Insert: {
@@ -576,6 +654,7 @@ export type Database = {
           provider?: string
           provider_transaction_id?: string | null
           received_at?: string
+          signature_valid?: boolean | null
           status?: string | null
         }
         Update: {
@@ -589,6 +668,7 @@ export type Database = {
           provider?: string
           provider_transaction_id?: string | null
           received_at?: string
+          signature_valid?: boolean | null
           status?: string | null
         }
         Relationships: []
@@ -1173,6 +1253,7 @@ export type Database = {
       withdrawals: {
         Row: {
           amount: number
+          batch_withdrawal_id: string | null
           completed_at: string | null
           created_at: string
           currency: string
@@ -1189,6 +1270,7 @@ export type Database = {
           pix_key_value: string | null
           processed_at: string | null
           provider: string | null
+          provider_payout_id: string | null
           provider_transaction_id: string | null
           reject_reason: string | null
           released_at: string | null
@@ -1197,6 +1279,7 @@ export type Database = {
           status: Database["public"]["Enums"]["withdrawal_status"]
           submitted_at: string | null
           tx_hash: string | null
+          unique_external_id: string | null
           updated_at: string
           user_id: string
           wallet_address: string | null
@@ -1204,6 +1287,7 @@ export type Database = {
         }
         Insert: {
           amount: number
+          batch_withdrawal_id?: string | null
           completed_at?: string | null
           created_at?: string
           currency?: string
@@ -1220,6 +1304,7 @@ export type Database = {
           pix_key_value?: string | null
           processed_at?: string | null
           provider?: string | null
+          provider_payout_id?: string | null
           provider_transaction_id?: string | null
           reject_reason?: string | null
           released_at?: string | null
@@ -1228,6 +1313,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["withdrawal_status"]
           submitted_at?: string | null
           tx_hash?: string | null
+          unique_external_id?: string | null
           updated_at?: string
           user_id: string
           wallet_address?: string | null
@@ -1235,6 +1321,7 @@ export type Database = {
         }
         Update: {
           amount?: number
+          batch_withdrawal_id?: string | null
           completed_at?: string | null
           created_at?: string
           currency?: string
@@ -1251,6 +1338,7 @@ export type Database = {
           pix_key_value?: string | null
           processed_at?: string | null
           provider?: string | null
+          provider_payout_id?: string | null
           provider_transaction_id?: string | null
           reject_reason?: string | null
           released_at?: string | null
@@ -1259,6 +1347,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["withdrawal_status"]
           submitted_at?: string | null
           tx_hash?: string | null
+          unique_external_id?: string | null
           updated_at?: string
           user_id?: string
           wallet_address?: string | null
@@ -1389,6 +1478,7 @@ export type Database = {
         Args: { _admin: string; _wid: string }
         Returns: {
           amount: number
+          batch_withdrawal_id: string | null
           completed_at: string | null
           created_at: string
           currency: string
@@ -1405,6 +1495,7 @@ export type Database = {
           pix_key_value: string | null
           processed_at: string | null
           provider: string | null
+          provider_payout_id: string | null
           provider_transaction_id: string | null
           reject_reason: string | null
           released_at: string | null
@@ -1413,6 +1504,7 @@ export type Database = {
           status: Database["public"]["Enums"]["withdrawal_status"]
           submitted_at: string | null
           tx_hash: string | null
+          unique_external_id: string | null
           updated_at: string
           user_id: string
           wallet_address: string | null
