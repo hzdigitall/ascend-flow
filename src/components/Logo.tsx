@@ -9,9 +9,8 @@ export function Logo({ className, to = "/" }: { className?: string; to?: string 
   const logoUrl = get<string | null>("logo_url", arenaLogo.url);
 
   return (
-    <Link to={to} className={cn("flex items-center gap-2.5 min-w-0", className)}>
-      <img src={logoUrl || ""} alt={name} className="h-8 w-auto shrink-0 object-contain" />
-      <span className="truncate text-lg font-bold tracking-tight">{name}</span>
+    <Link to={to} className={cn("flex items-center min-w-0", className)}>
+      <img src={logoUrl || ""} alt={name} className="h-9 w-auto shrink-0 object-contain" />
     </Link>
   );
 }
