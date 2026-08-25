@@ -178,6 +178,8 @@ export const adminApproveWithdrawal = createServerFn({ method: "POST" })
       external_id: string | null;
       unique_external_id: string | null;
       idempotency_key: string | null;
+      conversion_rate: number | null;
+      crypto_amount: number | null;
     };
 
     /* ---------------- USDT BEP20 -> NOWPayments ---------------- */
@@ -247,7 +249,12 @@ export const adminApproveWithdrawal = createServerFn({ method: "POST" })
 
       // 3) Criação do payout (amount com no máximo 6 casas decimais).
       const uniqueExternalId = withdrawal.unique_external_id ?? `arena-payout-${withdrawal.id}`;
-      const payoutAmount = Number(Number(withdrawal.net_amount).toFixed(6));
+      // Valor em USDT congelado no momento da solicitação (nunca recalculado).
+      const frozen = withdrawal.crypto_amount;
+      if (frozen === null || Number(frozen) <= 0) {
+        await fail("Saque USDT sem valor convertido registrado. Rejeite e solicite novamente.");
+      }
+      const payoutAmount = Number(Number(frozen).toFixed(6));
       const urls = np.webhookUrls(gateway);
       let batch: Awaited<ReturnType<typeof np.createPayout>>;
       try {
