@@ -87,7 +87,7 @@ export function UsdtWithdrawalDialog({ usdtBalance = 0, onSuccess }: Props) {
           </div>
           <Alert>
             <AlertDescription>
-              Confirme que o endereço aceita <strong>USDT na rede BEP20</strong>. Envios para redes
+              Confirme que o endereço aceita <strong>USDT na rede BEP20 (USDTBSC)</strong>. Envios para redes
               incompatíveis são irreversíveis.
             </AlertDescription>
           </Alert>
