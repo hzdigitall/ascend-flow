@@ -131,8 +131,8 @@ function PlansPage() {
           ...p,
           price,
           earned,
-          target: price * 2,
-          progress: price > 0 ? Math.min(100, (earned / (price * 2)) * 100) : 0,
+          target: price,
+          progress: price > 0 ? Math.min(100, (earned / price) * 100) : 0,
           dailyAmount: (price * roiPct(p.plan_name)) / 100,
           nextCredit,
           firstCreditPending: !lastCredit,
@@ -250,8 +250,8 @@ function PlansPage() {
                         </p>
                       </div>
                       <p className="mt-2 text-xs text-muted-foreground">
-                        Validade de {plan.validity_days} dias · Limite 200% ROI · 1º rendimento 24h após a
-                        ativação
+                        Rendimentos em dias úteis até dobrar o valor investido · 1º rendimento 24h
+                        após a ativação
                       </p>
 
                       <ul className="mt-5 flex-1 space-y-2">
@@ -332,7 +332,7 @@ function PlansPage() {
                         <p className="font-semibold text-success">{brl(p.dailyAmount)}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">Recebido no ciclo</p>
+                        <p className="text-xs text-muted-foreground">Rendimento acumulado</p>
                         <p className="font-semibold">
                           {brl(p.earned)} / {brl(p.target)}
                         </p>
@@ -341,7 +341,7 @@ function PlansPage() {
 
                     <Progress value={p.progress} className="mt-4" />
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {Math.floor(p.progress)}% do ciclo de 200% concluído
+                      {Math.floor(p.progress)}% do ciclo concluído
                     </p>
 
                     <div className="mt-4 space-y-1 text-xs text-muted-foreground">
@@ -355,8 +355,8 @@ function PlansPage() {
                         </p>
                       ) : null}
                       <p>
-                        Somente a rentabilidade fica disponível para saque; o valor do plano permanece
-                        investido até o fim do ciclo.
+                        Rendimentos creditados em dias úteis. Somente a rentabilidade fica disponível
+                        para saque; o valor do plano permanece investido até o fim do ciclo.
                       </p>
                     </div>
                   </CardContent>
