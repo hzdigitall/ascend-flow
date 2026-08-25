@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "@/lib/admin-guard.server";
+import type { SecretKey } from "./nowpayments.server";
 
 /**
  * Administração da gateway NOWPayments (USDT BEP20 / ticker USDTBSC).
@@ -75,7 +76,7 @@ export const saveNowPaymentsCredentials = createServerFn({ method: "POST" })
     const { encryptSecret } = await import("./gateway-vault.server");
     const np = await import("./nowpayments.server");
 
-    const entries: Array<[np.SecretKey, string]> = [];
+    const entries: Array<[SecretKey, string]> = [];
     if (data.apiKey) entries.push(["api_key", data.apiKey]);
     if (data.ipnSecret) entries.push(["ipn_secret", data.ipnSecret]);
     if (data.email) entries.push(["email", data.email]);
@@ -147,7 +148,10 @@ export const saveNowPaymentsCredentials = createServerFn({ method: "POST" })
       patch["last_connection_test"] = new Date().toISOString();
       patch["last_error"] = null;
     }
-    await supabaseAdmin.from("payment_gateways").update(patch).eq("provider", np.PROVIDER);
+    await supabaseAdmin
+      .from("payment_gateways")
+      .update(patch as never)
+      .eq("provider", np.PROVIDER);
 
     await supabaseAdmin.from("admin_logs").insert({
       admin_id: context.userId,
@@ -341,7 +345,7 @@ export const setNowPaymentsFeatures = createServerFn({ method: "POST" })
 
     const { error } = await supabaseAdmin
       .from("payment_gateways")
-      .update(patch)
+      .update(patch as never)
       .eq("provider", np.PROVIDER);
     if (error) throw new Error(error.message);
     await supabaseAdmin.from("admin_logs").insert({

@@ -39,7 +39,7 @@ export type NowGatewayRow = {
   payout_auth_configured: boolean;
   totp_configured: boolean;
   asset_available: boolean;
-  balance_snapshot: Record<string, unknown>;
+  balance_snapshot: Record<string, { amount?: number; pendingAmount?: number }>;
 };
 
 export class NowPaymentsError extends Error {
