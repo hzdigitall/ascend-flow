@@ -14,6 +14,7 @@ export const getDepositMethods = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { loadGateway } = await import("./connectpay.server");
     const np = await import("./nowpayments.server");
+    const { currentUsdtRate } = await import("./usdt.server");
 
     const cpGateway = await loadGateway(supabaseAdmin);
     const cpReady = Boolean(cpGateway?.active && cpGateway.credentials_configured);
@@ -26,9 +27,11 @@ export const getDepositMethods = createServerFn({ method: "POST" })
       usdt: npReady && Boolean(npGateway?.usdt_deposit_enabled),
       usdtTicker: np.PAY_CURRENCY_LABEL,
       usdtNetwork: np.NETWORK_LABEL,
+      usdtRate: await currentUsdtRate(supabaseAdmin),
       unavailableMessage: "Método de pagamento temporariamente indisponível.",
     };
   });
+
 
 export const createPixDeposit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
