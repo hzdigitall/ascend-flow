@@ -1,6 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  Bell,
   ChevronDown,
   LayoutDashboard,
   LogOut,
@@ -17,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSettings } from "@/hooks/useSettings";
 import { Logo } from "@/components/Logo";
+import { NotificationsBell } from "@/components/NotificationsBell";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -50,19 +50,6 @@ export function AppShell({
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
-
-  const { data: unread = 0 } = useQuery({
-    queryKey: ["notifications", "unread", profile?.id],
-    enabled: Boolean(profile?.id),
-    queryFn: async () => {
-      const { count } = await supabase
-        .from("notifications")
-        .select("id", { count: "exact", head: true })
-        .is("read_at", null);
-      return count ?? 0;
-    },
-    refetchInterval: 60_000,
-  });
 
   const { data: sponsor } = useQuery({
     queryKey: ["sponsor", profile?.sponsor_id],
