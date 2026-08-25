@@ -2,18 +2,30 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-/** Depósitos: PIX (BRL) e USDT BEP20 via ConnectPay. */
+/**
+ * Depósitos.
+ *  - PIX (BRL)          -> ConnectPay  (fluxo original preservado)
+ *  - USDT BEP20/USDTBSC -> NOWPayments (nova integração)
+ */
 
 export const getDepositMethods = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async () => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { loadGateway } = await import("./connectpay.server");
-    const g = await loadGateway(supabaseAdmin);
-    const ready = Boolean(g?.active && g.credentials_configured);
+    const np = await import("./nowpayments.server");
+
+    const cpGateway = await loadGateway(supabaseAdmin);
+    const cpReady = Boolean(cpGateway?.active && cpGateway.credentials_configured);
+
+    const npGateway = await np.loadGateway(supabaseAdmin);
+    const npReady = Boolean(npGateway?.active && npGateway.credentials_configured);
+
     return {
-      pix: ready && Boolean(g?.pix_cashin_enabled),
-      usdt: ready && Boolean(g?.usdt_deposit_enabled),
+      pix: cpReady && Boolean(cpGateway?.pix_cashin_enabled),
+      usdt: npReady && Boolean(npGateway?.usdt_deposit_enabled),
+      usdtTicker: np.PAY_CURRENCY_LABEL,
+      usdtNetwork: np.NETWORK_LABEL,
       unavailableMessage: "Método de pagamento temporariamente indisponível.",
     };
   });
