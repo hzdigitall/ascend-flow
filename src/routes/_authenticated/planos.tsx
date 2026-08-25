@@ -72,6 +72,7 @@ function PlansPage() {
     null,
   );
   const [sourceWallet, setSourceWallet] = useState<WalletKey>("referral");
+  const [method, setMethod] = useState<"balance" | null>(null);
   const [buying, setBuying] = useState(false);
 
   const { data, isLoading, isError, refetch } = useQuery({
