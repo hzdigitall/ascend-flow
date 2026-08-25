@@ -68,12 +68,8 @@ export function AppShell({
     queryKey: ["sponsor", profile?.sponsor_id],
     enabled: Boolean(profile?.sponsor_id),
     queryFn: async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("full_name, phone, avatar_url")
-        .eq("id", profile!.sponsor_id!)
-        .maybeSingle();
-      return data;
+      const { data } = await supabase.rpc("get_my_sponsor");
+      return data?.[0] ?? null;
     },
   });
 
