@@ -280,7 +280,22 @@ export const refreshDepositStatus = createServerFn({ method: "POST" })
     if (!deposit) throw new Error("Depósito não encontrado.");
     if (deposit.credited_at) return { status: "credited" as const };
 
-    if (deposit.method === "pix" && deposit.provider_transaction_id) {
+    if (deposit.provider === "nowpayments" && deposit.provider_transaction_id) {
+      const np = await import("./nowpayments.server");
+      try {
+        const gateway = await np.loadGateway(supabaseAdmin);
+        const apiKey = await np.requireApiKey(supabaseAdmin);
+        const payment = await np.getPayment(
+          apiKey,
+          gateway?.base_url,
+          deposit.provider_transaction_id,
+        );
+        const { settleNowPayment } = await import("./nowpayments-settle.server");
+        await settleNowPayment(supabaseAdmin, payment, "manual_refresh");
+      } catch {
+        // silencioso para o usuário; status local é retornado abaixo
+      }
+    } else if (deposit.method === "pix" && deposit.provider_transaction_id) {
       const gateway = await cp.loadGateway(supabaseAdmin);
       if (gateway?.credentials_configured) {
         try {
@@ -300,8 +315,11 @@ export const refreshDepositStatus = createServerFn({ method: "POST" })
 
     const { data: fresh } = await supabaseAdmin
       .from("deposits")
-      .select("status, credited_at")
+      .select("status, credited_at, payment_status")
       .eq("id", data.depositId)
       .maybeSingle();
-    return { status: fresh?.credited_at ? ("credited" as const) : (fresh?.status ?? "pending") };
+    return {
+      status: fresh?.credited_at ? ("credited" as const) : (fresh?.status ?? "pending"),
+      paymentStatus: fresh?.payment_status ?? null,
+    };
   });
