@@ -228,16 +228,8 @@ export function AppShell({
           </div>
 
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
-            <Button asChild variant="ghost" size="icon" className="relative">
-              <Link to="/notificacoes" aria-label="Notificações">
-                <Bell className="h-5 w-5" />
-                {unread > 0 ? (
-                  <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
-                    {unread > 99 ? "99+" : unread}
-                  </span>
-                ) : null}
-              </Link>
-            </Button>
+            <NotificationsBell userId={profile?.id} />
+
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
