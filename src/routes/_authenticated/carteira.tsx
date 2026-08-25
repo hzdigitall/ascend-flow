@@ -40,6 +40,7 @@ const WALLET_LABEL: Record<string, string> = {
 
 function WalletPage() {
   const { wallet } = useAuth();
+  const usdtRate = useUsdtRate();
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["wallet-transactions"],
