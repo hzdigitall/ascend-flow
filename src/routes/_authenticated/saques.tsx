@@ -51,9 +51,11 @@ function Page() {
               onSuccess={() => refetch()}
             />
             <UsdtWithdrawalDialog
-              usdtBalance={(wallet as { usdt_balance?: number } | null)?.usdt_balance}
+              earningsBalance={wallet?.earnings_balance}
+              referralBalance={wallet?.referral_balance}
               onSuccess={() => refetch()}
             />
+
           </div>
         }
       />
