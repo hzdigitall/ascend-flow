@@ -27,6 +27,8 @@ import { useSettings } from "@/hooks/useSettings";
 import { useUsdtRate } from "@/hooks/useUsdtRate";
 import { brl } from "@/lib/format";
 import { brlToUsdt, fmtRate, fmtUsdt, USDT_NETWORK_LABEL } from "@/lib/usdt";
+import { checkWithdrawalWindow, WITHDRAW_WINDOW_TEXT } from "@/lib/withdrawal-window";
+import { Clock } from "lucide-react";
 
 interface Props {
   earningsBalance?: number | undefined;
@@ -58,9 +60,16 @@ export function UsdtWithdrawalDialog({
   const fee = Math.round(((value * feePercent) / 100) * 100) / 100;
   const net = Math.max(0, Math.round((value - fee) * 100) / 100);
   const usdt = brlToUsdt(net, rate);
-  const valid = value > 0 && value <= balance && ADDRESS_RE.test(address.trim());
+  const windowStatus = checkWithdrawalWindow(wallet);
+  const valid =
+    windowStatus.isOpen && value >= 10 && value <= balance && ADDRESS_RE.test(address.trim());
 
   async function submit() {
+    const win = checkWithdrawalWindow(wallet);
+    if (!win.isOpen) {
+      toast.error(win.message);
+      return;
+    }
     setLoading(true);
     try {
       await submitFn({ data: { wallet, amount: value, address: address.trim() } });
@@ -88,11 +97,17 @@ export function UsdtWithdrawalDialog({
           <DialogTitle>Saque em USDT ({USDT_NETWORK_LABEL})</DialogTitle>
           <DialogDescription>
             Informe o valor em reais a debitar do seu saldo. A conversão usa a cotação interna (
-            {fmtRate(rate)}) e o envio ocorre após aprovação administrativa.
+            {fmtRate(rate)}) e o envio ocorre após aprovação administrativa. {WITHDRAW_WINDOW_TEXT}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
+          {!windowStatus.isOpen && (
+            <Alert variant="destructive">
+              <Clock className="h-4 w-4" />
+              <AlertDescription>{windowStatus.message}</AlertDescription>
+            </Alert>
+          )}
           <div className="space-y-2">
             <Label>Carteira de origem</Label>
             <Select value={wallet} onValueChange={(v) => setWallet(v as "earnings" | "referral")}>
