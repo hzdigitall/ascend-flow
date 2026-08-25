@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "@/lib/admin-guard.server";
+import { checkWithdrawalWindow } from "@/lib/withdrawal-window";
 
 /**
  * Saques (cash-out PIX e withdraw USDT BEP20).
@@ -49,22 +50,9 @@ export const requestPixWithdrawal = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
-    // Janelas existentes preservadas (horário de Brasília).
-    const nowBR = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
-    const day = nowBR.getDay();
-    const hour = nowBR.getHours();
-
-    if (data.wallet === "earnings") {
-      if (day !== 1) {
-        throw new Error("Saques de rendimentos são permitidos apenas às segundas-feiras.");
-      }
-      if (hour < 10 || hour >= 17) {
-        throw new Error("Saques de rendimentos são permitidos apenas entre 10h e 17h.");
-      }
-    }
-    if (data.wallet === "referral" && (hour < 9 || hour >= 17)) {
-      throw new Error("Saques de bônus são permitidos apenas entre 09h e 17h.");
-    }
+    // Mesmas janelas do USDT (horário de Brasília).
+    const win = checkWithdrawalWindow(data.wallet);
+    if (!win.isOpen) throw new Error(win.message);
     if (data.amount < 10) throw new Error("O valor mínimo para saque é R$ 10,00.");
     if (!pixKeyIsValid(data.keyType, data.key)) {
       throw new Error("Chave PIX inválida para o tipo selecionado.");
@@ -107,21 +95,10 @@ export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
-    // Janelas existentes preservadas (horário de Brasília).
-    const nowBR = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
-    const day = nowBR.getDay();
-    const hour = nowBR.getHours();
-    if (data.wallet === "earnings") {
-      if (day !== 1) {
-        throw new Error("Saques de rendimentos são permitidos apenas às segundas-feiras.");
-      }
-      if (hour < 10 || hour >= 17) {
-        throw new Error("Saques de rendimentos são permitidos apenas entre 10h e 17h.");
-      }
-    }
-    if (data.wallet === "referral" && (hour < 9 || hour >= 17)) {
-      throw new Error("Saques de bônus são permitidos apenas entre 09h e 17h.");
-    }
+    // Mesmas janelas do PIX (horário de Brasília).
+    const win = checkWithdrawalWindow(data.wallet);
+    if (!win.isOpen) throw new Error(win.message);
+    if (data.amount < 10) throw new Error("O valor mínimo para saque é R$ 10,00.");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const np = await import("./nowpayments.server");
