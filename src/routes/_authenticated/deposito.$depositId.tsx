@@ -84,7 +84,10 @@ function DepositDetailPage() {
   const isUsdt = data.currency === "USDT";
   const credited = Boolean(data.credited_at);
   const failed = data.status === "failed" || data.status === "expired";
-  const amountLabel = isUsdt ? `${Number(data.amount).toFixed(2)} USDT` : brl(Number(data.amount));
+  const usdtAddress = data.pay_address ?? data.deposit_address;
+  const exactAmount = Number(data.expected_amount ?? data.amount);
+  const amountLabel = isUsdt ? `${exactAmount} USDT` : brl(Number(data.amount));
+  const isNowPayments = data.provider === "nowpayments";
 
   return (
     <UserShell>
@@ -133,29 +136,50 @@ function DepositDetailPage() {
               <div className="space-y-4">
                 <Alert>
                   <AlertDescription>
-                    Envie exclusivamente <strong>USDT na rede BEP20</strong> para o endereço abaixo.
-                    Outros ativos ou redes não são creditados.
+                    Envie exclusivamente <strong>USDT na rede BEP20 (USDTBSC)</strong> para o
+                    endereço abaixo. Outros ativos ou redes não são creditados.
                   </AlertDescription>
                 </Alert>
-                {data.deposit_address ? (
+                {usdtAddress ? (
                   <>
                     <div className="flex justify-center rounded-xl border bg-white p-4">
-                      <QRCodeCanvas value={data.deposit_address} size={180} />
+                      <QRCodeCanvas value={usdtAddress} size={180} />
                     </div>
                     <div className="space-y-2">
                       <p className="text-xs font-medium text-muted-foreground">Endereço BEP20</p>
                       <div className="flex items-center gap-2">
                         <code className="flex-1 break-all rounded bg-muted px-2 py-2 text-xs">
-                          {data.deposit_address}
+                          {usdtAddress}
                         </code>
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => copy(data.deposit_address!, "Endereço")}
+                          onClick={() => copy(usdtAddress, "Endereço")}
                         >
                           <Copy className="h-3.5 w-3.5" />
                         </Button>
                       </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium text-muted-foreground">
+                        Valor exato a enviar
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <code className="flex-1 rounded bg-muted px-2 py-2 text-xs font-semibold">
+                          {exactAmount} USDT
+                        </code>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copy(String(exactAmount), "Valor")}
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Envie exatamente este valor. Envios parciais permanecem pendentes até a
+                        conclusão.
+                      </p>
                     </div>
                   </>
                 ) : (
@@ -226,9 +250,21 @@ function DepositDetailPage() {
             <div className="flex items-center justify-between gap-2">
               <span className="text-muted-foreground">Método</span>
               <span className="font-medium uppercase">
-                {isUsdt ? `USDT ${data.network ?? "BEP20"}` : "PIX"}
+                {isUsdt ? `USDTBSC · ${data.network ?? "BEP20"}` : "PIX"}
               </span>
             </div>
+            {isUsdt ? (
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-muted-foreground">Provedor</span>
+                <span className="font-medium">{isNowPayments ? "NOWPayments" : "ConnectPay"}</span>
+              </div>
+            ) : null}
+            {data.payment_status ? (
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-muted-foreground">Status no provedor</span>
+                <span className="font-medium">{data.payment_status}</span>
+              </div>
+            ) : null}
             <div className="flex items-center justify-between gap-2">
               <span className="text-muted-foreground">Criado em</span>
               <span>{dateTimeBR(data.created_at)}</span>
