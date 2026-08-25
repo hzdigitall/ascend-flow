@@ -1331,6 +1331,14 @@ export type Database = {
         Returns: undefined
       }
       generate_referral_code: { Args: never; Returns: string }
+      get_my_sponsor: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          full_name: string
+          phone: string
+        }[]
+      }
       get_setting: { Args: { _default: Json; _key: string }; Returns: Json }
       has_role: {
         Args: {
