@@ -309,15 +309,20 @@ function GatewaysPage() {
               <CardContent className="space-y-3">
                 <CopyField label="Webhook PIX Cash-in" value={data?.webhooks.pixCashIn ?? ""} />
                 <CopyField label="Webhook PIX Cash-out" value={data?.webhooks.pixCashOut ?? ""} />
-                <CopyField label="Webhook Crypto (USDT)" value={data?.webhooks.crypto ?? ""} />
                 <p className="text-xs text-muted-foreground">
-                  Essas URLs são utilizadas automaticamente na criação das transações.
+                  Essas URLs são utilizadas automaticamente na criação das transações PIX. As
+                  operações em USDT são processadas pela NOWPayments.
                 </p>
               </CardContent>
             </Card>
           </div>
         </div>
       )}
+
+      <div className="mt-8 space-y-4" id="nowpayments">
+        <h2 className="text-lg font-semibold">NOWPayments — USDT BEP20</h2>
+        <NowPaymentsCard />
+      </div>
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent>
