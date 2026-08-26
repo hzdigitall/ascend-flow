@@ -346,10 +346,7 @@ export type CryptoWithdrawResponse = {
   [key: string]: unknown;
 };
 
-/**
- * @deprecated Migrado para a NOWPayments (USDTBSC). Mantido apenas como
- * referência histórica: nenhuma nova operação USDT usa a ConnectPay.
- */
+/** POST /v1/crypto/withdraws — saque USDT BEP20. */
 export function createCryptoWithdraw(
   secret: string,
   baseUrl: string | undefined,
