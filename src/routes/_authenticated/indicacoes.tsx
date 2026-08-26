@@ -51,7 +51,7 @@ function Page() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("referrals")
-        .select("id, level, created_at, referred_id, profiles!referrals_referred_id_fkey(full_name)")
+        .select("id, level, created_at, referred_id, profiles!referrals_referred_id_fkey(full_name, email)")
         .eq("sponsor_id", profile!.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -315,13 +315,20 @@ function Page() {
                                   <UserCheck className="h-5 w-5" />
                                 </div>
                                 <div className="min-w-0">
-                                  <p className="truncate text-sm font-semibold text-foreground">
-                                    {(r.profiles as { full_name: string } | null)
-                                      ?.full_name ?? "Usuário"}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    Cadastro em {dateBR(r.created_at)}
-                                  </p>
+                                  <div className="min-w-0">
+                                          <p className="truncate text-sm font-semibold text-foreground">
+                                            {(r.profiles as { full_name: string } | null)
+                                              ?.full_name ?? "Usuário"}
+                                          </p>
+                                          {(r.profiles as { email: string } | null)?.email && (
+                                            <p className="truncate text-xs text-muted-foreground">
+                                              {(r.profiles as { email: string } | null)?.email}
+                                            </p>
+                                          )}
+                                          <p className="text-xs text-muted-foreground">
+                                            Cadastro em {dateBR(r.created_at)}
+                                          </p>
+                                        </div>
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
@@ -373,11 +380,16 @@ function Page() {
                 </div>
                 <div>
                   <p className="text-lg font-bold">
-                    {(selectedReferral.profiles as any)?.full_name ?? "Usuário"}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Nível {selectedReferral.level} da sua rede
-                  </p>
+                                            {(selectedReferral.profiles as any)?.full_name ?? "Usuário"}
+                                          </p>
+                                          {(selectedReferral.profiles as any)?.email && (
+                                            <p className="text-sm text-muted-foreground">
+                                              {(selectedReferral.profiles as any)?.email}
+                                            </p>
+                                          )}
+                                          <p className="text-sm text-muted-foreground">
+                                            Nível {selectedReferral.level} da sua rede
+                                          </p>
                 </div>
               </div>
               
