@@ -101,8 +101,8 @@ export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
     if (data.amount < 10) throw new Error("O valor mínimo para saque é R$ 10,00.");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const np = await import("./nowpayments.server");
-    const gateway = await np.loadGateway(supabaseAdmin);
+    const cp = await import("./connectpay.server");
+    const gateway = await cp.loadGateway(supabaseAdmin);
     if (!gateway?.active || !gateway.usdt_withdraw_enabled) {
       throw new Error("Saques em USDT estão temporariamente indisponíveis.");
     }
