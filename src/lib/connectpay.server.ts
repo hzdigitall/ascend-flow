@@ -281,6 +281,29 @@ export function getPixCashout(secret: string, baseUrl: string | undefined, id: s
   });
 }
 
+export type PixKeyQueryResponse = {
+  key?: string;
+  key_type?: string;
+  name?: string;
+  document?: string;
+  [key: string]: unknown;
+};
+
+/** POST /v1/pix/query — valida a chave PIX antes do cash-out. */
+export function queryPixKey(
+  secret: string,
+  baseUrl: string | undefined,
+  body: { pix_key: string; pix_type: "CPF" | "CNPJ" | "EMAIL" | "PHONE" | "RANDOM" },
+) {
+  return call<PixKeyQueryResponse>({
+    secret,
+    baseUrl,
+    method: "POST",
+    path: "/v1/pix/query",
+    body,
+  });
+}
+
 export type CryptoDepositResponse = {
   transaction_id?: string;
   id?: string;
@@ -297,10 +320,7 @@ export type CryptoDepositResponse = {
   [key: string]: unknown;
 };
 
-/**
- * @deprecated Migrado para a NOWPayments (USDTBSC). Mantido apenas como
- * referência histórica: nenhuma nova operação USDT usa a ConnectPay.
- */
+/** POST /v1/crypto/deposits — depósito USDT BEP20. */
 export function createCryptoDeposit(
   secret: string,
   baseUrl: string | undefined,
