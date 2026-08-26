@@ -178,7 +178,7 @@ function DepositDetailPage() {
               <div className="space-y-4">
                 <Alert>
                   <AlertDescription>
-                    Envie exclusivamente <strong>USDT na rede BEP20 (USDTBSC)</strong> para o
+                    Envie exclusivamente <strong>USDT na rede BEP20 (BNB Smart Chain)</strong> para o
                     endereço abaixo. Outros ativos ou redes não são creditados.
                   </AlertDescription>
                 </Alert>
