@@ -184,7 +184,9 @@ function WithdrawalsPage() {
                                 {w.wallet_address}
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                {w.provider === "nowpayments" ? "NOWPayments" : "ConnectPay (legado)"}
+                                {w.provider === "nowpayments"
+                                  ? "Provedor legado (histórico)"
+                                  : "ConnectPay"}
                               </p>
                               {w.crypto_amount !== null && (
                                 <p className="text-xs font-medium">
