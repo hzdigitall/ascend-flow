@@ -292,13 +292,13 @@ function DepositDetailPage() {
             <div className="flex items-center justify-between gap-2">
               <span className="text-muted-foreground">Método</span>
               <span className="font-medium uppercase">
-                {isUsdt ? `USDTBSC · ${data.network ?? "BEP20"}` : "PIX"}
+                {isUsdt ? `USDT · ${data.network ?? "BEP20"}` : "PIX"}
               </span>
             </div>
             {isUsdt ? (
               <div className="flex items-center justify-between gap-2">
                 <span className="text-muted-foreground">Provedor</span>
-                <span className="font-medium">{isNowPayments ? "NOWPayments" : "ConnectPay"}</span>
+                <span className="font-medium">{isLegacyProvider ? "Legado" : "ConnectPay"}</span>
               </div>
             ) : null}
             {data.payment_status ? (
