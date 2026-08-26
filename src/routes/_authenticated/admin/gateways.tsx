@@ -196,10 +196,13 @@ function GatewaysPage() {
               </dl>
 
               <div className="space-y-3 rounded-lg border p-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  PIX (BRL)
+                </p>
                 {(
                   [
-                    ["pix_cashin_enabled", "PIX Cash-in"],
-                    ["pix_cashout_enabled", "PIX Cash-out"],
+                    ["pix_cashin_enabled", "PIX Cash-in (depósito)"],
+                    ["pix_cashout_enabled", "PIX Cash-out (saque)"],
                   ] as const
                 ).map(([key, label]) => (
                   <div key={key} className="flex items-center justify-between gap-3">
@@ -213,7 +216,31 @@ function GatewaysPage() {
                     />
                   </div>
                 ))}
+                <p className="pt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  USDT · Rede BEP20
+                </p>
+                {(
+                  [
+                    ["usdt_deposit_enabled", "USDT Depósito"],
+                    ["usdt_withdraw_enabled", "USDT Saque"],
+                  ] as const
+                ).map(([key, label]) => (
+                  <div key={key} className="flex items-center justify-between gap-3">
+                    <Label htmlFor={key} className="text-sm">
+                      {label}
+                    </Label>
+                    <Switch
+                      id={key}
+                      checked={Boolean(g?.[key])}
+                      onCheckedChange={(checked) => toggleFeature.mutate({ [key]: checked })}
+                    />
+                  </div>
+                ))}
+                <p className="text-xs text-muted-foreground">
+                  Moeda: USDT · Rede: BEP20 (BNB Smart Chain)
+                </p>
               </div>
+
 
               <div className="flex flex-wrap gap-2">
                 <Button
