@@ -4,29 +4,25 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 /**
  * Depósitos.
- *  - PIX (BRL)          -> ConnectPay  (fluxo original preservado)
- *  - USDT BEP20/USDTBSC -> NOWPayments (nova integração)
+ *  - PIX (BRL)   -> ConnectPay
+ *  - USDT BEP20  -> ConnectPay (asset USDT, chain BEP20)
  */
 
 export const getDepositMethods = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async () => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { loadGateway } = await import("./connectpay.server");
-    const np = await import("./nowpayments.server");
+    const cp = await import("./connectpay.server");
     const { currentUsdtRate } = await import("./usdt.server");
 
-    const cpGateway = await loadGateway(supabaseAdmin);
-    const cpReady = Boolean(cpGateway?.active && cpGateway.credentials_configured);
-
-    const npGateway = await np.loadGateway(supabaseAdmin);
-    const npReady = Boolean(npGateway?.active && npGateway.credentials_configured);
+    const gateway = await cp.loadGateway(supabaseAdmin);
+    const ready = Boolean(gateway?.active && gateway.credentials_configured);
 
     return {
-      pix: cpReady && Boolean(cpGateway?.pix_cashin_enabled),
-      usdt: npReady && Boolean(npGateway?.usdt_deposit_enabled),
-      usdtTicker: np.PAY_CURRENCY_LABEL,
-      usdtNetwork: np.NETWORK_LABEL,
+      pix: ready && Boolean(gateway?.pix_cashin_enabled),
+      usdt: ready && Boolean(gateway?.usdt_deposit_enabled),
+      usdtTicker: cp.USDT_ASSET,
+      usdtNetwork: cp.USDT_CHAIN,
       usdtRate: await currentUsdtRate(supabaseAdmin),
       unavailableMessage: "Método de pagamento temporariamente indisponível.",
     };
