@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useServerFn } from "@tanstack/react-start";
 import { updateProfile } from "@/lib/app.functions";
 import { toast } from "sonner";
-import { Loader2, User, Phone, CreditCard, Mail, Key, Camera, Trash2, AlertCircle } from "lucide-react";
+import { Loader2, User, Phone, CreditCard, Mail, Key, Camera, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/conta")({
@@ -33,7 +33,7 @@ function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [formData, setFormData] = useState({
     full_name: profile?.full_name || "",
     phone: profile?.phone || "",
@@ -42,55 +42,86 @@ function Page() {
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !profile?.id) return;
+    if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error("Por favor, selecione uma imagem válida.");
+    // Validação de tipo de arquivo
+    if (!file.type.startsWith("image/")) {
+      toast.error("Por favor, selecione uma imagem válida (JPG, PNG).");
       return;
     }
 
-    // Validate file size (2MB)
+    // Validação de tamanho (2MB)
     if (file.size > 2 * 1024 * 1024) {
       toast.error("A imagem deve ter no máximo 2MB.");
       return;
     }
 
+    // Verifica se o perfil existe
+    if (!profile?.id) {
+      toast.error("Erro: sessão não encontrada. Faça login novamente.");
+      return;
+    }
+
     setIsUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const allowedExts = ["jpg", "jpeg", "png", "gif", "webp"];
+      if (!allowedExts.includes(fileExt)) {
+        toast.error("Formato não suportado. Use JPG, PNG ou GIF.");
+        setIsUploading(false);
+        return;
+      }
+
       const fileName = `${profile.id}/${Date.now()}.${fileExt}`;
 
+      // Upload para o Supabase Storage
       const { error: uploadError } = await supabase.storage
-        .from('avatars')
+        .from("avatars")
         .upload(fileName, file, { upsert: true });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        // Fallback: tenta com caminho simples
+        if (uploadError.message?.includes("already exists") || uploadError.message?.includes("conflict")) {
+          const { error: upsertError } = await supabase.storage
+            .from("avatars")
+            .upload(fileName, file, { upsert: true });
+          if (upsertError) throw upsertError;
+        } else {
+          throw uploadError;
+        }
+      }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
+      // Obtém a URL pública
+      const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
+      const publicUrl = data?.publicUrl;
 
+      if (!publicUrl) {
+        throw new Error("Não foi possível obter a URL da imagem.");
+      }
+
+      // Atualiza o perfil com a nova URL
       await updateProfileFn({ data: { avatar_url: publicUrl } });
       toast.success("Foto de perfil atualizada!");
-      refresh();
+      await refresh();
     } catch (error: any) {
-      toast.error("Erro ao fazer upload: " + error.message);
+      console.error("Erro no upload:", error);
+      toast.error(error.message || "Erro ao fazer upload da imagem.");
     } finally {
       setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
   const handleRemovePhoto = async () => {
     if (!profile?.id) return;
-    
+
     setIsUploading(true);
     try {
       await updateProfileFn({ data: { avatar_url: null } });
       toast.success("Foto removida com sucesso!");
-      refresh();
+      await refresh();
     } catch (error: any) {
-      toast.error("Erro ao remover foto: " + error.message);
+      toast.error(error.message || "Erro ao remover foto.");
     } finally {
       setIsUploading(false);
     }
@@ -103,7 +134,7 @@ function Page() {
       await updateProfileFn({ data: formData });
       toast.success("Perfil atualizado com sucesso!");
       setIsEditing(false);
-      refresh();
+      await refresh();
     } catch (error: any) {
       toast.error(error.message || "Erro ao atualizar perfil.");
     } finally {
@@ -125,13 +156,17 @@ function Page() {
     }
   };
 
+  // Determina a URL da foto com fallbacks
+  const avatarSrc = profile?.avatar_url || null;
+  const avatarFallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || "U")}&background=random&color=fff&size=128`;
+
   return (
     <UserShell>
-      <PageHeader 
-        title="Minha conta" 
-        description="Gerencie seus dados cadastrais e informações de contato." 
+      <PageHeader
+        title="Minha conta"
+        description="Gerencie seus dados cadastrais e informações de contato."
       />
-      
+
       <div className="grid gap-6 md:grid-cols-3">
         <Card className="md:col-span-1 shadow-card h-fit">
           <CardHeader className="border-b bg-muted/30 px-6 py-4">
@@ -140,11 +175,17 @@ function Page() {
           <CardContent className="p-6 flex flex-col items-center space-y-4">
             <div className="relative group">
               <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 bg-muted flex items-center justify-center">
-                {profile?.avatar_url ? (
-                  <img 
-                    src={profile.avatar_url} 
-                    alt={profile.full_name} 
+                {avatarSrc ? (
+                  <img
+                    src={avatarSrc}
+                    alt={profile?.full_name || "Foto de perfil"}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const img = e.currentTarget;
+                      if (img.src !== avatarFallback) {
+                        img.src = avatarFallback;
+                      }
+                    }}
                   />
                 ) : (
                   <User className="w-16 h-16 text-muted-foreground" />
@@ -155,7 +196,7 @@ function Page() {
                   </div>
                 )}
               </div>
-              
+
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
@@ -170,25 +211,25 @@ function Page() {
               type="file"
               ref={fileInputRef}
               onChange={handleFileUpload}
-              accept="image/*"
+              accept="image/jpeg,image/png,image/gif,image/webp"
               className="hidden"
             />
 
             <div className="flex flex-col w-full gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="w-full"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
               >
                 {profile?.avatar_url ? "Trocar foto" : "Adicionar foto"}
               </Button>
-              
+
               {profile?.avatar_url && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
                   onClick={handleRemovePhoto}
                   disabled={isUploading}
@@ -198,9 +239,9 @@ function Page() {
                 </Button>
               )}
             </div>
-            
+
             <p className="text-xs text-muted-foreground text-center">
-              Formatos: JPG, PNG · Máx 2MB
+              Formatos: JPG, PNG, GIF, WebP · Máx 2MB
             </p>
           </CardContent>
         </Card>
@@ -210,113 +251,114 @@ function Page() {
             <CardHeader className="border-b bg-muted/30 px-6 py-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base font-bold">Informações Pessoais</CardTitle>
-              {!isEditing && (
-                <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-                  Editar
-                </Button>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent className="p-6">
-            {isEditing ? (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="full_name">Nome completo</Label>
-                  <Input
-                    id="full_name"
-                    value={formData.full_name}
-                    onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">WhatsApp</Label>
-                  <Input
-                    id="phone"
-                    value={maskPhone(formData.phone)}
-                    onChange={handlePhoneChange}
-                    placeholder="(00) 00000-0000"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cpf">CPF</Label>
-                  <Input
-                    id="cpf"
-                    value={maskCPF(formData.cpf)}
-                    onChange={handleCpfChange}
-                    placeholder="000.000.000-00"
-                    required
-                  />
-                </div>
-                <div className="flex gap-2 pt-2">
-                  <Button type="submit" disabled={isLoading} className="flex-1">
-                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    Salvar alterações
+                {!isEditing && (
+                  <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+                    Editar
                   </Button>
-                  <Button 
-                    type="button" 
-                    variant="ghost" 
-                    onClick={() => {
-                      setIsEditing(false);
-                      setFormData({
-                        full_name: profile?.full_name || "",
-                        phone: profile?.phone || "",
-                        cpf: profile?.cpf || "",
-                      });
-                    }}
-                  >
-                    Cancelar
-                  </Button>
-                </div>
-              </form>
-            ) : (
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
-                    <User className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Nome</p>
-                    <p className="text-sm font-medium">{profile?.full_name || "—"}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
-                    <Mail className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">E-mail</p>
-                    <p className="text-sm font-medium">{profile?.email || "—"}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
-                    <Phone className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">WhatsApp</p>
-                    <p className="text-sm font-medium">{profile?.phone ? maskPhone(profile.phone) : "—"}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
-                    <CreditCard className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">CPF</p>
-                    <p className="text-sm font-medium">{profile?.cpf ? maskCPF(profile.cpf) : "—"}</p>
-                  </div>
-                </div>
+                )}
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent className="p-6">
+              {isEditing ? (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="full_name">Nome completo</Label>
+                    <Input
+                      id="full_name"
+                      value={formData.full_name}
+                      onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">WhatsApp</Label>
+                    <Input
+                      id="phone"
+                      value={maskPhone(formData.phone)}
+                      onChange={handlePhoneChange}
+                      placeholder="(00) 00000-0000"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cpf">CPF</Label>
+                    <Input
+                      id="cpf"
+                      value={maskCPF(formData.cpf)}
+                      onChange={handleCpfChange}
+                      placeholder="000.000.000-00"
+                      required
+                    />
+                  </div>
+                  <div className="flex gap-2 pt-2">
+                    <Button type="submit" disabled={isLoading} className="flex-1">
+                      {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                      Salvar alterações
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => {
+                        setIsEditing(false);
+                        setFormData({
+                          full_name: profile?.full_name || "",
+                          phone: profile?.phone || "",
+                          cpf: profile?.cpf || "",
+                        });
+                      }}
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4">
+                    <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
+                      <User className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Nome</p>
+                      <p className="text-sm font-medium">{profile?.full_name || "—"}</p>
+                    </div>
+                  </div>
 
-        <Card className="shadow-card">
+                  <div className="flex items-center gap-4">
+                    <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
+                      <Mail className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">E-mail</p>
+                      <p className="text-sm font-medium">{profile?.email || "—"}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
+                      <Phone className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">WhatsApp</p>
+                      <p className="text-sm font-medium">{profile?.phone ? maskPhone(profile.phone) : "—"}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
+                      <CreditCard className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">CPF</p>
+                      <p className="text-sm font-medium">{profile?.cpf ? maskCPF(profile.cpf) : "—"}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="md:col-span-3 shadow-card">
           <CardHeader className="border-b bg-muted/30 px-6 py-4">
             <CardTitle className="text-base font-bold">Segurança e Indicação</CardTitle>
           </CardHeader>
@@ -329,9 +371,9 @@ function Page() {
                 <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Código de indicação</p>
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-bold tracking-widest text-primary">{profile?.referral_code || "—"}</p>
-                  <Button 
-                    variant="link" 
-                    size="sm" 
+                  <Button
+                    variant="link"
+                    size="sm"
                     className="h-auto p-0 text-xs"
                     onClick={() => {
                       navigator.clipboard.writeText(profile?.referral_code || "");
@@ -349,8 +391,8 @@ function Page() {
               <p className="text-xs text-muted-foreground mb-4">
                 Por motivos de segurança, a alteração de senha deve ser feita através do processo de recuperação.
               </p>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full text-xs"
                 onClick={() => toast.info("Funcionalidade em desenvolvimento.")}
               >
@@ -359,7 +401,6 @@ function Page() {
             </div>
           </CardContent>
         </Card>
-        </div>
       </div>
     </UserShell>
   );
