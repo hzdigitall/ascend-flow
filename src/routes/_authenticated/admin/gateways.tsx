@@ -29,7 +29,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { NowPaymentsCard } from "@/components/admin/NowPaymentsCard";
 import { dateTimeBR } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/admin/gateways")({
@@ -38,8 +37,7 @@ export const Route = createFileRoute("/_authenticated/admin/gateways")({
       { title: "Gateways de pagamento — Arena Saúde" },
       {
         name: "description",
-        content:
-          "Configure, teste e ative a ConnectPay (PIX) e a NOWPayments (USDT BEP20).",
+        content: "Configure, teste e ative a ConnectPay (PIX e USDT BEP20).",
       },
     ],
   }),
