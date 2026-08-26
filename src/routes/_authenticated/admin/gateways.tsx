@@ -135,7 +135,7 @@ function GatewaysPage() {
     <AppShell items={adminNav} variant="admin">
       <PageHeader
         title="Gateways de pagamento"
-        description="ConnectPay processa exclusivamente PIX (BRL). NOWPayments processa exclusivamente USDT BEP20 (USDTBSC)."
+        description="A ConnectPay é a única gateway do sistema: PIX (BRL) e USDT na rede BEP20."
       />
 
       {isLoading ? (
