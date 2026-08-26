@@ -13,6 +13,8 @@ import { updateProfile } from "@/lib/app.functions";
 import { toast } from "sonner";
 import { Loader2, User, Phone, CreditCard, Mail, Key, Camera, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { AvatarCropDialog } from "@/components/profile/AvatarCropDialog";
+
 
 export const Route = createFileRoute("/_authenticated/conta")({
   head: () => ({
@@ -40,8 +42,11 @@ function Page() {
     cpf: profile?.cpf || "",
   });
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    if (fileInputRef.current) fileInputRef.current.value = "";
     if (!file) return;
 
     // Validação de tipo de arquivo
@@ -56,40 +61,27 @@ function Page() {
       return;
     }
 
-    // Verifica se o perfil existe
     if (!profile?.id) {
       toast.error("Erro: sessão não encontrada. Faça login novamente.");
       return;
     }
 
+    setPendingFile(file);
+  };
+
+  const handleCroppedUpload = async (blob: Blob) => {
+    if (!profile?.id) return;
+
     setIsUploading(true);
     try {
-      const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
-      const allowedExts = ["jpg", "jpeg", "png", "gif", "webp"];
-      if (!allowedExts.includes(fileExt)) {
-        toast.error("Formato não suportado. Use JPG, PNG ou GIF.");
-        setIsUploading(false);
-        return;
-      }
-
-      const fileName = `${profile.id}/${Date.now()}.${fileExt}`;
+      const fileName = `${profile.id}/${Date.now()}.jpg`;
 
       // Upload para o Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, blob, { upsert: true, contentType: "image/jpeg" });
 
-      if (uploadError) {
-        // Fallback: tenta com caminho simples
-        if (uploadError.message?.includes("already exists") || uploadError.message?.includes("conflict")) {
-          const { error: upsertError } = await supabase.storage
-            .from("avatars")
-            .upload(fileName, file, { upsert: true });
-          if (upsertError) throw upsertError;
-        } else {
-          throw uploadError;
-        }
-      }
+      if (uploadError) throw uploadError;
 
       // Gera uma URL assinada de longa duração (bucket privado)
       const { data, error: signError } = await supabase.storage
@@ -101,19 +93,19 @@ function Page() {
         throw new Error("Não foi possível obter a URL da imagem.");
       }
 
-
       // Atualiza o perfil com a nova URL
       await updateProfileFn({ data: { avatar_url: publicUrl } });
       toast.success("Foto de perfil atualizada!");
+      setPendingFile(null);
       await refresh();
     } catch (error: any) {
       console.error("Erro no upload:", error);
       toast.error(error.message || "Erro ao fazer upload da imagem.");
     } finally {
       setIsUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
+
 
   const handleRemovePhoto = async () => {
     if (!profile?.id) return;
@@ -213,7 +205,7 @@ function Page() {
             <input
               type="file"
               ref={fileInputRef}
-              onChange={handleFileUpload}
+              onChange={handleFileSelect}
               accept="image/jpeg,image/png,image/gif,image/webp"
               className="hidden"
             />
@@ -405,6 +397,15 @@ function Page() {
           </CardContent>
         </Card>
       </div>
+
+      <AvatarCropDialog
+        open={!!pendingFile}
+        file={pendingFile}
+        isSaving={isUploading}
+        onCancel={() => setPendingFile(null)}
+        onConfirm={handleCroppedUpload}
+      />
     </UserShell>
+
   );
 }
