@@ -393,12 +393,16 @@ export const adminReconcileWithdrawal = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!w) throw new Error("Saque não encontrado.");
 
-    // USDT novo (NOWPayments): consulta GET /v1/payout/:id — nunca cria payout.
+    // Legado (somente auditoria): saques antigos enviados à NOWPayments.
+    // Consulta o status — nunca cria novos payouts nesse provedor.
     if (w.provider === "nowpayments") {
       const np = await import("./nowpayments.server");
       const payoutId = w.provider_payout_id ?? w.batch_withdrawal_id;
       if (!payoutId) {
-        return { ok: false as const, message: "Este saque ainda não foi enviado à NOWPayments." };
+        return {
+          ok: false as const,
+          message: "Saque legado sem identificador no provedor anterior.",
+        };
       }
       const gateway = await np.loadGateway(supabaseAdmin);
       const apiKey = await np.requireApiKey(supabaseAdmin);
@@ -417,20 +421,20 @@ export const adminReconcileWithdrawal = createServerFn({ method: "POST" })
         action: "withdrawal_reconciled",
         table_name: "withdrawals",
         record_id: w.id,
-        new_value: { provider: "nowpayments", reasons },
+        new_value: { provider: "nowpayments", legacy: true, reasons },
       });
       return {
         ok: true as const,
-        message: `Status na NOWPayments: ${reasons.join(", ") || "desconhecido"}`,
+        message: `Status no provedor legado: ${reasons.join(", ") || "desconhecido"}`,
       };
     }
 
-    // USDT histórico da ConnectPay continua sendo reconciliado pelo webhook crypto.
+    // USDT ConnectPay: reconciliação automática pelo webhook crypto.
     if (w.currency === "USDT") {
       return {
         ok: false as const,
         message:
-          "Saque USDT antigo (ConnectPay): reconciliação automática pelo webhook crypto do provedor original.",
+          "Saque USDT (ConnectPay): a confirmação é feita automaticamente pelo webhook crypto.",
       };
     }
     if (!w.provider_transaction_id) {
