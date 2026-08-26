@@ -203,7 +203,7 @@ function Page() {
             <input
               type="file"
               ref={fileInputRef}
-              onChange={handleFileUpload}
+              onChange={handleFileSelect}
               accept="image/jpeg,image/png,image/gif,image/webp"
               className="hidden"
             />
