@@ -110,12 +110,8 @@ export async function loadSecret(supabaseAdmin: AdminClient): Promise<string> {
  */
 export async function requireActiveGateway(
   supabaseAdmin: AdminClient,
-  feature: "pix_cashin" | "pix_cashout",
+  feature: "pix_cashin" | "pix_cashout" | "usdt_deposit" | "usdt_withdraw",
 ): Promise<{ gateway: GatewayRow; secret: string }> {
-  // Migração: a ConnectPay é exclusivamente PIX. USDT BEP20 usa a NOWPayments.
-  if (feature !== "pix_cashin" && feature !== "pix_cashout") {
-    throw new GatewayError("A ConnectPay não processa mais operações em USDT.", 400);
-  }
   const gateway = await loadGateway(supabaseAdmin);
   const enabled =
     gateway &&
@@ -124,6 +120,8 @@ export async function requireActiveGateway(
     ({
       pix_cashin: gateway.pix_cashin_enabled,
       pix_cashout: gateway.pix_cashout_enabled,
+      usdt_deposit: gateway.usdt_deposit_enabled,
+      usdt_withdraw: gateway.usdt_withdraw_enabled,
     }[feature] ??
       false);
 
