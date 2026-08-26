@@ -44,7 +44,7 @@ function Page() {
         title="Saques" 
         description="Acompanhe suas solicitações de saque via PIX. Rendimentos: Segundas (10h-17h). Bônus: Diariamente (09h-17h). Taxa de 2%." 
         action={
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <WithdrawalDialog
               earningsBalance={wallet?.earnings_balance}
               referralBalance={wallet?.referral_balance}

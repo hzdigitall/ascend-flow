@@ -143,7 +143,7 @@ function GatewaysPage() {
       ) : isError ? (
         <ErrorState onRetry={() => refetch()} />
       ) : (
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]" id="connectpay">
+        <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2" id="connectpay">
           <Card className="shadow-card">
             <CardHeader className="flex flex-row items-center justify-between gap-3">
               <CardTitle className="flex items-center gap-2">
@@ -159,7 +159,7 @@ function GatewaysPage() {
                 {g?.active ? "Ativa" : "Inativa"}
               </span>
             </CardHeader>
-            <CardContent className="space-y-4 text-sm">
+            <CardContent className="space-y-4 p-4 sm:p-6 text-sm">
               <dl className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <dt className="text-xs text-muted-foreground">Credencial configurada</dt>
@@ -242,7 +242,7 @@ function GatewaysPage() {
               </div>
 
 
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 pt-2">
                 <Button
                   variant="outline"
                   onClick={() => test.mutate()}

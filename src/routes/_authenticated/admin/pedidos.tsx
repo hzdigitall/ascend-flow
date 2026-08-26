@@ -167,7 +167,7 @@ function AdminOrdersPage() {
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
+                  <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Atualizar pedido</DialogTitle>
           </DialogHeader>

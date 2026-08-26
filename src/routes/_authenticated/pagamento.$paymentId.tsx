@@ -78,9 +78,9 @@ function PaymentPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-[1fr_320px]">
           <Card className="shadow-card">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-sm text-muted-foreground">Valor a pagar</p>
@@ -122,7 +122,7 @@ function PaymentPage() {
           </Card>
 
           <Card className="h-fit shadow-card">
-            <CardContent className="space-y-4 p-6 text-sm">
+            <CardContent className="space-y-3 p-4 sm:p-6 text-sm">
               <div>
                 <p className="text-muted-foreground">Plano</p>
                 <p className="font-semibold">{data.plans?.name ?? "—"}</p>

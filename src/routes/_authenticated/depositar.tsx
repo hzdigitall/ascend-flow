@@ -73,7 +73,7 @@ function DepositPage() {
       {isLoading ? (
         <Skeleton className="h-48 w-full" />
       ) : (
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
           <Card className="shadow-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
