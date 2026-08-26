@@ -93,7 +93,7 @@ function DepositDetailPage() {
   const amountLabel = isUsdt
     ? `${exactAmount} USDT (${brl(brlAmount)})`
     : brl(Number(data.amount));
-  const isNowPayments = data.provider === "nowpayments";
+  const isLegacyProvider = data.provider === "nowpayments";
 
   return (
     <UserShell>
@@ -178,7 +178,7 @@ function DepositDetailPage() {
               <div className="space-y-4">
                 <Alert>
                   <AlertDescription>
-                    Envie exclusivamente <strong>USDT na rede BEP20 (USDTBSC)</strong> para o
+                    Envie exclusivamente <strong>USDT na rede BEP20 (BNB Smart Chain)</strong> para o
                     endereço abaixo. Outros ativos ou redes não são creditados.
                   </AlertDescription>
                 </Alert>
@@ -292,13 +292,13 @@ function DepositDetailPage() {
             <div className="flex items-center justify-between gap-2">
               <span className="text-muted-foreground">Método</span>
               <span className="font-medium uppercase">
-                {isUsdt ? `USDTBSC · ${data.network ?? "BEP20"}` : "PIX"}
+                {isUsdt ? `USDT · ${data.network ?? "BEP20"}` : "PIX"}
               </span>
             </div>
             {isUsdt ? (
               <div className="flex items-center justify-between gap-2">
                 <span className="text-muted-foreground">Provedor</span>
-                <span className="font-medium">{isNowPayments ? "NOWPayments" : "ConnectPay"}</span>
+                <span className="font-medium">{isLegacyProvider ? "Legado" : "ConnectPay"}</span>
               </div>
             ) : null}
             {data.payment_status ? (

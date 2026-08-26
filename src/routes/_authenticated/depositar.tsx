@@ -112,7 +112,7 @@ function DepositPage() {
           <Card className="shadow-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Bitcoin className="h-4 w-4 text-primary" /> USDT ({methods?.usdtTicker ?? "USDTBSC"} · {methods?.usdtNetwork ?? "BEP20"})
+                <Bitcoin className="h-4 w-4 text-primary" /> USDT ({methods?.usdtTicker ?? "USDT"} · {methods?.usdtNetwork ?? "BEP20"})
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -147,7 +147,7 @@ function DepositPage() {
 
                   <Alert>
                     <AlertDescription>
-                      Envie exclusivamente USDT na rede BEP20 (USDTBSC). Envios em outra rede ou
+                      Envie exclusivamente USDT na rede BEP20 (BNB Smart Chain). Envios em outra rede ou
                       outro ativo não são creditados.
                     </AlertDescription>
                   </Alert>

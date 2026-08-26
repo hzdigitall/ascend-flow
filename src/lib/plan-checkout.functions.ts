@@ -3,8 +3,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 /**
- * Aquisição de plano paga diretamente por PIX (ConnectPay) ou USDT BEP20
- * (NOWPayments).
+ * Aquisição de plano paga diretamente por PIX ou USDT BEP20 — ambos via
+ * ConnectPay.
  *
  * O pagamento é criado com finalidade `plan_purchase`: quando confirmado, o
  * valor é aplicado DIRETAMENTE no plano (a RPC `credit_deposit` chama
@@ -18,7 +18,7 @@ export const createPlanCheckout = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const provider = data.method === "pix" ? "connectpay" : "nowpayments";
+    const provider = "connectpay";
 
     const { data: checkout, error: checkoutError } = await supabaseAdmin.rpc(
       "create_plan_checkout",
@@ -152,15 +152,15 @@ export const createPlanCheckout = createServerFn({ method: "POST" })
     }
 
     /* ---------------------------- USDT BEP20 ---------------------------- */
-    const np = await import("./nowpayments.server");
+    const cp = await import("./connectpay.server");
     const { currentUsdtRate, toUsdt } = await import("./usdt.server");
 
-    let gateway: Awaited<ReturnType<typeof np.loadGateway>>;
-    let apiKey: string;
+    let gateway: Awaited<ReturnType<typeof cp.loadGateway>>;
+    let secret: string;
     try {
-      const active = await np.requireActiveGateway(supabaseAdmin, "usdt_deposit");
+      const active = await cp.requireActiveGateway(supabaseAdmin, "usdt_deposit");
       gateway = active.gateway;
-      apiKey = active.apiKey;
+      secret = active.secret;
     } catch {
       return abort("Pagamento via USDT temporariamente indisponível.");
     }
@@ -169,12 +169,14 @@ export const createPlanCheckout = createServerFn({ method: "POST" })
     const usdtAmount = toUsdt(price, rate);
     if (usdtAmount <= 0) return abort("Valor convertido em USDT inválido.");
 
+    const idempotencyKey = `connectpay-usdt-deposit-${depositId}`;
+
     const { error: depError } = await supabaseAdmin.from("deposits").insert({
       id: depositId,
       user_id: context.userId,
       method: "crypto",
       currency: "USDT",
-      network: np.NETWORK,
+      network: cp.USDT_CHAIN,
       amount: usdtAmount,
       expected_amount: usdtAmount,
       crypto_amount: usdtAmount,
@@ -185,52 +187,51 @@ export const createPlanCheckout = createServerFn({ method: "POST" })
       plan_id: data.planId,
       external_id: depositId,
       order_id: depositId,
-      idempotency_key: `nowpayments-plan-${depositId}`,
+      idempotency_key: idempotencyKey,
       status: "creating",
-      provider: np.PROVIDER,
+      provider: cp.PROVIDER,
     });
     if (depError) return abort("Não foi possível registrar a cobrança do plano.");
 
     try {
-      const response = await np.createPayment(apiKey, gateway!.base_url, {
-        price_amount: usdtAmount,
-        price_currency: "usdt",
-        pay_currency: np.PAY_CURRENCY,
-        order_id: depositId,
-        order_description: `Plano ${row.plan_name} — Arena Saúde`,
-        ipn_callback_url: np.webhookUrls(gateway).payment,
-      });
+      const response = await cp.createCryptoDeposit(
+        secret,
+        gateway!.base_url,
+        {
+          asset: cp.USDT_ASSET,
+          chain: cp.USDT_CHAIN,
+          amount: usdtAmount.toFixed(6),
+          webhook_url: cp.webhookUrls(gateway).crypto,
+        },
+        idempotencyKey,
+      );
 
-      const payAddress = response.pay_address ? String(response.pay_address) : null;
-      const paymentId = response.payment_id === undefined ? null : String(response.payment_id);
-      if (!payAddress || !paymentId) {
-        throw new np.NowPaymentsError("A NOWPayments não retornou o endereço de pagamento.", 502);
+      const address = response.deposit_address ? String(response.deposit_address) : null;
+      const transactionId = String(response.transaction_id ?? response.id ?? "") || null;
+      if (!address) {
+        throw new cp.GatewayError("A ConnectPay não retornou o endereço de depósito.", 502);
       }
 
       await supabaseAdmin
         .from("deposits")
         .update({
-          provider_transaction_id: paymentId,
-          purchase_id:
-            response.purchase_id === undefined || response.purchase_id === null
-              ? null
-              : String(response.purchase_id),
-          pay_address: payAddress,
-          deposit_address: payAddress,
-          expected_amount:
-            response.pay_amount === undefined ? usdtAmount : Number(response.pay_amount),
-          payment_status: String(response.payment_status ?? "waiting").toLowerCase(),
+          provider_transaction_id: transactionId,
+          deposit_address: address,
+          pay_address: address,
+          qr_code: response.qr_code ? String(response.qr_code) : null,
+          gateway_fee: response.fee === undefined ? 0 : Number(response.fee),
+          net_amount: response.net_amount === undefined ? null : Number(response.net_amount),
+          expected_amount: response.amount === undefined ? usdtAmount : Number(response.amount),
+          payment_status: String(response.status ?? "PENDING_CONFIRMATION").toLowerCase(),
           status: "pending",
-          expires_at:
-            (response.valid_until as string | null) ??
-            (response.expiration_estimate_date as string | null) ??
-            null,
+          expires_at: response.expires_at ?? null,
           metadata: {
-            provider: np.PROVIDER,
+            provider: cp.PROVIDER,
             purpose: "plan_purchase",
+            asset: cp.USDT_ASSET,
+            chain: cp.USDT_CHAIN,
             conversion_rate: rate,
             brl_amount: price,
-            network: response.network ?? np.NETWORK,
           } as never,
         })
         .eq("id", depositId);
@@ -245,7 +246,7 @@ export const createPlanCheckout = createServerFn({ method: "POST" })
       };
     } catch (err) {
       const message =
-        err instanceof np.NowPaymentsError
+        err instanceof cp.GatewayError
           ? err.message
           : "Não foi possível gerar a cobrança em USDT neste momento.";
       await supabaseAdmin

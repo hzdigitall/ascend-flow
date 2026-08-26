@@ -29,7 +29,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { NowPaymentsCard } from "@/components/admin/NowPaymentsCard";
 import { dateTimeBR } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/admin/gateways")({
@@ -38,8 +37,7 @@ export const Route = createFileRoute("/_authenticated/admin/gateways")({
       { title: "Gateways de pagamento — Arena Saúde" },
       {
         name: "description",
-        content:
-          "Configure, teste e ative a ConnectPay (PIX) e a NOWPayments (USDT BEP20).",
+        content: "Configure, teste e ative a ConnectPay (PIX e USDT BEP20).",
       },
     ],
   }),
@@ -137,7 +135,7 @@ function GatewaysPage() {
     <AppShell items={adminNav} variant="admin">
       <PageHeader
         title="Gateways de pagamento"
-        description="ConnectPay processa exclusivamente PIX (BRL). NOWPayments processa exclusivamente USDT BEP20 (USDTBSC)."
+        description="A ConnectPay é a única gateway do sistema: PIX (BRL) e USDT na rede BEP20."
       />
 
       {isLoading ? (
@@ -198,10 +196,13 @@ function GatewaysPage() {
               </dl>
 
               <div className="space-y-3 rounded-lg border p-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  PIX (BRL)
+                </p>
                 {(
                   [
-                    ["pix_cashin_enabled", "PIX Cash-in"],
-                    ["pix_cashout_enabled", "PIX Cash-out"],
+                    ["pix_cashin_enabled", "PIX Cash-in (depósito)"],
+                    ["pix_cashout_enabled", "PIX Cash-out (saque)"],
                   ] as const
                 ).map(([key, label]) => (
                   <div key={key} className="flex items-center justify-between gap-3">
@@ -215,7 +216,31 @@ function GatewaysPage() {
                     />
                   </div>
                 ))}
+                <p className="pt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  USDT · Rede BEP20
+                </p>
+                {(
+                  [
+                    ["usdt_deposit_enabled", "USDT Depósito"],
+                    ["usdt_withdraw_enabled", "USDT Saque"],
+                  ] as const
+                ).map(([key, label]) => (
+                  <div key={key} className="flex items-center justify-between gap-3">
+                    <Label htmlFor={key} className="text-sm">
+                      {label}
+                    </Label>
+                    <Switch
+                      id={key}
+                      checked={Boolean(g?.[key])}
+                      onCheckedChange={(checked) => toggleFeature.mutate({ [key]: checked })}
+                    />
+                  </div>
+                ))}
+                <p className="text-xs text-muted-foreground">
+                  Moeda: USDT · Rede: BEP20 (BNB Smart Chain)
+                </p>
               </div>
+
 
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -309,9 +334,10 @@ function GatewaysPage() {
               <CardContent className="space-y-3">
                 <CopyField label="Webhook PIX Cash-in" value={data?.webhooks.pixCashIn ?? ""} />
                 <CopyField label="Webhook PIX Cash-out" value={data?.webhooks.pixCashOut ?? ""} />
+                <CopyField label="Webhook Crypto (USDT BEP20)" value={data?.webhooks.crypto ?? ""} />
                 <p className="text-xs text-muted-foreground">
-                  Essas URLs são utilizadas automaticamente na criação das transações PIX. As
-                  operações em USDT são processadas pela NOWPayments.
+                  Essas URLs são utilizadas automaticamente na criação das transações PIX e dos
+                  depósitos/saques em USDT (asset USDT, rede BEP20).
                 </p>
               </CardContent>
             </Card>
@@ -319,10 +345,7 @@ function GatewaysPage() {
         </div>
       )}
 
-      <div className="mt-8 space-y-4" id="nowpayments">
-        <h2 className="text-lg font-semibold">NOWPayments — USDT BEP20</h2>
-        <NowPaymentsCard />
-      </div>
+
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent>

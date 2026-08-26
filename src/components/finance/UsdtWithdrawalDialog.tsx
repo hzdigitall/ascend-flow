@@ -170,7 +170,7 @@ export function UsdtWithdrawalDialog({
 
           <Alert>
             <AlertDescription>
-              Confirme que o endereço aceita <strong>USDT na rede BEP20 (USDTBSC)</strong>. Envios
+              Confirme que o endereço aceita <strong>USDT na rede BEP20 (BNB Smart Chain)</strong>. Envios
               para redes incompatíveis são irreversíveis.
             </AlertDescription>
           </Alert>

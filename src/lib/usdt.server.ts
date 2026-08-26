@@ -16,7 +16,7 @@ export async function currentUsdtRate(admin: AdminClient): Promise<number> {
   return normalizeRate(data ?? DEFAULT_USDT_BRL_RATE);
 }
 
-/** BRL -> USDT com 6 casas decimais (precisão aceita pela NOWPayments). */
+/** BRL -> USDT com 6 casas decimais (precisão aceita pela ConnectPay). */
 export function toUsdt(amountBrl: number, rate: number): number {
   return Math.round((amountBrl / normalizeRate(rate)) * 1_000_000) / 1_000_000;
 }

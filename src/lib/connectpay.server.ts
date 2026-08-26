@@ -110,12 +110,8 @@ export async function loadSecret(supabaseAdmin: AdminClient): Promise<string> {
  */
 export async function requireActiveGateway(
   supabaseAdmin: AdminClient,
-  feature: "pix_cashin" | "pix_cashout",
+  feature: "pix_cashin" | "pix_cashout" | "usdt_deposit" | "usdt_withdraw",
 ): Promise<{ gateway: GatewayRow; secret: string }> {
-  // Migração: a ConnectPay é exclusivamente PIX. USDT BEP20 usa a NOWPayments.
-  if (feature !== "pix_cashin" && feature !== "pix_cashout") {
-    throw new GatewayError("A ConnectPay não processa mais operações em USDT.", 400);
-  }
   const gateway = await loadGateway(supabaseAdmin);
   const enabled =
     gateway &&
@@ -124,6 +120,8 @@ export async function requireActiveGateway(
     ({
       pix_cashin: gateway.pix_cashin_enabled,
       pix_cashout: gateway.pix_cashout_enabled,
+      usdt_deposit: gateway.usdt_deposit_enabled,
+      usdt_withdraw: gateway.usdt_withdraw_enabled,
     }[feature] ??
       false);
 
@@ -283,6 +281,29 @@ export function getPixCashout(secret: string, baseUrl: string | undefined, id: s
   });
 }
 
+export type PixKeyQueryResponse = {
+  key?: string;
+  key_type?: string;
+  name?: string;
+  document?: string;
+  [key: string]: unknown;
+};
+
+/** POST /v1/pix/query — valida a chave PIX antes do cash-out. */
+export function queryPixKey(
+  secret: string,
+  baseUrl: string | undefined,
+  body: { pix_key: string; pix_type: "CPF" | "CNPJ" | "EMAIL" | "PHONE" | "RANDOM" },
+) {
+  return call<PixKeyQueryResponse>({
+    secret,
+    baseUrl,
+    method: "POST",
+    path: "/v1/pix/query",
+    body,
+  });
+}
+
 export type CryptoDepositResponse = {
   transaction_id?: string;
   id?: string;
@@ -299,10 +320,7 @@ export type CryptoDepositResponse = {
   [key: string]: unknown;
 };
 
-/**
- * @deprecated Migrado para a NOWPayments (USDTBSC). Mantido apenas como
- * referência histórica: nenhuma nova operação USDT usa a ConnectPay.
- */
+/** POST /v1/crypto/deposits — depósito USDT BEP20. */
 export function createCryptoDeposit(
   secret: string,
   baseUrl: string | undefined,
@@ -328,10 +346,7 @@ export type CryptoWithdrawResponse = {
   [key: string]: unknown;
 };
 
-/**
- * @deprecated Migrado para a NOWPayments (USDTBSC). Mantido apenas como
- * referência histórica: nenhuma nova operação USDT usa a ConnectPay.
- */
+/** POST /v1/crypto/withdraws — saque USDT BEP20. */
 export function createCryptoWithdraw(
   secret: string,
   baseUrl: string | undefined,

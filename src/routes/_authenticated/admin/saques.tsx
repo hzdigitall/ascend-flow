@@ -78,6 +78,7 @@ function WithdrawalsPage() {
   const reconcileFn = useServerFn(adminReconcileWithdrawal);
 
   const [rejectTarget, setRejectTarget] = useState<Row | null>(null);
+  const [approveTarget, setApproveTarget] = useState<Row | null>(null);
   const [reason, setReason] = useState("");
 
   const { data, isLoading, isError, refetch } = useQuery({
@@ -184,7 +185,9 @@ function WithdrawalsPage() {
                                 {w.wallet_address}
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                {w.provider === "nowpayments" ? "NOWPayments" : "ConnectPay (legado)"}
+                                {w.provider === "nowpayments"
+                                  ? "Provedor legado (histórico)"
+                                  : "ConnectPay"}
                               </p>
                               {w.crypto_amount !== null && (
                                 <p className="text-xs font-medium">
@@ -224,7 +227,7 @@ function WithdrawalsPage() {
                               <>
                                 <Button
                                   size="sm"
-                                  onClick={() => approve.mutate(w.id)}
+                                  onClick={() => setApproveTarget(w)}
                                   disabled={approve.isPending}
                                 >
                                   Aprovar e enviar
@@ -262,6 +265,33 @@ function WithdrawalsPage() {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={Boolean(approveTarget)} onOpenChange={(o) => !o && setApproveTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmar envio do saque</DialogTitle>
+            <DialogDescription>
+              {approveTarget?.currency === "USDT"
+                ? `Enviar ${Number(approveTarget?.crypto_amount ?? 0).toFixed(6)} USDT na rede ${approveTarget?.network ?? "BEP20"} para ${approveTarget?.wallet_address}. Esta operação é irreversível.`
+                : `Enviar o PIX de R$ ${Number(approveTarget?.net_amount ?? 0).toFixed(2)} para a chave ${approveTarget?.pix_key_value ?? ""}. Esta operação é irreversível.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setApproveTarget(null)}>
+              Cancelar
+            </Button>
+            <Button
+              disabled={approve.isPending}
+              onClick={() => {
+                if (approveTarget) approve.mutate(approveTarget.id);
+                setApproveTarget(null);
+              }}
+            >
+              Confirmar envio
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={Boolean(rejectTarget)} onOpenChange={(o) => !o && setRejectTarget(null)}>
         <DialogContent>
