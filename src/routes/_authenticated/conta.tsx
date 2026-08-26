@@ -395,6 +395,15 @@ function Page() {
           </CardContent>
         </Card>
       </div>
+
+      <AvatarCropDialog
+        open={!!pendingFile}
+        file={pendingFile}
+        isSaving={isUploading}
+        onCancel={() => setPendingFile(null)}
+        onConfirm={handleCroppedUpload}
+      />
     </UserShell>
+
   );
 }
