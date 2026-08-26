@@ -199,19 +199,9 @@ function Page() {
               )}
             </div>
             
-            <div className="flex flex-col items-center gap-2 mt-2">
-              <p className="text-[10px] text-muted-foreground text-center">
-                Formatos aceitos: JPG, PNG. Tamanho máx: 2MB.
-              </p>
-              <div className="flex flex-col gap-1 w-full">
-                <div className="flex items-start gap-1 p-2 rounded bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50">
-                  <AlertCircle className="w-3 h-3 mt-0.5 shrink-0" />
-                  <p className="text-[9px] leading-tight">
-                    Remova em perfil para adicionar de foto de perfil.
-                  </p>
-                </div>
-              </div>
-            </div>
+            <p className="text-xs text-muted-foreground text-center">
+              Formatos: JPG, PNG · Máx 2MB
+            </p>
           </CardContent>
         </Card>
 
