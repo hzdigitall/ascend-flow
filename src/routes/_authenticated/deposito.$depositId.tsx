@@ -93,7 +93,7 @@ function DepositDetailPage() {
   const amountLabel = isUsdt
     ? `${exactAmount} USDT (${brl(brlAmount)})`
     : brl(Number(data.amount));
-  const isNowPayments = data.provider === "nowpayments";
+  const isLegacyProvider = data.provider === "nowpayments";
 
   return (
     <UserShell>
