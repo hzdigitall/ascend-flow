@@ -68,7 +68,6 @@ const SidebarNav = ({ items, pathname, variant, onNavigate }: SidebarNavProps) =
                       ? "bg-sidebar-accent text-sidebar-accent-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
-                  prefetch="intent"
                 >
                   <item.icon className="h-4.5 w-4.5 shrink-0" aria-hidden />
                   <span className="truncate">{item.label}</span>
@@ -83,7 +82,6 @@ const SidebarNav = ({ items, pathname, variant, onNavigate }: SidebarNavProps) =
           to="/admin/dashboard"
           onClick={onNavigate}
           className="flex items-center gap-3 rounded-xl bg-primary-soft px-3 py-2.5 text-sm font-medium text-primary"
-          prefetch="intent"
         >
           <Shield className="h-4.5 w-4.5" aria-hidden />
           Painel administrativo
@@ -94,7 +92,6 @@ const SidebarNav = ({ items, pathname, variant, onNavigate }: SidebarNavProps) =
           to="/dashboard"
           onClick={onNavigate}
           className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-          prefetch="intent"
         >
           <LayoutDashboard className="h-4.5 w-4.5" aria-hidden />
           Voltar para minha conta

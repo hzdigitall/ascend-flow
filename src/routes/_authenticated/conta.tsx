@@ -91,13 +91,16 @@ function Page() {
         }
       }
 
-      // Obtém a URL pública
-      const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
-      const publicUrl = data?.publicUrl;
+      // Gera uma URL assinada de longa duração (bucket privado)
+      const { data, error: signError } = await supabase.storage
+        .from("avatars")
+        .createSignedUrl(fileName, 60 * 60 * 24 * 365 * 5);
+      const publicUrl = data?.signedUrl;
 
-      if (!publicUrl) {
+      if (signError || !publicUrl) {
         throw new Error("Não foi possível obter a URL da imagem.");
       }
+
 
       // Atualiza o perfil com a nova URL
       await updateProfileFn({ data: { avatar_url: publicUrl } });
