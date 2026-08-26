@@ -59,6 +59,21 @@ function Page() {
     },
   });
 
+  const { data: monthlyTx } = useQuery({
+    queryKey: ["points-monthly"],
+    queryFn: async () => {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const { data, error } = await supabase
+        .from("points_transactions")
+        .select("points")
+        .eq("direction", "in")
+        .gte("created_at", start);
+      if (error) throw error;
+      return (data ?? []).reduce((acc, t) => acc + Number(t.points), 0);
+    },
+  });
+
   const groupedReferrals = useMemo(() => {
     const levels = Array.from({ length: 8 }, (_, i) => i + 1);
     const groups: Record<number, typeof data> = {};
