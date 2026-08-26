@@ -3,8 +3,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 /**
- * Aquisição de plano paga diretamente por PIX (ConnectPay) ou USDT BEP20
- * (NOWPayments).
+ * Aquisição de plano paga diretamente por PIX ou USDT BEP20 — ambos via
+ * ConnectPay.
  *
  * O pagamento é criado com finalidade `plan_purchase`: quando confirmado, o
  * valor é aplicado DIRETAMENTE no plano (a RPC `credit_deposit` chama
@@ -18,7 +18,7 @@ export const createPlanCheckout = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const provider = data.method === "pix" ? "connectpay" : "nowpayments";
+    const provider = "connectpay";
 
     const { data: checkout, error: checkoutError } = await supabaseAdmin.rpc(
       "create_plan_checkout",
