@@ -63,6 +63,23 @@ export function friendlyMessage(status: number): string {
   }
 }
 
+/** IP do cliente (a ConnectPay exige um IP válido em /v1/transactions). */
+export async function clientIp(): Promise<string> {
+  try {
+    const { getRequestHeader } = await import("@tanstack/react-start/server");
+    const raw =
+      getRequestHeader("x-forwarded-for") ??
+      getRequestHeader("cf-connecting-ip") ??
+      getRequestHeader("x-real-ip") ??
+      "";
+    const first = String(raw).split(",")[0]?.trim() ?? "";
+    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(first) || /^[0-9a-fA-F:]{3,}$/.test(first)) return first;
+  } catch {
+    // sem contexto de requisição
+  }
+  return "127.0.0.1";
+}
+
 export function webhookBaseUrl(gateway: GatewayRow | null): string {
   const base =
     gateway?.webhook_base_url ||
@@ -162,7 +179,9 @@ async function call<T>(options: {
   const raw = await response.text();
   if (!response.ok) {
     // Nunca logamos headers (onde vive o api-secret), apenas status + corpo.
-    console.error(`[connectpay] ${options.method} ${options.path} -> ${response.status}`);
+    console.error(
+      `[connectpay] ${options.method} ${options.path} -> ${response.status} ${raw.slice(0, 800)}`,
+    );
     throw new GatewayError(friendlyMessage(response.status), response.status, raw.slice(0, 800));
   }
   if (!raw) return {} as T;
@@ -204,9 +223,11 @@ export function createPixTransaction(
     total_amount: number;
     payment_method: "PIX";
     webhook_url: string;
+    ip: string;
     items: Array<{
       id: string;
       title: string;
+      description: string;
       price: number;
       quantity: number;
       is_physical: boolean;

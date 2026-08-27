@@ -94,10 +94,12 @@ export const createPixDeposit = createServerFn({ method: "POST" })
         total_amount: amount,
         payment_method: "PIX",
         webhook_url: cp.webhookUrls(gateway).pixCashIn,
+        ip: await cp.clientIp(),
         items: [
           {
             id: deposit.id,
             title: "Depósito em conta Arena Saúde",
+            description: "Depósito em conta Arena Saúde",
             price: amount,
             quantity: 1,
             is_physical: false,
