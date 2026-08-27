@@ -43,6 +43,7 @@ import { Route as AuthenticatedDepositoDepositIdRouteImport } from './routes/_au
 import { Route as AuthenticatedPagamentoPaymentIdRouteImport } from './routes/_authenticated/pagamento.$paymentId'
 import { Route as ApiPublicCronRoiRouteImport } from './routes/api/public/cron/roi'
 import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/webhooks/pix'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as ApiPublicWebhooksConnectpayCashoutRouteImport } from './routes/api/public/webhooks/connectpay/cashout'
 import { Route as ApiPublicWebhooksConnectpayCryptoRouteImport } from './routes/api/public/webhooks/connectpay/crypto'
 import { Route as ApiPublicWebhooksConnectpayPixRouteImport } from './routes/api/public/webhooks/connectpay/pix'
@@ -230,6 +231,12 @@ const ApiPublicWebhooksPixRoute = ApiPublicWebhooksPixRouteImport.update({
   path: '/api/public/webhooks/pix',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicWebhooksConnectpayCashoutRoute =
   ApiPublicWebhooksConnectpayCashoutRouteImport.update({
     id: '/api/public/webhooks/connectpay/cashout',
@@ -283,6 +290,7 @@ export interface FileRoutesByFullPath {
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
   '/api/public/webhooks/connectpay/crypto': typeof ApiPublicWebhooksConnectpayCryptoRoute
   '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
@@ -321,6 +329,7 @@ export interface FileRoutesByTo {
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
   '/api/public/webhooks/connectpay/crypto': typeof ApiPublicWebhooksConnectpayCryptoRoute
   '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
@@ -361,6 +370,7 @@ export interface FileRoutesById {
   '/_authenticated/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
   '/api/public/webhooks/connectpay/crypto': typeof ApiPublicWebhooksConnectpayCryptoRoute
   '/api/public/webhooks/connectpay/pix': typeof ApiPublicWebhooksConnectpayPixRoute
@@ -401,6 +411,7 @@ export interface FileRouteTypes {
     | '/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
+    | '/lovable/email/transactional/preview'
     | '/api/public/webhooks/connectpay/cashout'
     | '/api/public/webhooks/connectpay/crypto'
     | '/api/public/webhooks/connectpay/pix'
@@ -439,6 +450,7 @@ export interface FileRouteTypes {
     | '/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
+    | '/lovable/email/transactional/preview'
     | '/api/public/webhooks/connectpay/cashout'
     | '/api/public/webhooks/connectpay/crypto'
     | '/api/public/webhooks/connectpay/pix'
@@ -478,6 +490,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pagamento/$paymentId'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
+    | '/lovable/email/transactional/preview'
     | '/api/public/webhooks/connectpay/cashout'
     | '/api/public/webhooks/connectpay/crypto'
     | '/api/public/webhooks/connectpay/pix'
@@ -494,6 +507,7 @@ export interface RootRouteChildren {
   TermosRoute: typeof TermosRoute
   ApiPublicCronRoiRoute: typeof ApiPublicCronRoiRoute
   ApiPublicWebhooksPixRoute: typeof ApiPublicWebhooksPixRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   ApiPublicWebhooksConnectpayCashoutRoute: typeof ApiPublicWebhooksConnectpayCashoutRoute
   ApiPublicWebhooksConnectpayCryptoRoute: typeof ApiPublicWebhooksConnectpayCryptoRoute
   ApiPublicWebhooksConnectpayPixRoute: typeof ApiPublicWebhooksConnectpayPixRoute
@@ -739,6 +753,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksPixRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/connectpay/cashout': {
       id: '/api/public/webhooks/connectpay/cashout'
       path: '/api/public/webhooks/connectpay/cashout'
@@ -832,6 +853,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermosRoute: TermosRoute,
   ApiPublicCronRoiRoute: ApiPublicCronRoiRoute,
   ApiPublicWebhooksPixRoute: ApiPublicWebhooksPixRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   ApiPublicWebhooksConnectpayCashoutRoute:
     ApiPublicWebhooksConnectpayCashoutRoute,
   ApiPublicWebhooksConnectpayCryptoRoute:
