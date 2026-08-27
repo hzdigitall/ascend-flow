@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import especialistaAsset from "@/assets/arena-especialista-2.png.asset.json";
+import ceoAsset from "@/assets/arena-ceo.png.asset.json";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -61,17 +61,22 @@ function LoginPage() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="relative hidden overflow-hidden bg-primary px-12 pb-16 pt-12 lg:flex lg:flex-col lg:items-center">
-        <Logo className="self-start text-white" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-12 text-center text-white">
-          <h2 className="text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
+      <div className="relative hidden overflow-hidden bg-secondary lg:block">
+        <img
+          src={ceoAsset.url}
+          alt="CEO da Arena Saúde"
+          className="absolute inset-0 h-full w-full object-cover object-top"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
+        <div className="relative z-10 flex h-full flex-col items-center justify-center px-12 text-center text-white">
+          <h2 className="text-3xl font-extrabold leading-tight drop-shadow-md sm:text-4xl lg:text-5xl">
             Seu futuro, nosso propósito.
           </h2>
-          <p className="mt-4 text-base text-white/85 sm:text-lg">
+          <p className="mt-4 text-base text-white/90 drop-shadow sm:text-lg">
             Saúde, bem estar e resultados através de tecnologia e ciência.
           </p>
         </div>
-        <p className="absolute bottom-6 left-12 text-sm text-white/70">
+        <p className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-sm text-white/80">
           © {new Date().getFullYear()} Arena Saúde
         </p>
       </div>
