@@ -83,6 +83,8 @@ export async function settlePixDeposit(
     _payload: { provider_status: status, source, provider_transaction_id: providerId },
   });
   if (error) throw new Error(error.message);
+  const { notifyDepositCredited } = await import("./whatsapp.server");
+  await notifyDepositCredited(admin, deposit.id);
   return { credited: true, reason: "credited" };
 }
 
@@ -172,6 +174,8 @@ export async function settleCryptoDeposit(
     },
   });
   if (error) throw new Error(error.message);
+  const { notifyDepositCredited } = await import("./whatsapp.server");
+  await notifyDepositCredited(admin, deposit.id);
   return { credited: true, reason: "credited" };
 }
 
