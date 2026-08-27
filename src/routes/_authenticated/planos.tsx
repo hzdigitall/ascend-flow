@@ -1,11 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Clock, Coins, Loader2, Sparkles, TrendingUp, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { purchasePlanWithBalance } from "@/lib/app.functions";
+import { getMyActivePlans } from "@/lib/plans.functions";
 import { createPlanCheckout } from "@/lib/plan-checkout.functions";
 import { useUsdtRate } from "@/hooks/useUsdtRate";
 import { brlToUsdt, fmtUsdt } from "@/lib/usdt";
@@ -63,7 +64,7 @@ type WalletKey = "main" | "earnings" | "referral";
 
 function PlansPage() {
   const navigate = useNavigate();
-  const { wallet, refresh } = useAuth();
+  const { user, wallet, refresh } = useAuth();
   const startCheckout = useServerFn(createPlanCheckout);
   const usdtRate = useUsdtRate();
   const buyWithBalance = useServerFn(purchasePlanWithBalance);
