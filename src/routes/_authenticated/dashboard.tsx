@@ -18,6 +18,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { brl, dateBR, dateTimeBR, pts } from "@/lib/format";
+import { referralLink as buildReferralLink } from "@/lib/site";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
