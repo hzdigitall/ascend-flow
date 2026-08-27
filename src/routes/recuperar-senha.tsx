@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Loader2, MailCheck } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { SITE_URL } from "@/lib/site";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,7 +37,7 @@ function ForgotPasswordPage() {
     }
     setLoading(true);
     await supabase.auth.resetPasswordForEmail(parsed.data, {
-      redirectTo: `${window.location.origin}/redefinir-senha`,
+      redirectTo: `${SITE_URL}/redefinir-senha`,
     });
     setLoading(false);
     setSent(true);

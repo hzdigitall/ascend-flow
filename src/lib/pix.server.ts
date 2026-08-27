@@ -50,7 +50,7 @@ export async function createPixCharge(input: {
       amount: Number(input.amount.toFixed(2)),
       description: input.description,
       expires_in: input.expiresInMinutes * 60,
-      notification_url: `${process.env["APP_URL"] || "https://" + (process.env["VERCEL_URL"] || "localhost:8080")}/api/public/webhooks/pix`,
+      notification_url: `${process.env["APP_URL"] || "https://www.arenasuplementos.com"}/api/public/webhooks/pix`,
       payer: {
         name: input.payerName,
         email: input.payerEmail,

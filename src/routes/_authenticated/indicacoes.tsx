@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { dateBR } from "@/lib/format";
+import { referralLink } from "@/lib/site";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemo, useState } from "react";
 import careerPlanAsset from "@/assets/career-plan.png.asset.json";
@@ -40,10 +41,7 @@ function Page() {
   const { profile, wallet } = useAuth();
   const [selectedReferral, setSelectedReferral] = useState<any>(null);
   
-  const link =
-    typeof window !== "undefined" && profile?.referral_code
-      ? `${window.location.origin}/cadastro?ref=${profile.referral_code}`
-      : "";
+  const link = profile?.referral_code ? referralLink(profile.referral_code) : "";
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["referrals", profile?.id],

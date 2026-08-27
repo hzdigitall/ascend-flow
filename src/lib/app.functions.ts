@@ -65,7 +65,7 @@ export const createPlanPayment = createServerFn({ method: "POST" })
         payerEmail: profile?.email ?? "",
         payerDocument: profile?.cpf ?? null,
         expiresInMinutes: minutes,
-        webhookUrl: `${process.env["APP_URL"] ?? ""}/api/public/webhooks/pix`,
+        webhookUrl: `${process.env["APP_URL"] ?? "https://www.arenasuplementos.com"}/api/public/webhooks/pix`,
       });
 
       await supabaseAdmin

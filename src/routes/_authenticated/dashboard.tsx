@@ -18,6 +18,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { brl, dateBR, dateTimeBR, pts } from "@/lib/format";
+import { referralLink as buildReferralLink } from "@/lib/site";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -91,13 +92,10 @@ function DashboardPage() {
     },
   });
 
-  const referralLink =
-    typeof window !== "undefined" && profile?.referral_code
-      ? `${window.location.origin}/cadastro?ref=${profile.referral_code}`
-      : "";
+  const refLink = profile?.referral_code ? buildReferralLink(profile.referral_code) : "";
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(referralLink);
+    await navigator.clipboard.writeText(refLink);
     toast.success("Link de indicação copiado!");
   };
 
@@ -265,10 +263,10 @@ function DashboardPage() {
                 {directs} indicado{directs === 1 ? "" : "s"} direto{directs === 1 ? "" : "s"}
               </p>
               <div className="rounded-xl bg-muted p-3">
-                <p className="break-all text-xs text-muted-foreground">{referralLink || "—"}</p>
+                <p className="break-all text-xs text-muted-foreground">{refLink || "—"}</p>
               </div>
               <div className="flex gap-2">
-                <Button onClick={copyLink} className="flex-1" disabled={!referralLink}>
+                <Button onClick={copyLink} className="flex-1" disabled={!refLink}>
                   <Copy className="mr-2 h-4 w-4" /> Copiar
                 </Button>
                 <Button asChild variant="outline">
