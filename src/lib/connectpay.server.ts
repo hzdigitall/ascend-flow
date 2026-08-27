@@ -162,7 +162,9 @@ async function call<T>(options: {
   const raw = await response.text();
   if (!response.ok) {
     // Nunca logamos headers (onde vive o api-secret), apenas status + corpo.
-    console.error(`[connectpay] ${options.method} ${options.path} -> ${response.status}`);
+    console.error(
+      `[connectpay] ${options.method} ${options.path} -> ${response.status} ${raw.slice(0, 800)}`,
+    );
     throw new GatewayError(friendlyMessage(response.status), response.status, raw.slice(0, 800));
   }
   if (!raw) return {} as T;
