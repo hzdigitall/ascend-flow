@@ -28,6 +28,7 @@ import { Route as AuthenticatedPedidosRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedPlanosRouteImport } from './routes/_authenticated/planos'
 import { Route as AuthenticatedPontosRouteImport } from './routes/_authenticated/pontos'
 import { Route as AuthenticatedSaquesRouteImport } from './routes/_authenticated/saques'
+import { Route as AuthenticatedAdminAuditoriaPlanosRouteImport } from './routes/_authenticated/admin/auditoria-planos'
 import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
 import { Route as AuthenticatedAdminConfiguracoesRouteImport } from './routes/_authenticated/admin/configuracoes'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
@@ -141,6 +142,12 @@ const AuthenticatedSaquesRoute = AuthenticatedSaquesRouteImport.update({
   path: '/saques',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminAuditoriaPlanosRoute =
+  AuthenticatedAdminAuditoriaPlanosRouteImport.update({
+    id: '/admin/auditoria-planos',
+    path: '/admin/auditoria-planos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminBannersRoute =
   AuthenticatedAdminBannersRouteImport.update({
     id: '/admin/banners',
@@ -261,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/planos': typeof AuthenticatedPlanosRoute
   '/pontos': typeof AuthenticatedPontosRoute
   '/saques': typeof AuthenticatedSaquesRoute
+  '/admin/auditoria-planos': typeof AuthenticatedAdminAuditoriaPlanosRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -298,6 +306,7 @@ export interface FileRoutesByTo {
   '/planos': typeof AuthenticatedPlanosRoute
   '/pontos': typeof AuthenticatedPontosRoute
   '/saques': typeof AuthenticatedSaquesRoute
+  '/admin/auditoria-planos': typeof AuthenticatedAdminAuditoriaPlanosRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -337,6 +346,7 @@ export interface FileRoutesById {
   '/_authenticated/planos': typeof AuthenticatedPlanosRoute
   '/_authenticated/pontos': typeof AuthenticatedPontosRoute
   '/_authenticated/saques': typeof AuthenticatedSaquesRoute
+  '/_authenticated/admin/auditoria-planos': typeof AuthenticatedAdminAuditoriaPlanosRoute
   '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -376,6 +386,7 @@ export interface FileRouteTypes {
     | '/planos'
     | '/pontos'
     | '/saques'
+    | '/admin/auditoria-planos'
     | '/admin/banners'
     | '/admin/configuracoes'
     | '/admin/dashboard'
@@ -413,6 +424,7 @@ export interface FileRouteTypes {
     | '/planos'
     | '/pontos'
     | '/saques'
+    | '/admin/auditoria-planos'
     | '/admin/banners'
     | '/admin/configuracoes'
     | '/admin/dashboard'
@@ -451,6 +463,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planos'
     | '/_authenticated/pontos'
     | '/_authenticated/saques'
+    | '/_authenticated/admin/auditoria-planos'
     | '/_authenticated/admin/banners'
     | '/_authenticated/admin/configuracoes'
     | '/_authenticated/admin/dashboard'
@@ -621,6 +634,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSaquesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/auditoria-planos': {
+      id: '/_authenticated/admin/auditoria-planos'
+      path: '/admin/auditoria-planos'
+      fullPath: '/admin/auditoria-planos'
+      preLoaderRoute: typeof AuthenticatedAdminAuditoriaPlanosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/banners': {
       id: '/_authenticated/admin/banners'
       path: '/admin/banners'
@@ -755,6 +775,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlanosRoute: typeof AuthenticatedPlanosRoute
   AuthenticatedPontosRoute: typeof AuthenticatedPontosRoute
   AuthenticatedSaquesRoute: typeof AuthenticatedSaquesRoute
+  AuthenticatedAdminAuditoriaPlanosRoute: typeof AuthenticatedAdminAuditoriaPlanosRoute
   AuthenticatedAdminBannersRoute: typeof AuthenticatedAdminBannersRoute
   AuthenticatedAdminConfiguracoesRoute: typeof AuthenticatedAdminConfiguracoesRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
@@ -781,6 +802,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlanosRoute: AuthenticatedPlanosRoute,
   AuthenticatedPontosRoute: AuthenticatedPontosRoute,
   AuthenticatedSaquesRoute: AuthenticatedSaquesRoute,
+  AuthenticatedAdminAuditoriaPlanosRoute:
+    AuthenticatedAdminAuditoriaPlanosRoute,
   AuthenticatedAdminBannersRoute: AuthenticatedAdminBannersRoute,
   AuthenticatedAdminConfiguracoesRoute: AuthenticatedAdminConfiguracoesRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,

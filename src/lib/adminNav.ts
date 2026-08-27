@@ -7,6 +7,7 @@ import {
   ShieldCheck,
   ShoppingCart,
   Users,
+  History,
   Wallet,
   PlugZap,
 } from "lucide-react";
@@ -16,6 +17,7 @@ export const adminNav: NavItem[] = [
   { label: "Visão geral", to: "/admin/dashboard", icon: LayoutDashboard, section: "Administração" },
   { label: "Usuários", to: "/admin/usuarios", icon: Users, section: "Gestão" },
   { label: "Planos", to: "/admin/planos", icon: ShieldCheck, section: "Gestão" },
+  { label: "Auditoria de planos", to: "/admin/auditoria-planos", icon: History, section: "Gestão" },
   { label: "Pagamentos", to: "/admin/pagamentos", icon: Wallet, section: "Financeiro" },
   { label: "Saques", to: "/admin/saques", icon: Gift, section: "Financeiro" },
   { label: "Produtos", to: "/admin/produtos", icon: Package, section: "Loja" },

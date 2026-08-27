@@ -73,7 +73,7 @@ function AdminPlanAuditPage() {
   });
 
   return (
-    <AppShell nav={adminNav} title="Administração">
+    <AppShell items={adminNav} variant="admin">
       <PageHeader
         title="Auditoria de planos"
         description="Histórico de ativações, vencimentos e ciclos concluídos, direto do banco de dados."
