@@ -95,7 +95,7 @@ function PlansPage() {
         supabase
           .from("user_plans")
           .select("*")
-          .in("status", ["active", "pending"])
+          .eq("status", "active")
           .order("created_at", { ascending: false }),
         supabase
           .from("wallet_transactions")
