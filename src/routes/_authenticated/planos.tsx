@@ -119,7 +119,10 @@ function PlansPage() {
         });
       }
 
-      return (plansRes.data ?? []).map((p) => {
+      const now = Date.now();
+      return (plansRes.data ?? [])
+        .filter((p) => !p.expires_at || new Date(p.expires_at).getTime() > now)
+        .map((p) => {
         const agg = totals.get(p.id);
         const price = Number(p.price);
         const earned = agg?.total ?? 0;
