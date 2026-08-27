@@ -128,7 +128,10 @@ export async function notifyExpiringForUser(
     .gt("expires_at", new Date().toISOString())
     .lte("expires_at", limit);
 
-  for (const plan of plans ?? []) {
+  if (!plans?.length) return;
+  const profile = await getProfile(admin, userId);
+
+  for (const plan of plans) {
     const { data: already } = await admin
       .from("plan_audit_logs")
       .select("id")
@@ -137,9 +140,7 @@ export async function notifyExpiringForUser(
       .maybeSingle();
     if (already) continue;
 
-    const when = new Date(plan.expires_at as string).toLocaleString("pt-BR", {
-      timeZone: "America/Sao_Paulo",
-    });
+    const when = fmt(plan.expires_at as string);
 
     await admin.from("notifications").insert({
       user_id: userId,
@@ -157,5 +158,21 @@ export async function notifyExpiringForUser(
       new_status: "active",
       details: { expires_at: plan.expires_at, days },
     });
+
+    if (profile?.email) {
+      await safeSend(
+        "plan-expiring",
+        profile.email,
+        {
+          name: profile.full_name,
+          planName: plan.plan_name,
+          expiresAt: when,
+          days,
+          url: `${SITE_URL}/planos`,
+        },
+        `plan-expiring-${plan.id}`,
+      );
+    }
   }
+
 }
