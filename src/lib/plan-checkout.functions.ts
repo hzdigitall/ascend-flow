@@ -99,10 +99,12 @@ export const createPlanCheckout = createServerFn({ method: "POST" })
           total_amount: price,
           payment_method: "PIX",
           webhook_url: cp.webhookUrls(gateway).pixCashIn,
+          ip: await cp.clientIp(),
           items: [
             {
               id: depositId,
               title: `Plano ${row.plan_name} — Arena Saúde`,
+              description: `Plano ${row.plan_name} — Arena Saúde`,
               price,
               quantity: 1,
               is_physical: false,
