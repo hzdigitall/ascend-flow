@@ -206,9 +206,11 @@ export function createPixTransaction(
     total_amount: number;
     payment_method: "PIX";
     webhook_url: string;
+    ip: string;
     items: Array<{
       id: string;
       title: string;
+      description: string;
       price: number;
       quantity: number;
       is_physical: boolean;

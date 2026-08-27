@@ -40,7 +40,6 @@ import { Route as AuthenticatedAdminSaquesRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin/usuarios'
 import { Route as AuthenticatedDepositoDepositIdRouteImport } from './routes/_authenticated/deposito.$depositId'
 import { Route as AuthenticatedPagamentoPaymentIdRouteImport } from './routes/_authenticated/pagamento.$paymentId'
-import { Route as ApiPublicDiagcpRouteImport } from './routes/api/public/diagcp'
 import { Route as ApiPublicCronRoiRouteImport } from './routes/api/public/cron/roi'
 import { Route as ApiPublicWebhooksPixRouteImport } from './routes/api/public/webhooks/pix'
 import { Route as ApiPublicWebhooksConnectpayCashoutRouteImport } from './routes/api/public/webhooks/connectpay/cashout'
@@ -214,11 +213,6 @@ const AuthenticatedPagamentoPaymentIdRoute =
     path: '/pagamento/$paymentId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiPublicDiagcpRoute = ApiPublicDiagcpRouteImport.update({
-  id: '/api/public/diagcp',
-  path: '/api/public/diagcp',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicCronRoiRoute = ApiPublicCronRoiRouteImport.update({
   id: '/api/public/cron/roi',
   path: '/api/public/cron/roi',
@@ -279,7 +273,6 @@ export interface FileRoutesByFullPath {
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/deposito/$depositId': typeof AuthenticatedDepositoDepositIdRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
-  '/api/public/diagcp': typeof ApiPublicDiagcpRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
   '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
@@ -317,7 +310,6 @@ export interface FileRoutesByTo {
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/deposito/$depositId': typeof AuthenticatedDepositoDepositIdRoute
   '/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
-  '/api/public/diagcp': typeof ApiPublicDiagcpRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
   '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
@@ -357,7 +349,6 @@ export interface FileRoutesById {
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/deposito/$depositId': typeof AuthenticatedDepositoDepositIdRoute
   '/_authenticated/pagamento/$paymentId': typeof AuthenticatedPagamentoPaymentIdRoute
-  '/api/public/diagcp': typeof ApiPublicDiagcpRoute
   '/api/public/cron/roi': typeof ApiPublicCronRoiRoute
   '/api/public/webhooks/pix': typeof ApiPublicWebhooksPixRoute
   '/api/public/webhooks/connectpay/cashout': typeof ApiPublicWebhooksConnectpayCashoutRoute
@@ -397,7 +388,6 @@ export interface FileRouteTypes {
     | '/admin/usuarios'
     | '/deposito/$depositId'
     | '/pagamento/$paymentId'
-    | '/api/public/diagcp'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
     | '/api/public/webhooks/connectpay/cashout'
@@ -435,7 +425,6 @@ export interface FileRouteTypes {
     | '/admin/usuarios'
     | '/deposito/$depositId'
     | '/pagamento/$paymentId'
-    | '/api/public/diagcp'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
     | '/api/public/webhooks/connectpay/cashout'
@@ -474,7 +463,6 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/deposito/$depositId'
     | '/_authenticated/pagamento/$paymentId'
-    | '/api/public/diagcp'
     | '/api/public/cron/roi'
     | '/api/public/webhooks/pix'
     | '/api/public/webhooks/connectpay/cashout'
@@ -491,7 +479,6 @@ export interface RootRouteChildren {
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
   TermosRoute: typeof TermosRoute
-  ApiPublicDiagcpRoute: typeof ApiPublicDiagcpRoute
   ApiPublicCronRoiRoute: typeof ApiPublicCronRoiRoute
   ApiPublicWebhooksPixRoute: typeof ApiPublicWebhooksPixRoute
   ApiPublicWebhooksConnectpayCashoutRoute: typeof ApiPublicWebhooksConnectpayCashoutRoute
@@ -718,13 +705,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPagamentoPaymentIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/diagcp': {
-      id: '/api/public/diagcp'
-      path: '/api/public/diagcp'
-      fullPath: '/api/public/diagcp'
-      preLoaderRoute: typeof ApiPublicDiagcpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/cron/roi': {
       id: '/api/public/cron/roi'
       path: '/api/public/cron/roi'
@@ -827,7 +807,6 @@ const rootRouteChildren: RootRouteChildren = {
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
   TermosRoute: TermosRoute,
-  ApiPublicDiagcpRoute: ApiPublicDiagcpRoute,
   ApiPublicCronRoiRoute: ApiPublicCronRoiRoute,
   ApiPublicWebhooksPixRoute: ApiPublicWebhooksPixRoute,
   ApiPublicWebhooksConnectpayCashoutRoute:
