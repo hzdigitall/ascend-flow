@@ -91,13 +91,10 @@ function DashboardPage() {
     },
   });
 
-  const referralLink =
-    typeof window !== "undefined" && profile?.referral_code
-      ? `${window.location.origin}/cadastro?ref=${profile.referral_code}`
-      : "";
+  const refLink = profile?.referral_code ? buildReferralLink(profile.referral_code) : "";
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(referralLink);
+    await navigator.clipboard.writeText(refLink);
     toast.success("Link de indicação copiado!");
   };
 
