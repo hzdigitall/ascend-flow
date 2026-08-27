@@ -28,6 +28,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { initials } from "@/lib/format";
+import { useI18n } from "@/lib/i18n";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { cn } from "@/lib/utils";
 
 export type NavItem = { label: string; to: string; icon: LucideIcon; section?: string };
@@ -42,10 +44,11 @@ interface SidebarNavProps {
 }
 
 const SidebarNav = ({ items, pathname, variant, onNavigate }: SidebarNavProps) => {
+  const { t } = useI18n();
   const sections = useMemo(() => [...new Set(items.map((i) => i.section ?? ""))], [items]);
 
   return (
-    <nav className="flex-1 space-y-5" aria-label="Navegação principal">
+    <nav className="flex-1 space-y-5" aria-label={t("nav.main")}>
       {sections.map((section) => (
         <div key={section} className="space-y-1">
           {section ? (
@@ -84,7 +87,7 @@ const SidebarNav = ({ items, pathname, variant, onNavigate }: SidebarNavProps) =
           className="flex items-center gap-3 rounded-xl bg-primary-soft px-3 py-2.5 text-sm font-medium text-primary"
         >
           <Shield className="h-4.5 w-4.5" aria-hidden />
-          Painel administrativo
+          {t("nav.admin")}
         </Link>
       )}
       {variant === "admin" && (
@@ -94,7 +97,7 @@ const SidebarNav = ({ items, pathname, variant, onNavigate }: SidebarNavProps) =
           className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <LayoutDashboard className="h-4.5 w-4.5" aria-hidden />
-          Voltar para minha conta
+          {t("nav.backToAccount")}
         </Link>
       )}
     </nav>
@@ -109,11 +112,12 @@ interface SponsorCardProps {
 }
 
 const SponsorCard = ({ sponsor, onNavigate }: SponsorCardProps) => {
+  const { t } = useI18n();
   if (!sponsor) return null;
   return (
     <div className="rounded-xl border bg-card p-4">
       <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-        Seu patrocinador
+        {t("nav.sponsor")}
       </p>
       <div className="mt-3 flex items-center gap-3">
         <Avatar className="h-9 w-9">
@@ -147,7 +151,9 @@ interface UserMenuProps {
   onSignOut: () => void;
 }
 
-const UserMenu = ({ profile, isAdmin, onSignOut }: UserMenuProps) => (
+const UserMenu = ({ profile, isAdmin, onSignOut }: UserMenuProps) => {
+  const { t } = useI18n();
+  return (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <button
@@ -162,7 +168,7 @@ const UserMenu = ({ profile, isAdmin, onSignOut }: UserMenuProps) => (
         </Avatar>
         <span className="hidden min-w-0 text-left sm:block">
           <span className="block truncate text-sm font-semibold">
-            {profile?.full_name || "Minha conta"}
+            {profile?.full_name || t("nav.account")}
           </span>
           <span className="block truncate text-xs text-muted-foreground">{profile?.email}</span>
         </span>
@@ -174,23 +180,24 @@ const UserMenu = ({ profile, isAdmin, onSignOut }: UserMenuProps) => (
       <DropdownMenuSeparator />
       <DropdownMenuItem asChild>
         <Link to="/conta">
-          <UserIcon className="mr-2 h-4 w-4" /> Minha conta
+          <UserIcon className="mr-2 h-4 w-4" /> {t("nav.account")}
         </Link>
       </DropdownMenuItem>
       {isAdmin ? (
         <DropdownMenuItem asChild>
           <Link to="/admin/dashboard">
-            <Shield className="mr-2 h-4 w-4" /> Painel administrativo
+            <Shield className="mr-2 h-4 w-4" /> {t("nav.admin")}
           </Link>
         </DropdownMenuItem>
       ) : null}
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={onSignOut}>
-        <LogOut className="mr-2 h-4 w-4" /> Sair
+        <LogOut className="mr-2 h-4 w-4" /> {t("nav.signOut")}
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
-);
+  );
+};
 
 // ─── Main AppShell ────────────────────────────────────────────────────────────
 
@@ -207,6 +214,7 @@ export function AppShell({
   const navigate = useNavigate();
   const { profile, isAdmin, signOut } = useAuth();
   const { get } = useSettings();
+  const { t, lang } = useI18n();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   // Close mobile menu on route change
@@ -278,7 +286,7 @@ export function AppShell({
         {supportHref ? (
           <Button asChild variant="secondary" size="sm" className="w-full">
             <a href={supportHref} target="_blank" rel="noreferrer">
-              <MessageCircle className="mr-2 h-4 w-4" /> Falar com suporte
+              <MessageCircle className="mr-2 h-4 w-4" /> {t("nav.support")}
             </a>
           </Button>
         ) : null}
@@ -290,7 +298,8 @@ export function AppShell({
       sponsor,
       supportHref,
       variant,
-      items.length, // only re-render if nav items count changes
+      items,
+      lang,
     ],
   );
 
@@ -335,6 +344,8 @@ export function AppShell({
 
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
             {/* NotificationsBell loads async — won't block header render */}
+            <LanguageSwitcher />
+
             <NotificationsBell userId={profile?.id} />
 
             <UserMenu

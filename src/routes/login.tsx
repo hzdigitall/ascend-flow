@@ -4,7 +4,9 @@ import { toast } from "sonner";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { signInSchema } from "@/lib/validators";
+import { useI18n } from "@/lib/i18n";
 import { Logo } from "@/components/Logo";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +27,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
@@ -50,12 +53,12 @@ function LoginPage() {
     if (error) {
       toast.error(
         error.message.includes("Invalid login")
-          ? "E-mail ou senha incorretos."
-          : "Não foi possível entrar. Tente novamente.",
+          ? t("login.error.invalid")
+          : t("login.error.generic"),
       );
       return;
     }
-    toast.success("Bem-vindo de volta!");
+    toast.success(t("login.success"));
     navigate({ to: "/dashboard", replace: true });
   };
 
@@ -64,16 +67,16 @@ function LoginPage() {
       <div className="relative hidden overflow-hidden bg-secondary lg:block">
         <img
           src={ceoAsset.url}
-          alt="CEO da Arena Saúde"
+          alt={t("auth.hero.alt")}
           className="absolute inset-0 h-full w-full object-cover object-top"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
         <div className="relative z-10 flex h-full flex-col items-center justify-center px-12 text-center text-white">
           <h2 className="text-3xl font-extrabold leading-tight drop-shadow-md sm:text-4xl lg:text-5xl">
-            Seu futuro, nosso propósito.
+            {t("auth.hero.title")}
           </h2>
           <p className="mt-4 text-base text-white/90 drop-shadow sm:text-lg">
-            Saúde, bem estar e resultados através de tecnologia e ciência.
+            {t("auth.hero.subtitle")}
           </p>
         </div>
         <p className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-sm text-white/80">
@@ -81,18 +84,19 @@ function LoginPage() {
         </p>
       </div>
 
-
-
       <div className="flex items-center justify-center px-4 py-12 bg-background">
         <div className="w-full max-w-md">
-          <div className="mb-8 lg:hidden">
-            <Logo />
+          <div className="mb-8 flex items-center justify-between gap-2">
+            <div className="lg:hidden">
+              <Logo />
+            </div>
+            <LanguageSwitcher className="ml-auto" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Entrar na sua conta</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t("login.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Ainda não tem conta?{" "}
+            {t("login.noAccount")}{" "}
             <Link to="/cadastro" className="font-medium text-primary hover:underline">
-              Criar conta
+              {t("common.signup")}
             </Link>
           </p>
 
@@ -100,7 +104,7 @@ function LoginPage() {
             <CardContent className="p-6">
               <form onSubmit={onSubmit} className="space-y-4" noValidate>
                 <div className="space-y-1.5">
-                  <Label htmlFor="email">E-mail</Label>
+                  <Label htmlFor="email">{t("login.email")}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -116,12 +120,12 @@ function LoginPage() {
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Senha</Label>
+                    <Label htmlFor="password">{t("login.password")}</Label>
                     <Link
                       to="/recuperar-senha"
                       className="text-xs font-medium text-primary hover:underline"
                     >
-                      Esqueci minha senha
+                      {t("login.forgot")}
                     </Link>
                   </div>
                   <div className="relative">
@@ -137,7 +141,7 @@ function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setShow((s) => !s)}
-                      aria-label={show ? "Ocultar senha" : "Mostrar senha"}
+                      aria-label={show ? t("login.hidePassword") : t("login.showPassword")}
                       className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:text-foreground"
                     >
                       {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -150,20 +154,20 @@ function LoginPage() {
 
                 <Button type="submit" className="w-full" size="lg" disabled={loading}>
                   {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  Entrar
+                  {t("login.submit")}
                 </Button>
               </form>
             </CardContent>
           </Card>
 
           <p className="mt-6 text-center text-xs text-muted-foreground">
-            Ao continuar você concorda com nossos{" "}
+            {t("login.agree")}{" "}
             <Link to="/termos" className="underline underline-offset-2">
-              Termos
+              {t("common.terms")}
             </Link>{" "}
-            e{" "}
+            {t("login.and")}{" "}
             <Link to="/privacidade" className="underline underline-offset-2">
-              Política de Privacidade
+              {t("login.privacyPolicy")}
             </Link>
             .
           </p>

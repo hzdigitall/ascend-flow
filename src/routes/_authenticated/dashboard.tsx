@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { brl, dateBR, dateTimeBR, pts } from "@/lib/format";
 import { referralLink as buildReferralLink } from "@/lib/site";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -34,6 +35,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function DashboardPage() {
   const { profile, wallet } = useAuth();
+  const { t } = useI18n();
 
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard", profile?.id],
@@ -96,7 +98,7 @@ function DashboardPage() {
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(refLink);
-    toast.success("Link de indicação copiado!");
+    toast.success(t("dash.copied"));
   };
 
   const directs = (data?.referrals ?? []).filter((r) => r.level === 1).length;
@@ -104,12 +106,12 @@ function DashboardPage() {
   return (
     <UserShell>
       <PageHeader
-        title={`Olá, ${profile?.full_name?.split(" ")[0] ?? "bem-vindo"}!`}
-        description="Este é o resumo da sua conta hoje."
+        title={t("dash.hello", { name: profile?.full_name?.split(" ")[0] ?? t("dash.welcome") })}
+        description={t("dash.subtitle")}
         action={
           <Button asChild>
             <Link to="/planos">
-              <Sparkles className="mr-2 h-4 w-4" /> Ver planos
+              <Sparkles className="mr-2 h-4 w-4" /> {t("dash.seePlans")}
             </Link>
           </Button>
         }
@@ -126,7 +128,7 @@ function DashboardPage() {
             </div>
             {data.banner.button_url ? (
               <Button asChild variant="secondary" className="shrink-0">
-                <a href={data.banner.button_url}>{data.banner.button_label ?? "Saiba mais"}</a>
+                <a href={data.banner.button_url}>{data.banner.button_label ?? t("dash.knowMore")}</a>
               </Button>
             ) : null}
           </CardContent>
@@ -135,30 +137,30 @@ function DashboardPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Saldo principal"
+          label={t("dash.balance.main")}
           value={brl(wallet?.main_balance)}
           icon={Wallet}
           loading={!wallet}
         />
         <StatCard
-          label="Ganhos"
+          label={t("dash.balance.earnings")}
           value={brl(wallet?.earnings_balance)}
           icon={TrendingUp}
           tone="success"
           loading={!wallet}
         />
         <StatCard
-          label="Comissões de indicação"
+          label={t("dash.balance.referral")}
           value={brl(wallet?.referral_balance)}
           icon={Users}
           tone="secondary"
           loading={!wallet}
         />
         <StatCard
-          label="Pontos"
+          label={t("dash.balance.points")}
           value={pts(wallet?.points_balance)}
           icon={Coins}
-          hint="Use na loja de prêmios"
+          hint={t("dash.points.hint")}
           loading={!wallet}
         />
       </div>
@@ -166,21 +168,21 @@ function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="shadow-card lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-base">Movimentações recentes</CardTitle>
+            <CardTitle className="text-base">{t("dash.recent")}</CardTitle>
             <Button asChild variant="ghost" size="sm">
               <Link to="/carteira">
-                Ver tudo <ArrowUpRight className="ml-1 h-4 w-4" />
+                {t("common.seeAll")} <ArrowUpRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <p className="py-8 text-center text-sm text-muted-foreground">Carregando…</p>
+              <p className="py-8 text-center text-sm text-muted-foreground">{t("common.loading")}</p>
             ) : (data?.transactions.length ?? 0) === 0 ? (
               <EmptyState
                 icon={Wallet}
-                title="Nenhuma movimentação ainda"
-                description="Ative um plano ou indique amigos para começar a movimentar sua carteira."
+                title={t("dash.empty.title")}
+                description={t("dash.empty.text")}
               />
             ) : (
               <ul className="divide-y">
@@ -210,7 +212,7 @@ function DashboardPage() {
         <div className="space-y-4">
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle className="text-base">Plano atual</CardTitle>
+              <CardTitle className="text-base">{t("dash.currentPlan")}</CardTitle>
             </CardHeader>
             <CardContent>
               {data?.plan ? (
@@ -222,7 +224,7 @@ function DashboardPage() {
                   
                   <div className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">Progresso ROI</span>
+                      <span className="text-muted-foreground">{t("dash.roiProgress")}</span>
                       <span className="font-medium">{((data.planTotalRoi / (data.plan.price * 2)) * 100).toFixed(1)}%</span>
                     </div>
                     <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
@@ -232,22 +234,22 @@ function DashboardPage() {
                       />
                     </div>
                     <p className="text-[10px] text-muted-foreground">
-                      Limite de 200%: {brl(data.planTotalRoi)} de {brl(data.plan.price * 2)}
+                      {t("dash.roiCap", { earned: brl(data.planTotalRoi), cap: brl(data.plan.price * 2) })}
                     </p>
                   </div>
 
                   <p className="text-[10px] text-muted-foreground">
-                    Ativado em {dateBR(data.plan.activated_at)}
-                    {data.plan.expires_at ? ` · expira em ${dateBR(data.plan.expires_at)}` : ""}
+                    {t("dash.activatedAt", { date: dateBR(data.plan.activated_at) })}
+                    {data.plan.expires_at ? t("dash.expiresAt", { date: dateBR(data.plan.expires_at) }) : ""}
                   </p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   <p className="text-sm text-muted-foreground">
-                    Você ainda não tem um plano ativo.
+                    {t("dash.noPlan")}
                   </p>
                   <Button asChild className="w-full">
-                    <Link to="/planos">Escolher plano</Link>
+                    <Link to="/planos">{t("dash.choosePlan")}</Link>
                   </Button>
                 </div>
               )}
@@ -256,21 +258,21 @@ function DashboardPage() {
 
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle className="text-base">Seu link de indicação</CardTitle>
+              <CardTitle className="text-base">{t("dash.refLink")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                {directs} indicado{directs === 1 ? "" : "s"} direto{directs === 1 ? "" : "s"}
+                {t("dash.directs", { count: directs })}
               </p>
               <div className="rounded-xl bg-muted p-3">
                 <p className="break-all text-xs text-muted-foreground">{refLink || "—"}</p>
               </div>
               <div className="flex gap-2">
                 <Button onClick={copyLink} className="flex-1" disabled={!refLink}>
-                  <Copy className="mr-2 h-4 w-4" /> Copiar
+                  <Copy className="mr-2 h-4 w-4" /> {t("common.copy")}
                 </Button>
                 <Button asChild variant="outline">
-                  <Link to="/indicacoes">Rede</Link>
+                  <Link to="/indicacoes">{t("dash.network")}</Link>
                 </Button>
               </div>
             </CardContent>

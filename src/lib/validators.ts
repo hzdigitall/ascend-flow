@@ -32,21 +32,35 @@ export const passwordSchema = z
   .regex(/[A-Za-z]/, "Inclua ao menos uma letra")
   .regex(/[0-9]/, "Inclua ao menos um número");
 
+const signUpBase = {
+  fullName: z.string().trim().min(3, "Informe seu nome completo").max(120),
+  email: z.string().trim().email("E-mail inválido").max(255),
+  phone: phoneSchema,
+  password: passwordSchema,
+  confirmPassword: z.string(),
+  referralCode: z.string().trim().max(16).optional().or(z.literal("")),
+  terms: z.literal(true, { message: "É necessário aceitar os termos" }),
+};
+
+const matchPasswords = {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"] as (string | number)[],
+};
+
+
 export const signUpSchema = z
-  .object({
-    fullName: z.string().trim().min(3, "Informe seu nome completo").max(120),
-    email: z.string().trim().email("E-mail inválido").max(255),
-    phone: phoneSchema,
-    cpf: cpfSchema,
-    password: passwordSchema,
-    confirmPassword: z.string(),
-    referralCode: z.string().trim().max(16).optional().or(z.literal("")),
-    terms: z.literal(true, { message: "É necessário aceitar os termos" }),
-  })
-  .refine((d) => d.password === d.confirmPassword, {
-    message: "As senhas não coincidem",
-    path: ["confirmPassword"],
-  });
+  .object({ ...signUpBase, cpf: cpfSchema })
+  .refine((d) => d.password === d.confirmPassword, matchPasswords);
+
+/** CPF é exigido apenas em português; em inglês o campo não é exibido nem validado. */
+export function makeSignUpSchema(requireCpf: boolean) {
+  return requireCpf
+    ? signUpSchema
+    : z
+        .object({ ...signUpBase, cpf: z.string().optional().or(z.literal("")) })
+        .refine((d) => d.password === d.confirmPassword, matchPasswords);
+}
+
 
 export const signInSchema = z.object({
   email: z.string().trim().email("E-mail inválido"),
