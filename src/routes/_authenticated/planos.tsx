@@ -88,65 +88,63 @@ function PlansPage() {
     },
   });
 
+  const fetchMyPlans = useServerFn(getMyActivePlans);
+
   const activeQuery = useQuery({
     queryKey: ["my-plans"],
     refetchInterval: 60_000,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
     queryFn: async () => {
-      const [plansRes, txRes] = await Promise.all([
-        supabase
-          .from("user_plans")
-          .select("*")
-          .eq("status", "active")
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("wallet_transactions")
-          .select("amount, reference_id, created_at")
-          .eq("category", "earning")
-          .order("created_at", { ascending: false }),
-      ]);
-      if (plansRes.error) throw plansRes.error;
-      if (txRes.error) throw txRes.error;
-
-      const totals = new Map<string, { total: number; last: string }>();
-      for (const tx of txRes.data ?? []) {
-        if (!tx.reference_id) continue;
-        const prev = totals.get(tx.reference_id);
-        totals.set(tx.reference_id, {
-          total: (prev?.total ?? 0) + Number(tx.amount),
-          last: prev?.last ?? tx.created_at,
-        });
-      }
-
+      const rows = await fetchMyPlans({ data: undefined });
       const now = Date.now();
-      return (plansRes.data ?? [])
-        .filter((p) => !p.expires_at || new Date(p.expires_at).getTime() > now)
-        .map((p) => {
-        const agg = totals.get(p.id);
-        const price = Number(p.price);
-        const earned = agg?.total ?? 0;
-        const activatedAt = p.activated_at ? new Date(p.activated_at) : null;
-        const lastCredit = agg?.last ? new Date(agg.last) : null;
-        const nextCredit = lastCredit
-          ? new Date(lastCredit.getTime() + 86_400_000)
-          : activatedAt
-            ? new Date(activatedAt.getTime() + 86_400_000)
-            : null;
-        return {
-          ...p,
-          price,
-          earned,
-          target: price,
-          progress: price > 0 ? Math.min(100, (earned / price) * 100) : 0,
-          dailyAmount: (price * roiPct(p.plan_name)) / 100,
-          nextCredit,
-          firstCreditPending: !lastCredit,
-        };
+      return (rows ?? [])
+        .filter((p: any) => !p.expires_at || new Date(p.expires_at).getTime() > now)
+        .map((p: any) => {
+          const price = Number(p.price);
+          const earned = Number(p.earned_total ?? 0);
+          const activatedAt = p.activated_at ? new Date(p.activated_at) : null;
+          const lastCredit = p.last_earning_at ? new Date(p.last_earning_at) : null;
+          const nextCredit = lastCredit
+            ? new Date(lastCredit.getTime() + 86_400_000)
+            : activatedAt
+              ? new Date(activatedAt.getTime() + 86_400_000)
+              : null;
+          return {
+            ...p,
+            price,
+            earned,
+            target: price,
+            progress: price > 0 ? Math.min(100, (earned / price) * 100) : 0,
+            dailyAmount: (price * roiPct(p.plan_name)) / 100,
+            nextCredit,
+            firstCreditPending: !lastCredit,
+          };
         })
-        .filter((p) => p.earned < p.target);
+        .filter((p: any) => p.earned < p.target);
     },
   });
+
+  // Tempo real: qualquer mudança nos planos do usuário atualiza a lista na hora.
+  const userId = user?.id;
+  const refetchActive = activeQuery.refetch;
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase
+      .channel(`user-plans-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_plans", filter: `user_id=eq.${userId}` },
+        () => {
+          refetchActive();
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, refetchActive]);
+
 
   // Compra direta do plano: o pagamento é aplicado no plano, sem creditar saldo livre.
   const buy = async (planId: string, method: "pix" | "usdt") => {
