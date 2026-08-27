@@ -90,6 +90,9 @@ function PlansPage() {
 
   const activeQuery = useQuery({
     queryKey: ["my-plans"],
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       const [plansRes, txRes] = await Promise.all([
         supabase
