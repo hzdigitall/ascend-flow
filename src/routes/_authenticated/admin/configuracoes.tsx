@@ -20,6 +20,7 @@ import {
 import { brl, dateTimeBR } from "@/lib/format";
 import { UsdtRateCard } from "@/components/admin/UsdtRateCard";
 import { normalizeRate } from "@/lib/usdt";
+import { WhatsappAutomationCard } from "@/components/admin/WhatsappAutomationCard";
 
 const items: NavItem[] = [
   { label: "Visão geral", to: "/admin/dashboard", icon: LayoutDashboard, section: "Administração" },
@@ -63,6 +64,7 @@ function SettingsPage() {
     <AppShell items={items} variant="admin">
       <PageHeader title="Configurações" description="Ajuste as variáveis globais do sistema." />
       <UsdtRateCard currentRate={normalizeRate(rateValue)} onSaved={() => void refetch()} />
+      <WhatsappAutomationCard />
       <Card className="shadow-card">
 
         <CardContent className="p-0">
