@@ -71,12 +71,6 @@ function LoginPage() {
             Saúde, bem estar e resultados através de tecnologia e ciência.
           </p>
         </div>
-        <img
-          src={especialistaAsset.url}
-          alt="Especialista Arena Saúde"
-          loading="lazy"
-          className="pointer-events-none mt-6 h-auto w-auto max-h-[46%] max-w-[68%] object-contain object-bottom drop-shadow-2xl"
-        />
         <p className="absolute bottom-6 left-12 text-sm text-white/70">
           © {new Date().getFullYear()} Arena Saúde
         </p>
