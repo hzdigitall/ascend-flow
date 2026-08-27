@@ -13,6 +13,7 @@ import {
   adminSendPasswordReset,
   adminUpdateUser,
 } from "@/lib/admin.functions";
+import { SITE_URL } from "@/lib/site";
 import { AppShell } from "@/components/layout/AppShell";
 import { adminNav } from "@/lib/adminNav";
 import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
