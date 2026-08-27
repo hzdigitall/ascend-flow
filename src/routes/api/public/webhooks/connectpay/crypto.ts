@@ -99,6 +99,8 @@ export const Route = createFileRoute("/api/public/webhooks/connectpay/crypto")({
                 _payload: { provider_status: status, source: "webhook" } as never,
               });
             }
+            const { notifyWithdrawalStatus } = await import("@/lib/whatsapp.server");
+            await notifyWithdrawalStatus(supabaseAdmin, w.id);
             await finishWebhookEvent(supabaseAdmin, eventId, "processed", status);
             return Response.json({ received: true });
           }

@@ -84,6 +84,8 @@ export const Route = createFileRoute("/api/public/webhooks/connectpay/cashout")(
             });
           }
 
+          const { notifyWithdrawalStatus } = await import("@/lib/whatsapp.server");
+          await notifyWithdrawalStatus(supabaseAdmin, w.id);
           await finishWebhookEvent(supabaseAdmin, eventId, "processed", status ?? undefined);
         } catch (err) {
           await finishWebhookEvent(

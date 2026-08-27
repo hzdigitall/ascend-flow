@@ -24,6 +24,8 @@ export const adminConfirmPayment = createServerFn({ method: "POST" })
       record_id: data.paymentId,
       new_value: { note: data.note ?? null },
     });
+    const { notifyCommissionsForPayment } = await import("./whatsapp.server");
+    await notifyCommissionsForPayment(supabaseAdmin, data.paymentId);
     return { ok: true };
   });
 
@@ -48,6 +50,8 @@ export const adminProcessWithdrawal = createServerFn({ method: "POST" })
       _reason: data.reason ?? "",
     });
     if (error) throw new Error(error.message);
+    const { notifyWithdrawalStatus } = await import("./whatsapp.server");
+    await notifyWithdrawalStatus(supabaseAdmin, data.withdrawalId);
     return { ok: true };
   });
 

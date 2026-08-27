@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyMySignup } from "@/lib/whatsapp.functions";
 import { signUpSchema } from "@/lib/validators";
 import { maskCPF, maskPhone, onlyDigits } from "@/lib/format";
 import { Logo } from "@/components/Logo";
@@ -92,6 +93,13 @@ function SignUpPage() {
     }
 
     if (data.user || data.session) {
+      if (data.session) {
+        try {
+          await notifyMySignup({ data: undefined });
+        } catch {
+          // notificação opcional: nunca bloqueia o cadastro
+        }
+      }
       toast.success("Conta criada com sucesso!");
       navigate({ to: "/dashboard", replace: true });
       return;
