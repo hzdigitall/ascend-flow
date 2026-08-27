@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
+import ceoAsset from "@/assets/arena-ceo.png.asset.json";
 
 const searchSchema = z.object({ ref: z.string().optional() });
 
@@ -298,6 +299,7 @@ function SignUpPage() {
             </form>
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   );
