@@ -389,3 +389,51 @@ export function createCryptoWithdraw(
     idempotencyKey,
   });
 }
+
+/* ---------------------------------------------------------------- */
+/* Helpers de leitura tolerante da resposta de depósito crypto      */
+/* ---------------------------------------------------------------- */
+
+const ADDRESS_KEYS = [
+  "deposit_address",
+  "depositAddress",
+  "pay_address",
+  "payAddress",
+  "address",
+  "wallet",
+  "wallet_address",
+  "walletAddress",
+];
+
+const QR_KEYS = ["qr_code", "qrCode", "qr_code_base64", "qrcode", "qr"];
+
+function deepFind(payload: unknown, keys: string[], depth = 0): string | null {
+  if (!payload || typeof payload !== "object" || depth > 4) return null;
+  const obj = payload as Record<string, unknown>;
+  for (const key of keys) {
+    const value = obj[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  for (const value of Object.values(obj)) {
+    const found = deepFind(value, keys, depth + 1);
+    if (found) return found;
+  }
+  return null;
+}
+
+/** Extrai o endereço de depósito da resposta, seja ela plana ou aninhada. */
+export function extractDepositAddress(response: unknown): string | null {
+  return deepFind(response, ADDRESS_KEYS);
+}
+
+/** Extrai o QR code (payload/base64) da resposta, se houver. */
+export function extractQrCode(response: unknown): string | null {
+  return deepFind(response, QR_KEYS);
+}
+
+/** Log seguro (apenas chaves) quando o endereço não vem na resposta. */
+export function logMissingAddress(context: string, response: unknown) {
+  const keys =
+    response && typeof response === "object" ? Object.keys(response as object) : typeof response;
+  console.error(`[connectpay] ${context}: resposta sem endereço. Chaves: ${JSON.stringify(keys)}`);
+}
