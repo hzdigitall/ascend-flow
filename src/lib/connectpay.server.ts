@@ -63,6 +63,23 @@ export function friendlyMessage(status: number): string {
   }
 }
 
+/** IP do cliente (a ConnectPay exige um IP válido em /v1/transactions). */
+export async function clientIp(): Promise<string> {
+  try {
+    const { getRequestHeader } = await import("@tanstack/react-start/server");
+    const raw =
+      getRequestHeader("x-forwarded-for") ??
+      getRequestHeader("cf-connecting-ip") ??
+      getRequestHeader("x-real-ip") ??
+      "";
+    const first = String(raw).split(",")[0]?.trim() ?? "";
+    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(first) || /^[0-9a-fA-F:]{3,}$/.test(first)) return first;
+  } catch {
+    // sem contexto de requisição
+  }
+  return "127.0.0.1";
+}
+
 export function webhookBaseUrl(gateway: GatewayRow | null): string {
   const base =
     gateway?.webhook_base_url ||
