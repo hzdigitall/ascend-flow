@@ -321,9 +321,7 @@ function PlansPage() {
                           {brl(p.price)} · {fmtPct(roiPct(p.plan_name))} ao dia
                         </p>
                       </div>
-                      <Badge variant={p.status === "active" ? "secondary" : "outline"}>
-                        {p.status === "active" ? "Ativo" : "Aguardando pagamento"}
-                      </Badge>
+                      <Badge variant="secondary">Ativo</Badge>
                     </div>
 
                     <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
