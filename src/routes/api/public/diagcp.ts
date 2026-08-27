@@ -14,8 +14,9 @@ export const Route = createFileRoute("/api/public/diagcp")({
           total_amount: 50,
           payment_method: "PIX",
           webhook_url: cp.webhookUrls(gateway).pixCashIn,
+          ip: "8.8.8.8",
           items: [
-            { id: crypto.randomUUID(), title: "Teste", price: 50, quantity: 1, is_physical: false },
+            { id: crypto.randomUUID(), title: "Teste", description: "Teste", price: 50, quantity: 1, is_physical: false },
           ],
           customer: {
             name: "Teste Silva",
