@@ -198,7 +198,7 @@ function PlansPage() {
           <TabsTrigger value="disponiveis">Adquirir</TabsTrigger>
           <TabsTrigger value="ativos">
             Planos ativos
-            {activeQuery.data ? ` (${activeQuery.data.filter((p) => p.status === "active").length})` : ""}
+            {activeQuery.data ? ` (${activeQuery.data.filter((p: any) => p.status === "active").length})` : ""}
           </TabsTrigger>
         </TabsList>
 
@@ -317,7 +317,7 @@ function PlansPage() {
             />
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
-              {activeQuery.data!.map((p) => (
+              {activeQuery.data!.map((p: any) => (
                 <Card key={p.id} className="shadow-card">
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between gap-3">
