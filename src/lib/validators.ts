@@ -44,8 +44,9 @@ const signUpBase = {
 
 const matchPasswords = {
   message: "As senhas não coincidem",
-  path: ["confirmPassword"] as const,
+  path: ["confirmPassword"] as (string | number)[],
 };
+
 
 export const signUpSchema = z
   .object({ ...signUpBase, cpf: cpfSchema })
