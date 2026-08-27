@@ -1,11 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Clock, Coins, Loader2, Sparkles, TrendingUp, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { purchasePlanWithBalance } from "@/lib/app.functions";
+import { getMyActivePlans } from "@/lib/plans.functions";
 import { createPlanCheckout } from "@/lib/plan-checkout.functions";
 import { useUsdtRate } from "@/hooks/useUsdtRate";
 import { brlToUsdt, fmtUsdt } from "@/lib/usdt";
@@ -63,7 +64,7 @@ type WalletKey = "main" | "earnings" | "referral";
 
 function PlansPage() {
   const navigate = useNavigate();
-  const { wallet, refresh } = useAuth();
+  const { user, wallet, refresh } = useAuth();
   const startCheckout = useServerFn(createPlanCheckout);
   const usdtRate = useUsdtRate();
   const buyWithBalance = useServerFn(purchasePlanWithBalance);
@@ -88,65 +89,63 @@ function PlansPage() {
     },
   });
 
+  const fetchMyPlans = useServerFn(getMyActivePlans);
+
   const activeQuery = useQuery({
     queryKey: ["my-plans"],
     refetchInterval: 60_000,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
     queryFn: async () => {
-      const [plansRes, txRes] = await Promise.all([
-        supabase
-          .from("user_plans")
-          .select("*")
-          .eq("status", "active")
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("wallet_transactions")
-          .select("amount, reference_id, created_at")
-          .eq("category", "earning")
-          .order("created_at", { ascending: false }),
-      ]);
-      if (plansRes.error) throw plansRes.error;
-      if (txRes.error) throw txRes.error;
-
-      const totals = new Map<string, { total: number; last: string }>();
-      for (const tx of txRes.data ?? []) {
-        if (!tx.reference_id) continue;
-        const prev = totals.get(tx.reference_id);
-        totals.set(tx.reference_id, {
-          total: (prev?.total ?? 0) + Number(tx.amount),
-          last: prev?.last ?? tx.created_at,
-        });
-      }
-
+      const rows = await fetchMyPlans({ data: undefined });
       const now = Date.now();
-      return (plansRes.data ?? [])
-        .filter((p) => !p.expires_at || new Date(p.expires_at).getTime() > now)
-        .map((p) => {
-        const agg = totals.get(p.id);
-        const price = Number(p.price);
-        const earned = agg?.total ?? 0;
-        const activatedAt = p.activated_at ? new Date(p.activated_at) : null;
-        const lastCredit = agg?.last ? new Date(agg.last) : null;
-        const nextCredit = lastCredit
-          ? new Date(lastCredit.getTime() + 86_400_000)
-          : activatedAt
-            ? new Date(activatedAt.getTime() + 86_400_000)
-            : null;
-        return {
-          ...p,
-          price,
-          earned,
-          target: price,
-          progress: price > 0 ? Math.min(100, (earned / price) * 100) : 0,
-          dailyAmount: (price * roiPct(p.plan_name)) / 100,
-          nextCredit,
-          firstCreditPending: !lastCredit,
-        };
+      return (rows ?? [])
+        .filter((p: any) => !p.expires_at || new Date(p.expires_at).getTime() > now)
+        .map((p: any) => {
+          const price = Number(p.price);
+          const earned = Number(p.earned_total ?? 0);
+          const activatedAt = p.activated_at ? new Date(p.activated_at) : null;
+          const lastCredit = p.last_earning_at ? new Date(p.last_earning_at) : null;
+          const nextCredit = lastCredit
+            ? new Date(lastCredit.getTime() + 86_400_000)
+            : activatedAt
+              ? new Date(activatedAt.getTime() + 86_400_000)
+              : null;
+          return {
+            ...p,
+            price,
+            earned,
+            target: price,
+            progress: price > 0 ? Math.min(100, (earned / price) * 100) : 0,
+            dailyAmount: (price * roiPct(p.plan_name)) / 100,
+            nextCredit,
+            firstCreditPending: !lastCredit,
+          };
         })
-        .filter((p) => p.earned < p.target);
+        .filter((p: any) => p.earned < p.target);
     },
   });
+
+  // Tempo real: qualquer mudança nos planos do usuário atualiza a lista na hora.
+  const userId = user?.id;
+  const refetchActive = activeQuery.refetch;
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase
+      .channel(`user-plans-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_plans", filter: `user_id=eq.${userId}` },
+        () => {
+          refetchActive();
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, refetchActive]);
+
 
   // Compra direta do plano: o pagamento é aplicado no plano, sem creditar saldo livre.
   const buy = async (planId: string, method: "pix" | "usdt") => {
@@ -199,7 +198,7 @@ function PlansPage() {
           <TabsTrigger value="disponiveis">Adquirir</TabsTrigger>
           <TabsTrigger value="ativos">
             Planos ativos
-            {activeQuery.data ? ` (${activeQuery.data.filter((p) => p.status === "active").length})` : ""}
+            {activeQuery.data ? ` (${activeQuery.data.filter((p: any) => p.status === "active").length})` : ""}
           </TabsTrigger>
         </TabsList>
 
@@ -318,7 +317,7 @@ function PlansPage() {
             />
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
-              {activeQuery.data!.map((p) => (
+              {activeQuery.data!.map((p: any) => (
                 <Card key={p.id} className="shadow-card">
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between gap-3">

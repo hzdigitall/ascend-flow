@@ -813,6 +813,60 @@ export type Database = {
           },
         ]
       }
+      plan_audit_logs: {
+        Row: {
+          created_at: string
+          details: Json
+          earned_total: number
+          event: string
+          id: string
+          new_status: string | null
+          old_status: string | null
+          plan_name: string
+          user_id: string
+          user_plan_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json
+          earned_total?: number
+          event: string
+          id?: string
+          new_status?: string | null
+          old_status?: string | null
+          plan_name?: string
+          user_id: string
+          user_plan_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json
+          earned_total?: number
+          event?: string
+          id?: string
+          new_status?: string | null
+          old_status?: string | null
+          plan_name?: string
+          user_id?: string
+          user_plan_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_audit_logs_user_plan_id_fkey"
+            columns: ["user_plan_id"]
+            isOneToOne: false
+            referencedRelation: "user_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plans: {
         Row: {
           active: boolean
@@ -1511,6 +1565,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      expire_due_plans: { Args: { _user?: string }; Returns: number }
       generate_referral_code: { Args: never; Returns: string }
       get_my_sponsor: {
         Args: never
@@ -1521,6 +1576,7 @@ export type Database = {
         }[]
       }
       get_setting: { Args: { _default: Json; _key: string }; Returns: Json }
+      has_active_plan: { Args: { _user: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1529,6 +1585,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      notify_expiring_plans: { Args: { _days?: number }; Returns: number }
       process_daily_roi: { Args: never; Returns: undefined }
       process_withdrawal: {
         Args: { _action: string; _admin: string; _reason: string; _wid: string }
