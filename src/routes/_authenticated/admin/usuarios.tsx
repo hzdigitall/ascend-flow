@@ -139,7 +139,7 @@ function UsersPage() {
 
   const resetPassword = useMutation({
     mutationFn: (email: string) =>
-      sendReset({ data: { email, redirectTo: `${window.location.origin}/login` } }),
+      sendReset({ data: { email, redirectTo: `${SITE_URL}/login` } }),
     onSuccess: () => toast.success("E-mail de redefinição enviado."),
     onError: (e: Error) => toast.error(e.message),
   });

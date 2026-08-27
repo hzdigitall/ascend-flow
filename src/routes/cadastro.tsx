@@ -6,6 +6,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyMySignup } from "@/lib/whatsapp.functions";
 import { signUpSchema } from "@/lib/validators";
+import { SITE_URL } from "@/lib/site";
 import { maskCPF, maskPhone, onlyDigits } from "@/lib/format";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -72,7 +73,7 @@ function SignUpPage() {
       email: parsed.data.email,
       password: parsed.data.password,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: SITE_URL,
         data: {
           full_name: parsed.data.fullName,
           phone: onlyDigits(parsed.data.phone),

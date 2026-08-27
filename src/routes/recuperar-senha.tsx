@@ -36,7 +36,7 @@ function ForgotPasswordPage() {
     }
     setLoading(true);
     await supabase.auth.resetPasswordForEmail(parsed.data, {
-      redirectTo: `${window.location.origin}/redefinir-senha`,
+      redirectTo: `${SITE_URL}/redefinir-senha`,
     });
     setLoading(false);
     setSent(true);
