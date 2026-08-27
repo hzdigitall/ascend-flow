@@ -1282,6 +1282,51 @@ export type Database = {
           },
         ]
       }
+      whatsapp_settings: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: boolean
+          notify_commission: boolean
+          notify_deposit: boolean
+          notify_referral: boolean
+          notify_withdrawal: boolean
+          token_ciphertext: string | null
+          token_iv: string | null
+          token_last_four: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: boolean
+          notify_commission?: boolean
+          notify_deposit?: boolean
+          notify_referral?: boolean
+          notify_withdrawal?: boolean
+          token_ciphertext?: string | null
+          token_iv?: string | null
+          token_last_four?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: boolean
+          notify_commission?: boolean
+          notify_deposit?: boolean
+          notify_referral?: boolean
+          notify_withdrawal?: boolean
+          token_ciphertext?: string | null
+          token_iv?: string | null
+          token_last_four?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       withdrawals: {
         Row: {
           amount: number
