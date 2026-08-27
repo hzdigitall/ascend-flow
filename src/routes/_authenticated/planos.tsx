@@ -143,7 +143,8 @@ function PlansPage() {
           nextCredit,
           firstCreditPending: !lastCredit,
         };
-      });
+        })
+        .filter((p) => p.earned < p.target);
     },
   });
 
