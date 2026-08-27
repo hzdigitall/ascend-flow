@@ -13,6 +13,7 @@ import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import OrbitalSphereBackground from "@/components/ui/orbital-sphere";
+import ceoAlicia from "@/assets/ceo-alicia.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -101,32 +102,32 @@ function Landing() {
       <section className="relative isolate overflow-hidden">
         <OrbitalSphereBackground className="opacity-70" />
         <div className="relative mx-auto max-w-6xl px-4 py-14 text-center sm:py-20">
-        <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
-          <Sparkles className="h-3.5 w-3.5" /> Saúde · Bem Estar · Resultados
-        </span>
-        <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
-          Seu futuro, <span className="text-primary">nosso propósito</span>.
-        </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
-          Uma marca criada para transformar escolhas em conquistas. Unimos saúde, qualidade,
-          resultados, transparência e oportunidade em um só ecossistema.
-        </p>
-        <div className="mt-9 flex flex-wrap justify-center gap-3">
-          <Button asChild size="lg">
-            <Link to="/cadastro">Começar agora</Link>
-          </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link to="/login">Já tenho conta</Link>
-          </Button>
-        </div>
-
-        <div className="mx-auto mt-10 flex max-w-2xl items-start gap-3 rounded-xl border border-primary/20 bg-primary-soft p-4 text-left">
-          <Gift className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
-          <p className="text-sm text-foreground">
-            <strong>Bônus de R$ 30 no cadastro:</strong> o plano mínimo é R$ 50 e você deposita
-            apenas R$ 20 no primeiro aporte.
+          <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary-soft px-4 py-1.5 text-xs font-semibold text-primary">
+            <Sparkles className="h-3.5 w-3.5" /> Saúde · Bem Estar · Resultados
+          </span>
+          <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
+            Seu futuro, <span className="text-primary">nosso propósito</span>.
+          </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
+            Uma marca criada para transformar escolhas em conquistas. Unimos saúde, qualidade,
+            resultados, transparência e oportunidade em um só ecossistema.
           </p>
-        </div>
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
+            <Button asChild size="lg">
+              <Link to="/cadastro">Começar agora</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link to="/login">Já tenho conta</Link>
+            </Button>
+          </div>
+
+          <div className="mx-auto mt-10 flex max-w-2xl items-start gap-3 rounded-xl border border-primary/20 bg-primary-soft p-4 text-left">
+            <Gift className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+            <p className="text-sm text-foreground">
+              <strong>Bônus de R$ 30 no cadastro:</strong> o plano mínimo é R$ 50 e você deposita
+              apenas R$ 20 no primeiro aporte.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -144,6 +145,43 @@ function Landing() {
             </Card>
           ))}
         </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-16">
+        <Card className="overflow-hidden shadow-card">
+          <div className="grid gap-0 lg:grid-cols-[320px_1fr]">
+            <div className="relative aspect-[4/5] w-full bg-muted lg:aspect-auto lg:h-full">
+              <img
+                src={ceoAlicia}
+                alt="Alicia Franco, CEO da Arena Saúde"
+                className="h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <CardContent className="flex flex-col justify-center gap-4 p-6 sm:p-10">
+              <span className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
+                <Crown className="h-3.5 w-3.5" aria-hidden /> Quem lidera
+              </span>
+              <div>
+                <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+                  Alicia Franco
+                </h2>
+                <p className="mt-1 text-sm font-semibold text-primary">CEO · Arena Saúde</p>
+              </div>
+              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                Fundadora e responsável por guiar a visão da Arena Saúde, Alicia Franco
+                acredita que saúde, propósito e oportunidade caminham juntos. Sob sua liderança,
+                a marca une produtos premium, um ecossistema de pontos e um plano de carreira
+                para transformar escolhas em conquistas reais na vida de cada participante.
+              </p>
+              <p className="text-sm font-semibold text-foreground">
+                "Nosso propósito é construir um futuro onde cada pessoa tem acesso à saúde e à
+                oportunidade de crescer."
+              </p>
+            </CardContent>
+          </div>
+        </Card>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-16">
