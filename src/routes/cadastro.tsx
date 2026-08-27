@@ -1,14 +1,16 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyMySignup } from "@/lib/whatsapp.functions";
-import { signUpSchema } from "@/lib/validators";
+import { makeSignUpSchema } from "@/lib/validators";
+import { useI18n } from "@/lib/i18n";
 import { SITE_URL } from "@/lib/site";
 import { maskCPF, maskPhone, onlyDigits } from "@/lib/format";
 import { Logo } from "@/components/Logo";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +39,9 @@ export const Route = createFileRoute("/cadastro")({
 function SignUpPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
+  const { t, lang } = useI18n();
+  const requireCpf = lang === "pt";
+  const schema = useMemo(() => makeSignUpSchema(requireCpf), [requireCpf]);
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -61,7 +66,7 @@ function SignUpPage() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = signUpSchema.safeParse(form);
+    const parsed = schema.safeParse(requireCpf ? form : { ...form, cpf: "" });
     if (!parsed.success) {
       const map: Record<string, string> = {};
       for (const issue of parsed.error.issues) map[String(issue.path[0])] = issue.message;
@@ -70,6 +75,7 @@ function SignUpPage() {
     }
     setErrors({});
     setLoading(true);
+    const cpfDigits = requireCpf ? onlyDigits(parsed.data.cpf ?? "") : null;
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
@@ -78,7 +84,7 @@ function SignUpPage() {
         data: {
           full_name: parsed.data.fullName,
           phone: onlyDigits(parsed.data.phone),
-          cpf: onlyDigits(parsed.data.cpf),
+          cpf: cpfDigits,
           referral_code: parsed.data.referralCode?.trim().toUpperCase() || null,
         },
       },
@@ -88,8 +94,8 @@ function SignUpPage() {
     if (error) {
       toast.error(
         error.message.includes("already registered")
-          ? "Este e-mail já está cadastrado."
-          : "Não foi possível criar sua conta. Tente novamente.",
+          ? t("signup.error.exists")
+          : t("signup.error.generic"),
       );
       return;
     }
@@ -102,7 +108,7 @@ function SignUpPage() {
           // notificação opcional: nunca bloqueia o cadastro
         }
       }
-      toast.success("Conta criada com sucesso!");
+      toast.success(t("signup.success"));
       navigate({ to: "/dashboard", replace: true });
       return;
     }
@@ -115,12 +121,12 @@ function SignUpPage() {
         <Card className="w-full max-w-md shadow-card">
           <CardContent className="p-8 text-center">
             <Logo className="justify-center" />
-            <h1 className="mt-6 text-xl font-bold">Confirmação enviada</h1>
+            <h1 className="mt-6 text-xl font-bold">{t("signup.sent.title")}</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Enviamos um link de acesso para <strong>{form.email}</strong>. Por favor, verifique sua caixa de entrada para continuar.
+              {t("signup.sent.text", { email: form.email })}
             </p>
             <Button asChild className="mt-6 w-full">
-              <Link to="/login">Ir para o login</Link>
+              <Link to="/login">{t("signup.sent.cta")}</Link>
             </Button>
           </CardContent>
         </Card>
@@ -133,16 +139,16 @@ function SignUpPage() {
       <div className="relative hidden overflow-hidden bg-secondary lg:block">
         <img
           src={ceoAsset.url}
-          alt="CEO da Arena Saúde"
+          alt={t("auth.hero.alt")}
           className="absolute inset-0 h-full w-full object-cover object-top"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
         <div className="relative z-10 flex h-full flex-col items-center justify-center px-12 text-center text-white">
           <h2 className="text-3xl font-extrabold leading-tight drop-shadow-md sm:text-4xl lg:text-5xl">
-            Seu futuro, nosso propósito.
+            {t("auth.hero.title")}
           </h2>
           <p className="mt-4 text-base text-white/90 drop-shadow sm:text-lg">
-            Saúde, bem estar e resultados através de tecnologia e ciência.
+            {t("auth.hero.subtitle")}
           </p>
         </div>
         <p className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-sm text-white/80">
@@ -152,14 +158,17 @@ function SignUpPage() {
 
       <div className="flex min-h-screen items-center justify-center px-4 py-10 bg-background">
       <div className="w-full max-w-lg">
-        <div className="lg:hidden">
-          <Logo />
+        <div className="flex items-center justify-between gap-2">
+          <div className="lg:hidden">
+            <Logo />
+          </div>
+          <LanguageSwitcher className="ml-auto" />
         </div>
-        <h1 className="mt-6 text-2xl font-bold tracking-tight lg:mt-0">Criar sua conta</h1>
+        <h1 className="mt-6 text-2xl font-bold tracking-tight lg:mt-0">{t("signup.title")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Já tem uma conta?{" "}
+          {t("signup.haveAccount")}{" "}
           <Link to="/login" className="font-medium text-primary hover:underline">
-            Entrar
+            {t("common.login")}
           </Link>
         </p>
 
@@ -168,12 +177,12 @@ function SignUpPage() {
           <CardContent className="p-6">
             <form onSubmit={onSubmit} className="space-y-4" noValidate>
               <div className="space-y-1.5">
-                <Label htmlFor="fullName">Nome completo</Label>
+                <Label htmlFor="fullName">{t("signup.fullName")}</Label>
                 <Input
                   id="fullName"
                   value={form.fullName}
                   onChange={(e) => set("fullName", e.target.value)}
-                  placeholder="Maria da Silva"
+                  placeholder={t("signup.fullNamePlaceholder")}
                 />
                 {errors["fullName"] ? (
                   <p className="text-xs text-destructive">{errors["fullName"]}</p>
@@ -181,7 +190,7 @@ function SignUpPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="email">E-mail</Label>
+                <Label htmlFor="email">{t("signup.email")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -196,7 +205,7 @@ function SignUpPage() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor="phone">WhatsApp</Label>
+                  <Label htmlFor="phone">{t("signup.phone")}</Label>
                   <Input
                     id="phone"
                     inputMode="numeric"
@@ -208,22 +217,24 @@ function SignUpPage() {
                     <p className="text-xs text-destructive">{errors["phone"]}</p>
                   ) : null}
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="cpf">CPF</Label>
-                  <Input
-                    id="cpf"
-                    inputMode="numeric"
-                    value={form.cpf}
-                    onChange={(e) => set("cpf", maskCPF(e.target.value))}
-                    placeholder="000.000.000-00"
-                  />
-                  {errors["cpf"] ? <p className="text-xs text-destructive">{errors["cpf"]}</p> : null}
-                </div>
+                {requireCpf ? (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="cpf">{t("signup.cpf")}</Label>
+                    <Input
+                      id="cpf"
+                      inputMode="numeric"
+                      value={form.cpf}
+                      onChange={(e) => set("cpf", maskCPF(e.target.value))}
+                      placeholder="000.000.000-00"
+                    />
+                    {errors["cpf"] ? <p className="text-xs text-destructive">{errors["cpf"]}</p> : null}
+                  </div>
+                ) : null}
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor="password">Senha</Label>
+                  <Label htmlFor="password">{t("signup.password")}</Label>
                   <div className="relative">
                     <Input
                       id="password"
@@ -236,7 +247,7 @@ function SignUpPage() {
                     <button
                       type="button"
                       onClick={() => setShow((s) => !s)}
-                      aria-label={show ? "Ocultar senha" : "Mostrar senha"}
+                      aria-label={show ? t("login.hidePassword") : t("login.showPassword")}
                       className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:text-foreground"
                     >
                       {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -247,7 +258,7 @@ function SignUpPage() {
                   ) : null}
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="confirmPassword">Confirmar senha</Label>
+                  <Label htmlFor="confirmPassword">{t("signup.confirmPassword")}</Label>
                   <Input
                     id="confirmPassword"
                     type={show ? "text" : "password"}
@@ -262,12 +273,12 @@ function SignUpPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="referralCode">Código de indicação (opcional)</Label>
+                <Label htmlFor="referralCode">{t("signup.referral")}</Label>
                 <Input
                   id="referralCode"
                   value={form.referralCode}
                   onChange={(e) => set("referralCode", e.target.value.toUpperCase())}
-                  placeholder="EX: ABC12345"
+                  placeholder={t("signup.referralPlaceholder")}
                 />
               </div>
 
@@ -279,13 +290,13 @@ function SignUpPage() {
                   className="mt-0.5"
                 />
                 <Label htmlFor="terms" className="text-xs font-normal leading-relaxed">
-                  Li e aceito os{" "}
+                  {t("signup.termsPrefix")}{" "}
                   <Link to="/termos" className="font-medium text-primary hover:underline">
-                    Termos de Uso
+                    {t("signup.termsLink")}
                   </Link>{" "}
-                  e a{" "}
+                  {t("signup.termsMiddle")}{" "}
                   <Link to="/privacidade" className="font-medium text-primary hover:underline">
-                    Política de Privacidade
+                    {t("signup.privacyLink")}
                   </Link>
                   .
                 </Label>
@@ -294,7 +305,7 @@ function SignUpPage() {
 
               <Button type="submit" size="lg" className="w-full" disabled={loading}>
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Criar conta
+                {t("signup.submit")}
               </Button>
             </form>
           </CardContent>
