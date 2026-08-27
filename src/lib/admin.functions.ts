@@ -24,6 +24,8 @@ export const adminConfirmPayment = createServerFn({ method: "POST" })
       record_id: data.paymentId,
       new_value: { note: data.note ?? null },
     });
+    const { notifyCommissionsForPayment } = await import("./whatsapp.server");
+    await notifyCommissionsForPayment(supabaseAdmin, data.paymentId);
     return { ok: true };
   });
 

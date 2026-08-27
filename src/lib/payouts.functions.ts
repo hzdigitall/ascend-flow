@@ -71,6 +71,8 @@ export const requestPixWithdrawal = createServerFn({ method: "POST" })
       _address: null as unknown as string,
     });
     if (error) throw new Error(error.message);
+    const { notifyWithdrawalStatus } = await import("./whatsapp.server");
+    await notifyWithdrawalStatus(supabaseAdmin, id as string);
     return { withdrawalId: id as string };
   });
 
@@ -118,6 +120,8 @@ export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
       _address: data.address,
     });
     if (error) throw new Error(error.message);
+    const { notifyWithdrawalStatus } = await import("./whatsapp.server");
+    await notifyWithdrawalStatus(supabaseAdmin, id as string);
     return { withdrawalId: id as string };
   });
 
