@@ -63,11 +63,11 @@ function LoginPage() {
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden overflow-hidden bg-primary px-12 pb-16 pt-12 lg:flex lg:flex-col lg:items-center">
         <Logo className="self-start text-white" />
-        <div className="mt-auto max-w-md text-center text-white">
-          <h2 className="text-4xl font-extrabold leading-tight">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-12 text-center text-white">
+          <h2 className="text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
             Seu futuro, nosso propósito.
           </h2>
-          <p className="mt-4 text-white/85">
+          <p className="mt-4 text-base text-white/85 sm:text-lg">
             Saúde, bem estar e resultados através de tecnologia e ciência.
           </p>
         </div>
