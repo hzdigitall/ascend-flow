@@ -263,10 +263,10 @@ function DashboardPage() {
                 {directs} indicado{directs === 1 ? "" : "s"} direto{directs === 1 ? "" : "s"}
               </p>
               <div className="rounded-xl bg-muted p-3">
-                <p className="break-all text-xs text-muted-foreground">{referralLink || "—"}</p>
+                <p className="break-all text-xs text-muted-foreground">{refLink || "—"}</p>
               </div>
               <div className="flex gap-2">
-                <Button onClick={copyLink} className="flex-1" disabled={!referralLink}>
+                <Button onClick={copyLink} className="flex-1" disabled={!refLink}>
                   <Copy className="mr-2 h-4 w-4" /> Copiar
                 </Button>
                 <Button asChild variant="outline">
