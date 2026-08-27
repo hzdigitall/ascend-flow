@@ -84,7 +84,7 @@ export function webhookBaseUrl(gateway: GatewayRow | null): string {
   const base =
     gateway?.webhook_base_url ||
     process.env["APP_URL"] ||
-    "https://project--35b87076-8266-43d0-9bc0-100b94a9dab0.lovable.app";
+    "https://www.arenasuplementos.com";
   return base.replace(/\/+$/, "");
 }
 
