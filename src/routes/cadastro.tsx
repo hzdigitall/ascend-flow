@@ -128,16 +128,40 @@ function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-10 bg-background">
+    <div className="grid min-h-screen lg:grid-cols-2">
+      <div className="relative hidden overflow-hidden bg-secondary lg:block">
+        <img
+          src={ceoAsset.url}
+          alt="CEO da Arena Saúde"
+          className="absolute inset-0 h-full w-full object-cover object-top"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
+        <div className="relative z-10 flex h-full flex-col items-center justify-center px-12 text-center text-white">
+          <h2 className="text-3xl font-extrabold leading-tight drop-shadow-md sm:text-4xl lg:text-5xl">
+            Seu futuro, nosso propósito.
+          </h2>
+          <p className="mt-4 text-base text-white/90 drop-shadow sm:text-lg">
+            Saúde, bem estar e resultados através de tecnologia e ciência.
+          </p>
+        </div>
+        <p className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-sm text-white/80">
+          © {new Date().getFullYear()} Arena Saúde
+        </p>
+      </div>
+
+      <div className="flex min-h-screen items-center justify-center px-4 py-10 bg-background">
       <div className="w-full max-w-lg">
-        <Logo />
-        <h1 className="mt-6 text-2xl font-bold tracking-tight">Criar sua conta</h1>
+        <div className="lg:hidden">
+          <Logo />
+        </div>
+        <h1 className="mt-6 text-2xl font-bold tracking-tight lg:mt-0">Criar sua conta</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Já tem uma conta?{" "}
           <Link to="/login" className="font-medium text-primary hover:underline">
             Entrar
           </Link>
         </p>
+
 
         <Card className="mt-6 shadow-card">
           <CardContent className="p-6">
