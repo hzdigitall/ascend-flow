@@ -332,6 +332,8 @@ export const adminApproveWithdrawal = createServerFn({ method: "POST" })
         record_id: withdrawal.id,
         new_value: { currency: withdrawal.currency, method: withdrawal.method },
       });
+      const wa = await import("./whatsapp.server");
+      await wa.notifyWithdrawalStatus(supabaseAdmin, withdrawal.id);
       return { ok: true as const, message: "Saque enviado à ConnectPay e em processamento." };
     } catch (err) {
       const detail =
@@ -370,6 +372,8 @@ export const adminRejectWithdrawal = createServerFn({ method: "POST" })
       _reason: data.reason ?? "Solicitação rejeitada pela administração.",
     });
     if (error) throw new Error(error.message);
+    const { notifyWithdrawalStatus } = await import("./whatsapp.server");
+    await notifyWithdrawalStatus(supabaseAdmin, data.withdrawalId);
     return { ok: true };
   });
 
@@ -467,6 +471,9 @@ export const adminReconcileWithdrawal = createServerFn({ method: "POST" })
         _payload: { provider_status: status, source: "reconcile" } as never,
       });
     }
+
+    const { notifyWithdrawalStatus } = await import("./whatsapp.server");
+    await notifyWithdrawalStatus(supabaseAdmin, w.id);
 
     await supabaseAdmin.from("admin_logs").insert({
       admin_id: context.userId,

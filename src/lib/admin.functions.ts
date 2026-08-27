@@ -48,6 +48,8 @@ export const adminProcessWithdrawal = createServerFn({ method: "POST" })
       _reason: data.reason ?? "",
     });
     if (error) throw new Error(error.message);
+    const { notifyWithdrawalStatus } = await import("./whatsapp.server");
+    await notifyWithdrawalStatus(supabaseAdmin, data.withdrawalId);
     return { ok: true };
   });
 
