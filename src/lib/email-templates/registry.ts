@@ -1,4 +1,7 @@
 import type { ComponentType } from 'react'
+import { template as planExpiringTemplate } from './plan-expiring'
+import { template as planExpiredTemplate } from './plan-expired'
+
 
 export interface TemplateEntry {
   component: ComponentType<any>
