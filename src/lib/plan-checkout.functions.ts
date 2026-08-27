@@ -208,9 +208,10 @@ export const createPlanCheckout = createServerFn({ method: "POST" })
         idempotencyKey,
       );
 
-      const address = response.deposit_address ? String(response.deposit_address) : null;
+      const address = cp.extractDepositAddress(response);
       const transactionId = String(response.transaction_id ?? response.id ?? "") || null;
       if (!address) {
+        cp.logMissingAddress("plan-checkout", response);
         throw new cp.GatewayError("A ConnectPay não retornou o endereço de depósito.", 502);
       }
 
@@ -220,7 +221,8 @@ export const createPlanCheckout = createServerFn({ method: "POST" })
           provider_transaction_id: transactionId,
           deposit_address: address,
           pay_address: address,
-          qr_code: response.qr_code ? String(response.qr_code) : null,
+          qr_code: cp.extractQrCode(response),
+
           gateway_fee: response.fee === undefined ? 0 : Number(response.fee),
           net_amount: response.net_amount === undefined ? null : Number(response.net_amount),
           expected_amount: response.amount === undefined ? usdtAmount : Number(response.amount),
