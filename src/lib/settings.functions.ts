@@ -27,3 +27,35 @@ export const adminSaveUsdtRate = createServerFn({ method: "POST" })
     });
     return { rate };
   });
+
+/** Atualiza links oficiais de suporte — somente administradores. */
+export const adminSaveSupportLinks = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { supportLink: string; supportGroup: string }) =>
+    z
+      .object({
+        supportLink: z.string().url().max(500),
+        supportGroup: z.string().url().max(500),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const values = [
+      { key: "support_link", value: data.supportLink as never, is_public: true },
+      { key: "support_group", value: data.supportGroup as never, is_public: true },
+    ];
+
+    const { error } = await supabaseAdmin.from("settings").upsert(values, { onConflict: "key" });
+    if (error) throw new Error(error.message);
+
+    await supabaseAdmin.from("admin_logs").insert({
+      admin_id: context.userId,
+      action: "support_links_updated",
+      table_name: "settings",
+      new_value: { support_link: data.supportLink, support_group: data.supportGroup } as never,
+    });
+    return { ok: true };
+  });
