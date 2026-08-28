@@ -292,6 +292,14 @@ export function AppShell({
             </a>
           </Button>
         ) : null}
+
+        {supportGroup ? (
+          <Button asChild variant="outline" size="sm" className="w-full">
+            <a href={supportGroup} target="_blank" rel="noreferrer">
+              <Users className="mr-2 h-4 w-4" /> {t("nav.supportGroup")}
+            </a>
+          </Button>
+        ) : null}
       </div>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
