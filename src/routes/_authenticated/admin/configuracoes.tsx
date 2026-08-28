@@ -142,12 +142,19 @@ function SettingsPage() {
   });
 
   const rateValue = data?.find((s) => s.key === "usdt_brl_rate")?.value;
+  const supportLink = String(data?.find((s) => s.key === "support_link")?.value ?? "");
+  const supportGroup = String(data?.find((s) => s.key === "support_group")?.value ?? "");
 
   return (
     <AppShell items={items} variant="admin">
       <PageHeader title="Configurações" description="Ajuste as variáveis globais do sistema." />
       <UsdtRateCard currentRate={normalizeRate(rateValue)} onSaved={() => void refetch()} />
       <WhatsappAutomationCard />
+      <SupportLinksCard
+        supportLink={supportLink}
+        supportGroup={supportGroup}
+        onSaved={() => void refetch()}
+      />
       <Card className="shadow-card">
 
         <CardContent className="p-0">
