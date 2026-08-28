@@ -41,10 +41,11 @@ interface SidebarNavProps {
   items: NavItem[];
   pathname: string;
   variant: "user" | "admin";
+  isAdmin: boolean;
   onNavigate: () => void;
 }
 
-const SidebarNav = ({ items, pathname, variant, onNavigate }: SidebarNavProps) => {
+const SidebarNav = ({ items, pathname, variant, isAdmin, onNavigate }: SidebarNavProps) => {
   const { t } = useI18n();
   const sections = useMemo(() => [...new Set(items.map((i) => i.section ?? ""))], [items]);
 
@@ -81,7 +82,7 @@ const SidebarNav = ({ items, pathname, variant, onNavigate }: SidebarNavProps) =
         </div>
       ))}
 
-      {variant === "user" && (
+      {variant === "user" && isAdmin && (
         <Link
           to="/admin/dashboard"
           onClick={onNavigate}
@@ -280,6 +281,7 @@ export function AppShell({
           items={items}
           pathname={pathname}
           variant={variant}
+          isAdmin={isAdmin}
           onNavigate={handleNavigate}
         />
 
@@ -311,6 +313,7 @@ export function AppShell({
       variant,
       items,
       lang,
+      isAdmin,
     ],
   );
 
