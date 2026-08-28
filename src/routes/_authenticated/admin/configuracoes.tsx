@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell, type NavItem } from "@/components/layout/AppShell";
 import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
-import { StatusBadge } from "@/components/StatusBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LayoutDashboard,
@@ -21,7 +20,6 @@ import {
   Image,
   PlugZap,
 } from "lucide-react";
-import { brl, dateTimeBR } from "@/lib/format";
 import { UsdtRateCard } from "@/components/admin/UsdtRateCard";
 import { normalizeRate } from "@/lib/usdt";
 import { WhatsappAutomationCard } from "@/components/admin/WhatsappAutomationCard";
