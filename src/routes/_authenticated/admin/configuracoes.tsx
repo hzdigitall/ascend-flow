@@ -43,6 +43,81 @@ const items: NavItem[] = [
   { label: "Configurações", to: "/admin/configuracoes", icon: Settings, section: "Sistema" },
 ];
 
+function SupportLinksCard({
+  supportLink,
+  supportGroup,
+  onSaved,
+}: {
+  supportLink: string;
+  supportGroup: string;
+  onSaved: () => void;
+}) {
+  const save = useServerFn(adminSaveSupportLinks);
+  const [link, setLink] = useState(supportLink);
+  const [group, setGroup] = useState(supportGroup);
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await save({ data: { supportLink: link.trim(), supportGroup: group.trim() } });
+      toast.success("Links de suporte atualizados.");
+      onSaved();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar links.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Card className="shadow-card">
+      <CardHeader>
+        <CardTitle className="text-base">Links de suporte</CardTitle>
+        <CardDescription>
+          WhatsApp de atendimento e grupo oficial exibidos no menu lateral dos usuários.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="support-link" className="flex items-center gap-2">
+              <MessageCircle className="h-4 w-4" /> WhatsApp de suporte
+            </Label>
+            <Input
+              id="support-link"
+              type="url"
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              placeholder="https://wa.me/..."
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="support-group" className="flex items-center gap-2">
+              <Users className="h-4 w-4" /> Grupo oficial
+            </Label>
+            <Input
+              id="support-group"
+              type="url"
+              value={group}
+              onChange={(e) => setGroup(e.target.value)}
+              placeholder="https://chat.whatsapp.com/..."
+              required
+            />
+          </div>
+          <div className="flex justify-end">
+            <Button type="submit" disabled={saving}>
+              {saving ? "Salvando..." : "Salvar links"}
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
     meta: [
