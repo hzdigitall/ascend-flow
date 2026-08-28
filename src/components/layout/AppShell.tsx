@@ -7,6 +7,7 @@ import {
   MessageCircle,
   Shield,
   User as UserIcon,
+  Users,
   X,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode, useCallback, useMemo } from "react";

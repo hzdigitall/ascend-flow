@@ -151,6 +151,7 @@ export const pt = {
   "nav.backToAccount": "Voltar para minha conta",
   "nav.sponsor": "Seu patrocinador",
   "nav.support": "Falar com suporte",
+  "nav.supportGroup": "Grupo oficial",
   "nav.signOut": "Sair",
   "nav.main": "Navegação principal",
 
@@ -327,6 +328,7 @@ export const en: Record<TranslationKey, string> = {
   "nav.backToAccount": "Back to my account",
   "nav.sponsor": "Your sponsor",
   "nav.support": "Contact support",
+  "nav.supportGroup": "Official group",
   "nav.signOut": "Sign out",
   "nav.main": "Main navigation",
 
