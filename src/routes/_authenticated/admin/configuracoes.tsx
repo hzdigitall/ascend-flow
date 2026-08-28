@@ -1,14 +1,17 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { MessageCircle, Users } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell, type NavItem } from "@/components/layout/AppShell";
 import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
-import { StatusBadge } from "@/components/StatusBadge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LayoutDashboard,
   ShieldCheck,
-  Users,
+  Users as UsersIcon,
   Wallet,
   Settings,
   Package,
@@ -17,14 +20,17 @@ import {
   Image,
   PlugZap,
 } from "lucide-react";
-import { brl, dateTimeBR } from "@/lib/format";
 import { UsdtRateCard } from "@/components/admin/UsdtRateCard";
 import { normalizeRate } from "@/lib/usdt";
 import { WhatsappAutomationCard } from "@/components/admin/WhatsappAutomationCard";
+import { adminSaveSupportLinks } from "@/lib/settings.functions";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 const items: NavItem[] = [
   { label: "Visão geral", to: "/admin/dashboard", icon: LayoutDashboard, section: "Administração" },
-  { label: "Usuários", to: "/admin/usuarios", icon: Users, section: "Gestão" },
+  { label: "Usuários", to: "/admin/usuarios", icon: UsersIcon, section: "Gestão" },
   { label: "Planos", to: "/admin/planos", icon: ShieldCheck, section: "Gestão" },
   { label: "Pagamentos", to: "/admin/pagamentos", icon: Wallet, section: "Financeiro" },
   { label: "Saques", to: "/admin/saques", icon: Gift, section: "Financeiro" },
@@ -34,6 +40,81 @@ const items: NavItem[] = [
   { label: "Gateways", to: "/admin/gateways", icon: PlugZap, section: "Financeiro" },
   { label: "Configurações", to: "/admin/configuracoes", icon: Settings, section: "Sistema" },
 ];
+
+function SupportLinksCard({
+  supportLink,
+  supportGroup,
+  onSaved,
+}: {
+  supportLink: string;
+  supportGroup: string;
+  onSaved: () => void;
+}) {
+  const save = useServerFn(adminSaveSupportLinks);
+  const [link, setLink] = useState(supportLink);
+  const [group, setGroup] = useState(supportGroup);
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await save({ data: { supportLink: link.trim(), supportGroup: group.trim() } });
+      toast.success("Links de suporte atualizados.");
+      onSaved();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar links.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Card className="shadow-card">
+      <CardHeader>
+        <CardTitle className="text-base">Links de suporte</CardTitle>
+        <CardDescription>
+          WhatsApp de atendimento e grupo oficial exibidos no menu lateral dos usuários.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="support-link" className="flex items-center gap-2">
+              <MessageCircle className="h-4 w-4" /> WhatsApp de suporte
+            </Label>
+            <Input
+              id="support-link"
+              type="url"
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              placeholder="https://wa.me/..."
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="support-group" className="flex items-center gap-2">
+              <Users className="h-4 w-4" /> Grupo oficial
+            </Label>
+            <Input
+              id="support-group"
+              type="url"
+              value={group}
+              onChange={(e) => setGroup(e.target.value)}
+              placeholder="https://chat.whatsapp.com/..."
+              required
+            />
+          </div>
+          <div className="flex justify-end">
+            <Button type="submit" disabled={saving}>
+              {saving ? "Salvando..." : "Salvar links"}
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
@@ -59,12 +140,19 @@ function SettingsPage() {
   });
 
   const rateValue = data?.find((s) => s.key === "usdt_brl_rate")?.value;
+  const supportLink = String(data?.find((s) => s.key === "support_link")?.value ?? "");
+  const supportGroup = String(data?.find((s) => s.key === "support_group")?.value ?? "");
 
   return (
     <AppShell items={items} variant="admin">
       <PageHeader title="Configurações" description="Ajuste as variáveis globais do sistema." />
       <UsdtRateCard currentRate={normalizeRate(rateValue)} onSaved={() => void refetch()} />
       <WhatsappAutomationCard />
+      <SupportLinksCard
+        supportLink={supportLink}
+        supportGroup={supportGroup}
+        onSaved={() => void refetch()}
+      />
       <Card className="shadow-card">
 
         <CardContent className="p-0">

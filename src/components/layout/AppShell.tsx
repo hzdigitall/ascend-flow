@@ -7,6 +7,7 @@ import {
   MessageCircle,
   Shield,
   User as UserIcon,
+  Users,
   X,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode, useCallback, useMemo } from "react";
@@ -245,6 +246,7 @@ export function AppShell({
   const supportWhats = useMemo(() => get<string>("support_whatsapp", ""), [get]);
   const supportEmail = useMemo(() => get<string>("support_email", ""), [get]);
   const supportLink = useMemo(() => get<string>("support_link", ""), [get]);
+  const supportGroup = useMemo(() => get<string>("support_group", ""), [get]);
   const supportHref = useMemo(
     () =>
       supportLink
@@ -290,6 +292,14 @@ export function AppShell({
             </a>
           </Button>
         ) : null}
+
+        {supportGroup ? (
+          <Button asChild variant="outline" size="sm" className="w-full">
+            <a href={supportGroup} target="_blank" rel="noreferrer">
+              <Users className="mr-2 h-4 w-4" /> {t("nav.supportGroup")}
+            </a>
+          </Button>
+        ) : null}
       </div>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -297,6 +307,7 @@ export function AppShell({
       pathname,
       sponsor,
       supportHref,
+      supportGroup,
       variant,
       items,
       lang,
