@@ -307,6 +307,7 @@ export function AppShell({
       pathname,
       sponsor,
       supportHref,
+      supportGroup,
       variant,
       items,
       lang,
