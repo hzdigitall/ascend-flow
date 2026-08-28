@@ -1,14 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { MessageCircle, Users } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell, type NavItem } from "@/components/layout/AppShell";
 import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
 import { StatusBadge } from "@/components/StatusBadge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LayoutDashboard,
   ShieldCheck,
-  Users,
+  Users as UsersIcon,
   Wallet,
   Settings,
   Package,
@@ -21,6 +25,10 @@ import { brl, dateTimeBR } from "@/lib/format";
 import { UsdtRateCard } from "@/components/admin/UsdtRateCard";
 import { normalizeRate } from "@/lib/usdt";
 import { WhatsappAutomationCard } from "@/components/admin/WhatsappAutomationCard";
+import { adminSaveSupportLinks } from "@/lib/settings.functions";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 const items: NavItem[] = [
   { label: "Visão geral", to: "/admin/dashboard", icon: LayoutDashboard, section: "Administração" },
