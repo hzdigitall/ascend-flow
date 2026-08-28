@@ -313,6 +313,7 @@ export function AppShell({
       variant,
       items,
       lang,
+      isAdmin,
     ],
   );
 
