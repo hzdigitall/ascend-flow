@@ -246,6 +246,7 @@ export function AppShell({
   const supportWhats = useMemo(() => get<string>("support_whatsapp", ""), [get]);
   const supportEmail = useMemo(() => get<string>("support_email", ""), [get]);
   const supportLink = useMemo(() => get<string>("support_link", ""), [get]);
+  const supportGroup = useMemo(() => get<string>("support_group", ""), [get]);
   const supportHref = useMemo(
     () =>
       supportLink
