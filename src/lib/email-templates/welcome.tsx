@@ -7,12 +7,16 @@ import {
   Heading,
   Hr,
   Html,
+  Img,
   Link,
   Preview,
   Section,
   Text,
 } from '@react-email/components'
 import type { TemplateEntry } from './registry'
+import logoAsset from '@/assets/arena-logo.png.asset.json'
+
+const LOGO_URL = `https://www.arenasuplementos.com${logoAsset.url}`
 
 interface Props {
   name?: string
