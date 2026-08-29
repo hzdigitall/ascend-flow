@@ -51,7 +51,7 @@ export const Route = createFileRoute("/_authenticated/planos")({
 const ROI_BY_PLAN: Record<string, number> = {
   Iniciante: 3.5,
   Intermediário: 4.5,
-  Avançado: 6.5,
+  Avançado: 5.5,
   Profissional: 6.5,
   Elite: 7.5,
 };

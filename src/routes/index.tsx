@@ -48,7 +48,7 @@ const pillars = [
 const plans = [
   { name: "home.plan.beginner", price: "R$ 50", rate: "3,50%", days: "home.days.29", total: "R$ 100" },
   { name: "home.plan.intermediate", price: "R$ 250", rate: "4,50%", days: "home.days.23", total: "R$ 500" },
-  { name: "home.plan.advanced", price: "R$ 500", rate: "6,50%", days: "home.days.16", total: "R$ 1.000" },
+  { name: "home.plan.advanced", price: "R$ 500", rate: "5,50%", days: "home.days.19", total: "R$ 1.000" },
   { name: "home.plan.professional", price: "R$ 1.000", rate: "6,50%", days: "home.days.16", total: "R$ 2.000" },
   { name: "home.plan.elite", price: "R$ 5.000", rate: "7,50%", days: "home.days.14", total: "R$ 10.000" },
 ] satisfies { name: TranslationKey; price: string; rate: string; days: TranslationKey; total: string }[];
