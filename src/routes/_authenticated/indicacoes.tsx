@@ -405,7 +405,7 @@ function Page() {
                 </div>
                 <div>
                   <p className="text-lg font-bold">
-                                            {(selectedReferral.profiles as any)?.full_name ?? "Usuário"}
+                                            {(selectedReferral.profiles as any)?.full_name?.trim() || "Sem nome"}
                                           </p>
                                           {(selectedReferral.profiles as any)?.email && (
                                             <p className="text-sm text-muted-foreground">
