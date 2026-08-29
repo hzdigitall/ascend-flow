@@ -42,12 +42,12 @@ const Email = ({ name, email, password, url, whatsappUrl, groupUrl }: Props) => 
         <Section style={bannerSection}>
           <Img src={BANNER_URL} alt="Arena Suplementos" width="260" height="260" style={banner} />
         </Section>
-        <Heading style={heading}>Bem-vindo(a) à Arena!</Heading>
+        <Heading style={heading}>Bem-vindo(a) à Arena Suplementos!</Heading>
         <Text style={text}>{name ? `Olá, ${name}!` : 'Olá!'}</Text>
         <Text style={text}>
-          Sua conta foi criada com sucesso. A partir de agora você tem acesso a
+Sua conta foi criada com sucesso. A partir de agora você tem acesso a
           todos os planos, ao programa de indicações em 8 níveis e ao plano de
-          carreira Arena.
+          carreira Arena Suplementos.
         </Text>
         {(email || password) && (
           <Section style={credentialsBox}>
