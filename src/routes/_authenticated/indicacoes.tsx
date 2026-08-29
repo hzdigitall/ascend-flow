@@ -47,13 +47,15 @@ function Page() {
     queryKey: ["referrals", profile?.id],
     enabled: Boolean(profile?.id),
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("referrals")
-        .select("id, level, created_at, referred_id, profiles!referrals_referred_id_fkey(full_name, email)")
-        .eq("sponsor_id", profile!.id)
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.rpc("get_my_network");
       if (error) throw error;
-      return data;
+      return (data ?? []).map((r: any) => ({
+        id: r.id,
+        level: r.level,
+        created_at: r.created_at,
+        referred_id: r.referred_id,
+        profiles: { full_name: r.full_name, email: r.email, phone: r.phone },
+      }));
     },
   });
 
