@@ -129,11 +129,24 @@ setErrors({});
     setLoading(false);
 
     if (error) {
-      toast.error(
-        error.message.includes("already registered")
-          ? t("signup.error.exists")
-          : t("signup.error.generic"),
-      );
+      const msg = error.message.toLowerCase();
+      if (msg.includes("already registered")) {
+        toast.error(t("signup.error.exists"));
+      } else if (msg.includes("weak") || msg.includes("password")) {
+        toast.error(
+          lang === "en"
+            ? "This password is too weak or has been leaked. Choose a stronger, unique password."
+            : "Essa senha é fraca ou já vazou na internet. Escolha uma senha mais forte e única.",
+        );
+      } else if (msg.includes("rate limit") || msg.includes("too many")) {
+        toast.error(
+          lang === "en"
+            ? "Too many attempts. Please wait a few minutes and try again."
+            : "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
+        );
+      } else {
+        toast.error(`${t("signup.error.generic")} (${error.message})`);
+      }
       return;
     }
 
