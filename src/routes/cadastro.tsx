@@ -76,9 +76,16 @@ function SignUpPage() {
     }
 setErrors({});
     setLoading(true);
-    // Pré-carrega o som dentro do gesto do usuário para liberar o autoplay
+    // Desbloqueia o áudio dentro do gesto do usuário (obrigatório no iOS/Android):
+    // inicia mudo agora e só depois do cadastro reproduz com som.
     const sound = new Audio(signupSound.url);
+    sound.preload = "auto";
+    sound.muted = true;
+    sound.play().catch(() => {
+      // autoplay bloqueado: nunca bloqueia o cadastro
+    });
     const cpfDigits = requireCpf ? onlyDigits(parsed.data.cpf ?? "") : null;
+
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
