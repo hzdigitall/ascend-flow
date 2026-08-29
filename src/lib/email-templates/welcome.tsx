@@ -144,5 +144,6 @@ const button = {
 }
 const link = { color: '#FB096E', textDecoration: 'underline' }
 const hr = { borderColor: '#e5e7eb', margin: '28px 0 16px' }
-const footer = { fontSize: '12px', color: '#6b7280' }const header = { textAlign: 'center' as const, padding: '8px 0 20px' }
+const footer = { fontSize: '12px', color: '#6b7280', textAlign: 'center' as const }
+const header = { textAlign: 'center' as const, padding: '8px 0 20px' }
 const logo = { display: 'block', margin: '0 auto 10px', borderRadius: '14px' }
