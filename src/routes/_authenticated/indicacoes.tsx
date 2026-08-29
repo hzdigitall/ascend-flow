@@ -62,6 +62,11 @@ function Page() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["referrals", profile?.id],
     enabled: Boolean(profile?.id),
+    staleTime: 60_000,
+    gcTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: (prev) => prev,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("get_my_network");
       if (error) throw error;
@@ -73,21 +78,6 @@ function Page() {
         is_active: Boolean(r.is_active),
         profiles: { full_name: r.full_name, email: r.email, phone: r.phone },
       }));
-    },
-  });
-
-  const { data: monthlyTx } = useQuery({
-    queryKey: ["points-monthly"],
-    queryFn: async () => {
-      const now = new Date();
-      const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-      const { data, error } = await supabase
-        .from("points_transactions")
-        .select("points")
-        .eq("direction", "in")
-        .gte("created_at", start);
-      if (error) throw error;
-      return (data ?? []).reduce((acc, t) => acc + Number(t.points), 0);
     },
   });
 
@@ -106,23 +96,8 @@ function Page() {
     return groups;
   }, [data]);
 
-  const careerRanks = [
-    { name: "Master", points: 500, bonus: 300 },
-    { name: "Bronze", points: 1000, bonus: 500 },
-    { name: "Prata", points: 2000, bonus: 800, req: "2 Master" },
-    { name: "Ouro", points: 5000, bonus: 1300, req: "4 Master" },
-    { name: "Platina", points: 10000, bonus: 2000, req: "4 Prata" },
-    { name: "Diamante", points: 20000, bonus: 3000, req: "8 Prata" },
-    { name: "Duplo Diamante", points: 40000, bonus: 4500, req: "10 Ouro" },
-    { name: "Triplo Diamante", points: 80000, bonus: 6500, req: "10 Diamante" },
-    { name: "Imperial", points: 160000, bonus: 9000, req: "10 Duplo Diamante" },
-    { name: "Embaixador", points: 320000, bonus: 12000, req: "5 Imperial" },
-    { name: "Presidente", points: 500000, bonus: 16000, req: "2 Embaixador" },
-    { name: "Titan", points: 1000000, bonus: 25000, req: "1 Presidente" },
-  ];
-
   const currentPoints = wallet?.points_balance || 0;
-  const careerRanksSorted = careerRanks.sort((a, b) => a.points - b.points);
+  const careerRanksSorted = CAREER_RANKS;
   const nextRank = careerRanksSorted.find(r => r.points > currentPoints) || careerRanksSorted[careerRanksSorted.length - 1];
   const currentRank = [...careerRanksSorted].reverse().find(r => r.points <= currentPoints) || null;
   const progress = nextRank ? Math.min((currentPoints / nextRank.points) * 100, 100) : 100;
