@@ -33,7 +33,10 @@ const Email = ({ name, email, password, url, whatsappUrl, groupUrl }: Props) => 
     <Preview>Bem-vindo(a) à Arena Suplementos — seus dados de acesso e bônus de R$ 30</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>Arena Suplementos</Text>
+        <Section style={header}>
+          <Img src={LOGO_URL} alt="Arena Suplementos" width="72" height="72" style={logo} />
+          <Text style={brand}>ARENA SUPLEMENTOS</Text>
+        </Section>
         <Heading style={heading}>Bem-vindo(a) à Arena!</Heading>
         <Text style={text}>{name ? `Olá, ${name}!` : 'Olá!'}</Text>
         <Text style={text}>
