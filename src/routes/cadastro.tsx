@@ -37,7 +37,7 @@ export const Route = createFileRoute("/cadastro")({
   component: SignUpPage,
 });
 
-const SIGNUPS_DISABLED = true;
+const SIGNUPS_DISABLED = false;
 
 function SignUpsClosed() {
   return (
