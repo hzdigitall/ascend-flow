@@ -19,7 +19,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import ceoAsset from "@/assets/arena-ceo.png.asset.json";
 import signupSound from "@/assets/caching-demo-1.mp3.asset.json";
 
-const searchSchema = z.object({ ref: z.string().optional() });
+// O parser de search params converte "60780780" em number — aceitamos ambos.
+const searchSchema = z.object({
+  ref: z
+    .union([z.string(), z.number()])
+    .optional()
+    .transform((v) => (v === undefined ? undefined : String(v))),
+});
 
 export const Route = createFileRoute("/cadastro")({
   validateSearch: searchSchema,
