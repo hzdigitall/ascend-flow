@@ -300,7 +300,7 @@ function Page() {
             </Card>
           ) : (
             <Tabs defaultValue="1" className="w-full">
-              <TabsList className="mb-6 flex w-full justify-start overflow-x-auto bg-transparent p-0">
+              <TabsList className="mb-6 flex w-full justify-start overflow-x-auto bg-transparent p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {Object.keys(groupedReferrals).map((level) => (
                   <TabsTrigger
                     key={level}
@@ -347,12 +347,12 @@ function Page() {
                               </div>
                               <div className="flex shrink-0 items-center gap-2">
                                 {whatsappHref((r.profiles as { phone?: string } | null)?.phone) && (
-                                  <a
+<a
                                     href={whatsappHref((r.profiles as { phone?: string } | null)?.phone)!}
                                     target="_blank"
                                     rel="noreferrer"
                                     aria-label="Conversar no WhatsApp"
-                                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-opacity hover:opacity-80"
+                                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#25D366]/12 text-[#25D366] ring-1 ring-inset ring-[#25D366]/25 transition-opacity hover:opacity-80"
                                   >
                                     <WhatsAppIcon className="h-5 w-5" />
                                   </a>
