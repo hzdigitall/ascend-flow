@@ -112,10 +112,14 @@ setErrors({});
 
 if (data.user || data.session) {
       try {
+        sound.muted = false;
+        sound.currentTime = 0;
+        sound.volume = 1;
         await sound.play();
       } catch {
         // autoplay bloqueado: nunca bloqueia o cadastro
       }
+
       if (data.session) {
         try {
           await notifyMySignup({ data: undefined });
