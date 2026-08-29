@@ -14,10 +14,10 @@ import { UsdtWithdrawalDialog } from "@/components/finance/UsdtWithdrawalDialog"
 export const Route = createFileRoute("/_authenticated/saques")({
   head: () => ({
     meta: [
-      { title: "Saques — Arena Saúde" },
-      { name: "description", content: "Solicite saques via PIX e acompanhe o status de cada pedido na Arena Saúde." },
-      { property: "og:title", content: "Saques — Arena Saúde" },
-      { property: "og:description", content: "Solicite saques via PIX e acompanhe o status de cada pedido na Arena Saúde." },
+      { title: "Saques — Arena Suplementos" },
+      { name: "description", content: "Solicite saques via PIX e acompanhe o status de cada pedido na Arena Suplementos." },
+      { property: "og:title", content: "Saques — Arena Suplementos" },
+      { property: "og:description", content: "Solicite saques via PIX e acompanhe o status de cada pedido na Arena Suplementos." },
     ],
   }),
   component: Page,

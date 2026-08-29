@@ -27,9 +27,9 @@ import { pts } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/admin/produtos")({
   head: () => ({
     meta: [
-      { title: "Gestão de produtos — Arena Saúde" },
+      { title: "Gestão de produtos — Arena Suplementos" },
       { name: "description", content: "Cadastre produtos, custo em pontos e estoque da loja de prêmios." },
-      { property: "og:title", content: "Gestão de produtos — Arena Saúde" },
+      { property: "og:title", content: "Gestão de produtos — Arena Suplementos" },
       { property: "og:description", content: "Administração da loja de prêmios." },
     ],
   }),

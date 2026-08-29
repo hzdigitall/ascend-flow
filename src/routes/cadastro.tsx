@@ -25,13 +25,13 @@ export const Route = createFileRoute("/cadastro")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Criar conta — Arena Saúde" },
+      { title: "Criar conta — Arena Suplementos" },
       {
         name: "description",
-        content: "Crie sua conta na Arena Saúde e comece a acumular pontos, indicar amigos e resgatar prêmios.",
+        content: "Crie sua conta na Arena Suplementos e comece a acumular pontos, indicar amigos e resgatar prêmios.",
       },
-      { property: "og:title", content: "Criar conta — Arena Saúde" },
-      { property: "og:description", content: "Cadastre-se na Arena Saúde em menos de um minuto." },
+      { property: "og:title", content: "Criar conta — Arena Suplementos" },
+      { property: "og:description", content: "Cadastre-se na Arena Suplementos em menos de um minuto." },
     ],
   }),
   component: SignUpPage,
@@ -171,7 +171,7 @@ if (data.user || data.session) {
           </p>
         </div>
         <p className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-sm text-white/80">
-          © {new Date().getFullYear()} Arena Saúde
+          © {new Date().getFullYear()} Arena Suplementos
         </p>
       </div>
 

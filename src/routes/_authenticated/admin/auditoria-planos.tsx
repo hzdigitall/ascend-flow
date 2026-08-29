@@ -15,13 +15,13 @@ import { brl, dateTimeBR } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/admin/auditoria-planos")({
   head: () => ({
     meta: [
-      { title: "Auditoria de planos — Arena Saúde" },
+      { title: "Auditoria de planos — Arena Suplementos" },
       {
         name: "description",
         content: "Histórico de expiração, ativação e ciclos concluídos dos planos dos usuários.",
       },
-      { property: "og:title", content: "Auditoria de planos — Arena Saúde" },
-      { property: "og:description", content: "Trilha de auditoria dos planos Arena Saúde." },
+      { property: "og:title", content: "Auditoria de planos — Arena Suplementos" },
+      { property: "og:description", content: "Trilha de auditoria dos planos Arena Suplementos." },
     ],
   }),
   component: AdminPlanAuditPage,

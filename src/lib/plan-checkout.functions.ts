@@ -103,8 +103,8 @@ export const createPlanCheckout = createServerFn({ method: "POST" })
           items: [
             {
               id: depositId,
-              title: `Plano ${row.plan_name} — Arena Saúde`,
-              description: `Plano ${row.plan_name} — Arena Saúde`,
+              title: `Plano ${row.plan_name} — Arena Suplementos`,
+              description: `Plano ${row.plan_name} — Arena Suplementos`,
               price,
               quantity: 1,
               is_physical: false,

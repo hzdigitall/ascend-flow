@@ -32,9 +32,9 @@ export const pt = {
   "home.pillar4.title": "Plano de carreira",
   "home.pillar4.text": "De Master (R$ 300/mês) até Titan (R$ 25.000/mês) por pontos e rede.",
   "home.ceo.badge": "Quem lidera",
-  "home.ceo.role": "CEO · Arena Saúde",
+  "home.ceo.role": "CEO · Arena Suplementos",
   "home.ceo.bio":
-    "Fundadora e responsável por guiar a visão da Arena Saúde, Alicia Franco acredita que saúde, propósito e oportunidade caminham juntos. Sob sua liderança, a marca une produtos premium, um ecossistema de pontos e um plano de carreira para transformar escolhas em conquistas reais na vida de cada participante.",
+    "Fundadora e responsável por guiar a visão da Arena Suplementos, Alicia Franco acredita que saúde, propósito e oportunidade caminham juntos. Sob sua liderança, a marca une produtos premium, um ecossistema de pontos e um plano de carreira para transformar escolhas em conquistas reais na vida de cada participante.",
   "home.ceo.quote":
     "\"Nosso propósito é construir um futuro onde cada pessoa tem acesso à saúde e à oportunidade de crescer.\"",
   "home.plans.title": "Escolha seu plano | Ative | Participe",
@@ -76,7 +76,7 @@ export const pt = {
   // Split panel (login/cadastro)
   "auth.hero.title": "Seu futuro, nosso propósito.",
   "auth.hero.subtitle": "Saúde, bem estar e resultados através de tecnologia e ciência.",
-  "auth.hero.alt": "CEO da Arena Saúde",
+  "auth.hero.alt": "CEO da Arena Suplementos",
 
   // Login
   "login.title": "Entrar na sua conta",
@@ -215,9 +215,9 @@ export const en: Record<TranslationKey, string> = {
   "home.pillar4.title": "Career plan",
   "home.pillar4.text": "From Master (R$ 300/month) to Titan (R$ 25,000/month) through points and network.",
   "home.ceo.badge": "Who leads",
-  "home.ceo.role": "CEO · Arena Saúde",
+  "home.ceo.role": "CEO · Arena Suplementos",
   "home.ceo.bio":
-    "Founder and the driving force behind Arena Saúde's vision, Alicia Franco believes health, purpose and opportunity go hand in hand. Under her leadership, the brand combines premium products, a points ecosystem and a career plan to turn choices into real achievements for every participant.",
+    "Founder and the driving force behind Arena Suplementos's vision, Alicia Franco believes health, purpose and opportunity go hand in hand. Under her leadership, the brand combines premium products, a points ecosystem and a career plan to turn choices into real achievements for every participant.",
   "home.ceo.quote":
     "\"Our purpose is to build a future where everyone has access to health and the opportunity to grow.\"",
   "home.plans.title": "Choose your plan | Activate | Participate",
@@ -257,7 +257,7 @@ export const en: Record<TranslationKey, string> = {
 
   "auth.hero.title": "Your future, our purpose.",
   "auth.hero.subtitle": "Health, wellness and results through technology and science.",
-  "auth.hero.alt": "Arena Saúde CEO",
+  "auth.hero.alt": "Arena Suplementos CEO",
 
   "login.title": "Sign in to your account",
   "login.noAccount": "Don't have an account yet?",

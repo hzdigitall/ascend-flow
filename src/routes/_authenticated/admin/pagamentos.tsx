@@ -15,9 +15,9 @@ import { brl, dateTimeBR } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/admin/pagamentos")({
   head: () => ({
     meta: [
-      { title: "Gestão de pagamentos — Arena Saúde" },
+      { title: "Gestão de pagamentos — Arena Suplementos" },
       { name: "description", content: "Acompanhe pagamentos PIX e confirme manualmente quando necessário." },
-      { property: "og:title", content: "Gestão de pagamentos — Arena Saúde" },
+      { property: "og:title", content: "Gestão de pagamentos — Arena Suplementos" },
       { property: "og:description", content: "Controle financeiro dos pagamentos da plataforma." },
     ],
   }),

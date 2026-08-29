@@ -34,7 +34,7 @@ import { dateTimeBR } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/admin/gateways")({
   head: () => ({
     meta: [
-      { title: "Gateways de pagamento — Arena Saúde" },
+      { title: "Gateways de pagamento — Arena Suplementos" },
       {
         name: "description",
         content: "Configure, teste e ative a ConnectPay (PIX e USDT BEP20).",

@@ -26,9 +26,9 @@ import {
 export const Route = createFileRoute("/_authenticated/admin/banners")({
   head: () => ({
     meta: [
-      { title: "Gestão de banners — Arena Saúde" },
+      { title: "Gestão de banners — Arena Suplementos" },
       { name: "description", content: "Configure os banners exibidos no painel dos usuários." },
-      { property: "og:title", content: "Gestão de banners — Arena Saúde" },
+      { property: "og:title", content: "Gestão de banners — Arena Suplementos" },
       { property: "og:description", content: "Administração dos banners do sistema." },
     ],
   }),

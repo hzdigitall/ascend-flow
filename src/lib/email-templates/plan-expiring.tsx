@@ -27,7 +27,7 @@ const Email = ({ name, planName, expiresAt, days, url }: Props) => (
     <Preview>{`Seu plano ${planName ?? ''} está próximo do vencimento`}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>Arena Saúde</Text>
+        <Text style={brand}>Arena Suplementos</Text>
         <Heading style={heading}>Seu plano vence em breve</Heading>
         <Text style={text}>Olá{name ? `, ${name}` : ''}!</Text>
         <Text style={text}>
@@ -42,7 +42,7 @@ const Email = ({ name, planName, expiresAt, days, url }: Props) => (
           </Button>
         </Section>
         <Hr style={hr} />
-        <Text style={footer}>Você recebeu este aviso porque possui um plano ativo na Arena Saúde.</Text>
+        <Text style={footer}>Você recebeu este aviso porque possui um plano ativo na Arena Suplementos.</Text>
       </Container>
     </Body>
   </Html>

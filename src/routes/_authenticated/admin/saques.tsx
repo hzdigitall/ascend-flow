@@ -30,7 +30,7 @@ import {
 export const Route = createFileRoute("/_authenticated/admin/saques")({
   head: () => ({
     meta: [
-      { title: "Gestão de saques — Arena Saúde" },
+      { title: "Gestão de saques — Arena Suplementos" },
       {
         name: "description",
         content: "Aprove, rejeite e reconcilie saques em PIX e USDT BEP20.",

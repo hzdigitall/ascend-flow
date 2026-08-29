@@ -119,7 +119,7 @@ function SupportLinksCard({
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
     meta: [
-      { title: "Configurações do sistema — Arena Saúde" },
+      { title: "Configurações do sistema — Arena Suplementos" },
       { name: "description", content: "Ajuste taxas, nomes e comportamentos da plataforma." },
     ],
   }),

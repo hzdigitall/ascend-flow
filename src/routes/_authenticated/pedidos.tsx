@@ -12,9 +12,9 @@ import { Truck } from "lucide-react";
 export const Route = createFileRoute("/_authenticated/pedidos")({
   head: () => ({
     meta: [
-      { title: "Meus pedidos — Arena Saúde" },
+      { title: "Meus pedidos — Arena Suplementos" },
       { name: "description", content: "Acompanhe o status dos produtos resgatados com seus pontos Arena." },
-      { property: "og:title", content: "Meus pedidos — Arena Saúde" },
+      { property: "og:title", content: "Meus pedidos — Arena Suplementos" },
       { property: "og:description", content: "Acompanhe o status dos produtos resgatados com seus pontos Arena." },
     ],
   }),

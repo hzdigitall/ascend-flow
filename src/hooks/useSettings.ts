@@ -26,5 +26,5 @@ export function useSettings() {
 
 export function usePlatformName() {
   const { get } = useSettings();
-  return get<string>("platform_name", "Arena Saúde");
+  return get<string>("platform_name", "Arena Suplementos");
 }

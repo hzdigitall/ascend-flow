@@ -138,7 +138,7 @@ export const sendWhatsappTest = createServerFn({ method: "POST" })
     const result = await sendWhatsappText(
       token,
       phone,
-      data.message?.trim() || "Mensagem de teste da Arena Saúde ✅",
+      data.message?.trim() || "Mensagem de teste da Arena Suplementos ✅",
     );
     return result.success
       ? { ok: true as const, message: "✅ Mensagem de teste enviada." }

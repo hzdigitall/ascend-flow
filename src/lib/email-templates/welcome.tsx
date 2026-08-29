@@ -24,10 +24,10 @@ interface Props {
 const Email = ({ name, url, whatsappUrl, groupUrl }: Props) => (
   <Html lang="pt-BR" dir="ltr">
     <Head />
-    <Preview>Bem-vindo(a) à Arena Saúde — seu bônus de R$ 30 já está disponível</Preview>
+    <Preview>Bem-vindo(a) à Arena Suplementos — seu bônus de R$ 30 já está disponível</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>Arena Saúde</Text>
+        <Text style={brand}>Arena Suplementos</Text>
         <Heading style={heading}>Bem-vindo(a) à Arena!</Heading>
         <Text style={text}>{name ? `Olá, ${name}!` : 'Olá!'}</Text>
         <Text style={text}>
@@ -61,7 +61,7 @@ const Email = ({ name, url, whatsappUrl, groupUrl }: Props) => (
         </Text>
         <Hr style={hr} />
         <Text style={footer}>
-          Você recebeu este e-mail porque criou uma conta na Arena Saúde.
+          Você recebeu este e-mail porque criou uma conta na Arena Suplementos.
         </Text>
       </Container>
     </Body>
@@ -70,7 +70,7 @@ const Email = ({ name, url, whatsappUrl, groupUrl }: Props) => (
 
 export const template = {
   component: Email,
-  subject: 'Bem-vindo(a) à Arena Saúde — bônus de R$ 30 liberado',
+  subject: 'Bem-vindo(a) à Arena Suplementos — bônus de R$ 30 liberado',
   displayName: 'Boas-vindas',
   previewData: {
     name: 'Leonardo',
