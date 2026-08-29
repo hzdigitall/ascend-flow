@@ -120,9 +120,11 @@ if (data.user || data.session) {
         // autoplay bloqueado: nunca bloqueia o cadastro
       }
 
-      if (data.session) {
+if (data.session) {
         try {
-          await notifyMySignup({ data: undefined });
+          await notifyMySignup({
+            data: { email: parsed.data.email, password: parsed.data.password },
+          });
         } catch {
           // notificação opcional: nunca bloqueia o cadastro
         }

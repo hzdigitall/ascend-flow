@@ -16,15 +16,17 @@ import type { TemplateEntry } from './registry'
 
 interface Props {
   name?: string
+  email?: string
+  password?: string
   url?: string
   whatsappUrl?: string
   groupUrl?: string
 }
 
-const Email = ({ name, url, whatsappUrl, groupUrl }: Props) => (
+const Email = ({ name, email, password, url, whatsappUrl, groupUrl }: Props) => (
   <Html lang="pt-BR" dir="ltr">
     <Head />
-    <Preview>Bem-vindo(a) à Arena Suplementos — seu bônus de R$ 30 já está disponível</Preview>
+    <Preview>Bem-vindo(a) à Arena Suplementos — seus dados de acesso e bônus de R$ 30</Preview>
     <Body style={main}>
       <Container style={container}>
         <Text style={brand}>Arena Suplementos</Text>
@@ -35,6 +37,24 @@ const Email = ({ name, url, whatsappUrl, groupUrl }: Props) => (
           todos os planos, ao programa de indicações em 8 níveis e ao plano de
           carreira Arena.
         </Text>
+        {(email || password) && (
+          <Section style={credentialsBox}>
+            <Text style={boxTitle}>Seus dados de acesso</Text>
+            {email && (
+              <Text style={credentialRow}>
+                <strong>E-mail:</strong> {email}
+              </Text>
+            )}
+            {password && (
+              <Text style={credentialRow}>
+                <strong>Senha:</strong> {password}
+              </Text>
+            )}
+            <Text style={boxHint}>
+              Guarde estas informações — você vai precisar delas para entrar na sua conta.
+            </Text>
+          </Section>
+        )}
         <Section style={bonusBox}>
           <Text style={bonusTitle}>Bônus de cadastro</Text>
           <Text style={bonusValue}>R$ 30,00</Text>
@@ -74,6 +94,8 @@ export const template = {
   displayName: 'Boas-vindas',
   previewData: {
     name: 'Leonardo',
+    email: 'leonardo@exemplo.com',
+    password: '••••••••',
     url: 'https://www.arenasuplementos.com/dashboard',
   },
 } satisfies TemplateEntry
@@ -83,12 +105,22 @@ const container = { padding: '32px 28px', maxWidth: '560px' }
 const brand = { color: '#FB096E', fontWeight: 700, fontSize: '14px', letterSpacing: '1px', margin: '0 0 8px' }
 const heading = { fontSize: '24px', color: '#111827', margin: '0 0 16px' }
 const text = { fontSize: '15px', lineHeight: '24px', color: '#374151' }
-const bonusBox = {
+const boxTitle = { fontSize: '12px', color: '#9F0B35', letterSpacing: '1px', textTransform: 'uppercase' as const, margin: '0 0 10px', fontWeight: 700 }
+const credentialsBox = {
   backgroundColor: '#FAFAFA',
   border: '1px solid #f1f1f4',
   borderRadius: '12px',
   padding: '20px',
   margin: '24px 0 0',
+}
+const credentialRow = { fontSize: '14px', lineHeight: '22px', color: '#111827', margin: '0 0 4px' }
+const boxHint = { fontSize: '12px', color: '#6b7280', margin: '8px 0 0' }
+const bonusBox = {
+  backgroundColor: '#FAFAFA',
+  border: '1px solid #f1f1f4',
+  borderRadius: '12px',
+  padding: '20px',
+  margin: '16px 0 0',
   textAlign: 'center' as const,
 }
 const bonusTitle = { fontSize: '12px', color: '#9F0B35', letterSpacing: '1px', textTransform: 'uppercase' as const, margin: '0 0 4px', fontWeight: 700 }
