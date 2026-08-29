@@ -37,7 +37,34 @@ export const Route = createFileRoute("/cadastro")({
   component: SignUpPage,
 });
 
+const SIGNUPS_DISABLED = true;
+
+function SignUpsClosed() {
+  return (
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <Card className="w-full max-w-md shadow-card">
+        <CardContent className="p-8 text-center">
+          <Logo className="justify-center" />
+          <h1 className="mt-6 text-xl font-bold">Cadastros temporariamente suspensos</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Por motivos de segurança, novos cadastros estão desativados no momento. Se você já tem
+            conta, faça login normalmente.
+          </p>
+          <Button asChild className="mt-6 w-full">
+            <Link to="/login">Ir para o login</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 function SignUpPage() {
+  if (SIGNUPS_DISABLED) return <SignUpsClosed />;
+  return <SignUpForm />;
+}
+
+function SignUpForm() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const { t, lang } = useI18n();
