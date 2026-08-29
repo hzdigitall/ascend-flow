@@ -162,6 +162,40 @@ export const notifyMySignup = createServerFn({ method: "POST" })
       return { ok: false as const };
     }
 
+    // E-mail de boas-vindas — enviado uma única vez por usuário.
+    try {
+      const { data: emailSent } = await supabaseAdmin
+        .from("admin_logs")
+        .select("id")
+        .eq("action", "welcome_email_sent")
+        .eq("record_id", context.userId)
+        .maybeSingle();
+      if (!emailSent) {
+        await supabaseAdmin.from("admin_logs").insert({
+          action: "welcome_email_sent",
+          table_name: "profiles",
+          record_id: context.userId,
+        });
+        const { data: info } = await supabaseAdmin
+          .from("profiles")
+          .select("full_name, email")
+          .eq("id", context.userId)
+          .maybeSingle();
+        if (info?.email) {
+          const { sendTemplateEmail } = await import("./email-templates/send-email");
+          await sendTemplateEmail("welcome", info.email, {
+            templateData: {
+              name: info.full_name || undefined,
+              url: "https://www.arenasuplementos.com/dashboard",
+            },
+            idempotencyKey: `welcome-${context.userId}`,
+          });
+        }
+      }
+    } catch {
+      // e-mail de boas-vindas é opcional: nunca bloqueia o cadastro
+    }
+
     const { data: already } = await supabaseAdmin
       .from("admin_logs")
       .select("id")
