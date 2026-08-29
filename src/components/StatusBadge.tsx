@@ -11,6 +11,7 @@ const LABELS: Record<string, string> = {
   expired: "Expirado",
   refunded: "Estornado",
   active: "Ativo",
+  inactive: "Inativo",
   completed: "Concluído",
   failed: "Falhou",
   placed: "Pedido realizado",
@@ -34,6 +35,7 @@ const TONES: Record<string, string> = {
   cancelled: "bg-destructive/10 text-destructive border-destructive/25",
   failed: "bg-destructive/10 text-destructive border-destructive/25",
   expired: "bg-muted text-muted-foreground border-border",
+  inactive: "bg-muted text-muted-foreground border-border",
 };
 
 export function StatusBadge({ status }: { status: string }) {

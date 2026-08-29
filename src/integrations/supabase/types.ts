@@ -1574,6 +1574,7 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          is_active: boolean
           level: number
           phone: string
           referred_id: string
