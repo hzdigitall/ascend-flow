@@ -70,6 +70,7 @@ function Page() {
         level: r.level,
         created_at: r.created_at,
         referred_id: r.referred_id,
+        is_active: Boolean(r.is_active),
         profiles: { full_name: r.full_name, email: r.email, phone: r.phone },
       }));
     },
@@ -357,7 +358,7 @@ function Page() {
                                     <WhatsAppIcon className="h-5 w-5" />
                                   </a>
                                 )}
-                                <StatusBadge status="active" />
+                                <StatusBadge status={r.is_active ? "active" : "inactive"} />
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -422,7 +423,7 @@ function Page() {
                 <div className="rounded-xl border p-3">
                   <p className="text-xs text-muted-foreground">Status</p>
                   <div className="mt-1">
-                    <StatusBadge status="active" />
+                    <StatusBadge status={selectedReferral.is_active ? "active" : "inactive"} />
                   </div>
                 </div>
                 <div className="rounded-xl border p-3">
