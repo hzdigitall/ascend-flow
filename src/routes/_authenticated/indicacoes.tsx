@@ -315,23 +315,32 @@ function Page() {
                                   <UserCheck className="h-5 w-5" />
                                 </div>
                                 <div className="min-w-0">
-                                  <div className="min-w-0">
-                                          <p className="truncate text-sm font-semibold text-foreground">
-                                            {(r.profiles as { full_name: string } | null)
-                                              ?.full_name ?? "Usuário"}
-                                          </p>
-                                          {(r.profiles as { email: string } | null)?.email && (
-                                            <p className="truncate text-xs text-muted-foreground">
-                                              {(r.profiles as { email: string } | null)?.email}
-                                            </p>
-                                          )}
-                                          <p className="text-xs text-muted-foreground">
-                                            Cadastro em {dateBR(r.created_at)}
-                                          </p>
-                                        </div>
+                                  <p className="truncate text-sm font-semibold text-foreground">
+                                    {(r.profiles as { full_name?: string } | null)?.full_name?.trim() ||
+                                      "Sem nome"}
+                                  </p>
+                                  {(r.profiles as { email?: string } | null)?.email && (
+                                    <p className="truncate text-xs text-muted-foreground">
+                                      {(r.profiles as { email?: string } | null)?.email}
+                                    </p>
+                                  )}
+                                  <p className="text-xs text-muted-foreground">
+                                    Cadastro em {dateBR(r.created_at)}
+                                  </p>
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
+                                {whatsappHref((r.profiles as { phone?: string } | null)?.phone) && (
+                                  <a
+                                    href={whatsappHref((r.profiles as { phone?: string } | null)?.phone)!}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    aria-label="Conversar no WhatsApp"
+                                    className="inline-flex h-8 w-8 items-center justify-center rounded-full transition-opacity hover:opacity-80"
+                                  >
+                                    <WhatsAppIcon className="h-5 w-5" />
+                                  </a>
+                                )}
                                 <StatusBadge status="active" />
                                 <Button
                                   variant="ghost"
