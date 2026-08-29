@@ -108,9 +108,9 @@ export const template = {
 } satisfies TemplateEntry
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, Helvetica, sans-serif' }
-const container = { padding: '32px 28px', maxWidth: '560px' }
-const brand = { color: '#FB096E', fontWeight: 700, fontSize: '14px', letterSpacing: '1px', margin: '0 0 8px' }
-const heading = { fontSize: '24px', color: '#111827', margin: '0 0 16px' }
+const container = { padding: '28px 24px', maxWidth: '560px', border: '1px solid #f1f1f4', borderRadius: '18px' }
+const brand = { color: '#FB096E', fontWeight: 700, fontSize: '13px', letterSpacing: '2px', margin: 0, textAlign: 'center' as const }
+const heading = { fontSize: '24px', color: '#111827', margin: '0 0 16px', textAlign: 'center' as const }
 const text = { fontSize: '15px', lineHeight: '24px', color: '#374151' }
 const boxTitle = { fontSize: '12px', color: '#9F0B35', letterSpacing: '1px', textTransform: 'uppercase' as const, margin: '0 0 10px', fontWeight: 700 }
 const credentialsBox = {
@@ -144,4 +144,5 @@ const button = {
 }
 const link = { color: '#FB096E', textDecoration: 'underline' }
 const hr = { borderColor: '#e5e7eb', margin: '28px 0 16px' }
-const footer = { fontSize: '12px', color: '#6b7280' }
+const footer = { fontSize: '12px', color: '#6b7280' }const header = { textAlign: 'center' as const, padding: '8px 0 20px' }
+const logo = { display: 'block', margin: '0 auto 10px', borderRadius: '14px' }
