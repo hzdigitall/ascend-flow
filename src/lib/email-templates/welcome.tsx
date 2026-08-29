@@ -39,6 +39,9 @@ const Email = ({ name, email, password, url, whatsappUrl, groupUrl }: Props) => 
           <Img src={LOGO_URL} alt="Arena Suplementos" width="72" height="72" style={logo} />
           <Text style={brand}>ARENA SUPLEMENTOS</Text>
         </Section>
+<Section style={bannerSection}>
+          <Img src={BANNER_URL} alt="Arena Suplementos" width="260" height="260" style={banner} />
+        </Section>
         <Heading style={heading}>Bem-vindo(a) à Arena!</Heading>
         <Text style={text}>{name ? `Olá, ${name}!` : 'Olá!'}</Text>
         <Text style={text}>
