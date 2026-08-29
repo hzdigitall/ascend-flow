@@ -20,15 +20,15 @@ import { brl } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/depositar")({
   head: () => ({
     meta: [
-      { title: "Depositar — Arena Saúde" },
+      { title: "Depositar — Arena Suplementos" },
       {
         name: "description",
-        content: "Adicione saldo à sua conta Arena Saúde via PIX ou USDT BEP20.",
+        content: "Adicione saldo à sua conta Arena Suplementos via PIX ou USDT BEP20.",
       },
-      { property: "og:title", content: "Depositar — Arena Saúde" },
+      { property: "og:title", content: "Depositar — Arena Suplementos" },
       {
         property: "og:description",
-        content: "Adicione saldo à sua conta Arena Saúde via PIX ou USDT BEP20.",
+        content: "Adicione saldo à sua conta Arena Suplementos via PIX ou USDT BEP20.",
       },
     ],
   }),

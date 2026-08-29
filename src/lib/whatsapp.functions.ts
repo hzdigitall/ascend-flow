@@ -138,17 +138,25 @@ export const sendWhatsappTest = createServerFn({ method: "POST" })
     const result = await sendWhatsappText(
       token,
       phone,
-      data.message?.trim() || "Mensagem de teste da Arena Saúde ✅",
+      data.message?.trim() || "Mensagem de teste da Arena Suplementos ✅",
     );
     return result.success
       ? { ok: true as const, message: "✅ Mensagem de teste enviada." }
       : { ok: false as const, message: `❌ Falha no envio (HTTP ${result.status}).` };
   });
 
-/** Chamado logo após o cadastro: avisa o patrocinador sobre a nova indicação. */
+/** Chamado logo após o cadastro: envia o e-mail de boas-vindas e avisa o patrocinador. */
 export const notifyMySignup = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator((data: { email?: string; password?: string } | undefined) =>
+    z
+      .object({
+        email: z.string().email().optional(),
+        password: z.string().min(1).max(200).optional(),
+      })
+      .parse(data ?? {}),
+  )
+  .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { notifyReferralRegistered } = await import("./whatsapp.server");
 
@@ -181,11 +189,13 @@ export const notifyMySignup = createServerFn({ method: "POST" })
           .select("full_name, email")
           .eq("id", context.userId)
           .maybeSingle();
-        if (info?.email) {
+if (info?.email) {
           const { sendTemplateEmail } = await import("./email-templates/send-email");
           await sendTemplateEmail("welcome", info.email, {
             templateData: {
               name: info.full_name || undefined,
+              email: data.email ?? info.email,
+              password: data.password,
               url: "https://www.arenasuplementos.com/dashboard",
             },
             idempotencyKey: `welcome-${context.userId}`,

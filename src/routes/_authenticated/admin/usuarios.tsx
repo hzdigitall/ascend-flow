@@ -43,9 +43,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/admin/usuarios")({
   head: () => ({
     meta: [
-      { title: "Gestão de usuários — Arena Saúde" },
+      { title: "Gestão de usuários — Arena Suplementos" },
       { name: "description", content: "Bloqueio, permissões, saldos e planos dos usuários." },
-      { property: "og:title", content: "Gestão de usuários — Arena Saúde" },
+      { property: "og:title", content: "Gestão de usuários — Arena Suplementos" },
       { property: "og:description", content: "Administração dos usuários da plataforma." },
     ],
   }),

@@ -20,9 +20,9 @@ import { dateTimeBR, pts } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/pontos")({
   head: () => ({
     meta: [
-      { title: "Meus pontos — Arena Saúde" },
+      { title: "Meus pontos — Arena Suplementos" },
       { name: "description", content: "Histórico completo de entrada e saída de pontos Arena na sua conta." },
-      { property: "og:title", content: "Meus pontos — Arena Saúde" },
+      { property: "og:title", content: "Meus pontos — Arena Suplementos" },
       { property: "og:description", content: "Veja como seus pontos Arena foram creditados e usados." },
     ],
   }),

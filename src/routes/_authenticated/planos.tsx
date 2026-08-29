@@ -39,10 +39,10 @@ import { brl, dateTimeBR, pts } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/planos")({
   head: () => ({
     meta: [
-      { title: "Planos — Arena Saúde" },
-      { name: "description", content: "Escolha seu plano Arena Saúde, pague via PIX ou com saldo e acompanhe seus planos ativos." },
-      { property: "og:title", content: "Planos — Arena Saúde" },
-      { property: "og:description", content: "Planos Arena Saúde com pagamento PIX, compra com saldo e rendimento diário." },
+      { title: "Planos — Arena Suplementos" },
+      { name: "description", content: "Escolha seu plano Arena Suplementos, pague via PIX ou com saldo e acompanhe seus planos ativos." },
+      { property: "og:title", content: "Planos — Arena Suplementos" },
+      { property: "og:description", content: "Planos Arena Suplementos com pagamento PIX, compra com saldo e rendimento diário." },
     ],
   }),
   component: PlansPage,

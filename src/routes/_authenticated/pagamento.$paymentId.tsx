@@ -14,10 +14,10 @@ import { brl, dateTimeBR } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/pagamento/$paymentId")({
   head: () => ({
     meta: [
-      { title: "Pagamento PIX — Arena Saúde" },
-      { name: "description", content: "Finalize o pagamento PIX para ativar seu plano Arena Saúde." },
-      { property: "og:title", content: "Pagamento PIX — Arena Saúde" },
-      { property: "og:description", content: "Conclua o pagamento e ative seu plano Arena Saúde." },
+      { title: "Pagamento PIX — Arena Suplementos" },
+      { name: "description", content: "Finalize o pagamento PIX para ativar seu plano Arena Suplementos." },
+      { property: "og:title", content: "Pagamento PIX — Arena Suplementos" },
+      { property: "og:description", content: "Conclua o pagamento e ative seu plano Arena Suplementos." },
     ],
   }),
   component: PaymentPage,

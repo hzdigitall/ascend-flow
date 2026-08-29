@@ -21,13 +21,13 @@ import ceoAlicia from "@/assets/ceo-alicia.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Arena Saúde — Seu futuro, nosso propósito" },
+      { title: "Arena Suplementos — Seu futuro, nosso propósito" },
       {
         name: "description",
         content:
-          "Produtos premium, pontos Arena, indicação em 8 níveis e plano de carreira. Transforme escolhas em conquistas com a Arena Saúde.",
+          "Produtos premium, pontos Arena, indicação em 8 níveis e plano de carreira. Transforme escolhas em conquistas com a Arena Suplementos.",
       },
-      { property: "og:title", content: "Arena Saúde — Seu futuro, nosso propósito" },
+      { property: "og:title", content: "Arena Suplementos — Seu futuro, nosso propósito" },
       {
         property: "og:description",
         content:
@@ -142,7 +142,7 @@ function Landing() {
             <div className="relative aspect-[4/5] w-full bg-muted lg:aspect-auto lg:h-full">
               <img
                 src={ceoAlicia}
-                alt="Alicia Franco, CEO da Arena Saúde"
+                alt="Alicia Franco, CEO da Arena Suplementos"
                 className="h-full w-full object-cover"
                 loading="lazy"
                 decoding="async"
@@ -248,7 +248,7 @@ function Landing() {
 
       <footer className="border-t">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-6 text-sm text-muted-foreground">
-          <span>© {new Date().getFullYear()} Arena Saúde</span>
+          <span>© {new Date().getFullYear()} Arena Suplementos</span>
           <nav className="flex gap-4">
             <Link to="/termos" className="hover:text-foreground">
               {t("common.terms")}

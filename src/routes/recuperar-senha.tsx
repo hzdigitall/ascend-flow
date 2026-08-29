@@ -14,10 +14,10 @@ import { Card, CardContent } from "@/components/ui/card";
 export const Route = createFileRoute("/recuperar-senha")({
   head: () => ({
     meta: [
-      { title: "Recuperar senha — Arena Saúde" },
+      { title: "Recuperar senha — Arena Suplementos" },
       { name: "description", content: "Receba um link seguro para redefinir a senha da sua conta." },
-      { property: "og:title", content: "Recuperar senha — Arena Saúde" },
-      { property: "og:description", content: "Redefina o acesso à sua conta Arena Saúde." },
+      { property: "og:title", content: "Recuperar senha — Arena Suplementos" },
+      { property: "og:description", content: "Redefina o acesso à sua conta Arena Suplementos." },
     ],
   }),
   component: ForgotPasswordPage,

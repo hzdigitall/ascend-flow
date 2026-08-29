@@ -5,7 +5,7 @@ import arenaLogo from "@/assets/arena-logo.png.asset.json";
 
 export function Logo({ className, to = "/" }: { className?: string; to?: string }) {
   const { get } = useSettings();
-  const name = get<string>("platform_name", "Arena Saúde");
+  const name = get<string>("platform_name", "Arena Suplementos");
   const logoUrl = get<string | null>("logo_url", arenaLogo.url);
 
   return (

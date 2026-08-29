@@ -28,10 +28,10 @@ import {
 export const Route = createFileRoute("/_authenticated/indicacoes")({
   head: () => ({
     meta: [
-      { title: "Indicações — Arena Saúde" },
-      { name: "description", content: "Veja sua rede de indicados por nível e o link para convidar novos usuários na Arena Saúde." },
-      { property: "og:title", content: "Indicações — Arena Saúde" },
-      { property: "og:description", content: "Veja sua rede de indicados por nível e o link para convidar novos usuários na Arena Saúde." },
+      { title: "Indicações — Arena Suplementos" },
+      { name: "description", content: "Veja sua rede de indicados por nível e o link para convidar novos usuários na Arena Suplementos." },
+      { property: "og:title", content: "Indicações — Arena Suplementos" },
+      { property: "og:description", content: "Veja sua rede de indicados por nível e o link para convidar novos usuários na Arena Suplementos." },
     ],
   }),
   component: Page,
@@ -236,7 +236,7 @@ function Page() {
                   <p className="text-[11px] font-bold uppercase text-muted-foreground">Visão Geral do Plano</p>
                   <img 
                     src={careerPlanAsset.url} 
-                    alt="Plano de Carreira Arena Saúde" 
+                    alt="Plano de Carreira Arena Suplementos" 
                     className="mt-4 rounded-lg shadow-sm"
                   />
                 </div>

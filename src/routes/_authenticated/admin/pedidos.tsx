@@ -32,9 +32,9 @@ import { pts, dateTimeBR } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/admin/pedidos")({
   head: () => ({
     meta: [
-      { title: "Gestão de pedidos — Arena Saúde" },
+      { title: "Gestão de pedidos — Arena Suplementos" },
       { name: "description", content: "Acompanhe e atualize os resgates da loja de prêmios." },
-      { property: "og:title", content: "Gestão de pedidos — Arena Saúde" },
+      { property: "og:title", content: "Gestão de pedidos — Arena Suplementos" },
       { property: "og:description", content: "Status e rastreio dos pedidos." },
     ],
   }),

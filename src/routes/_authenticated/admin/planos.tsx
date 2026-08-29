@@ -27,9 +27,9 @@ import { brl } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/admin/planos")({
   head: () => ({
     meta: [
-      { title: "Gestão de planos — Arena Saúde" },
+      { title: "Gestão de planos — Arena Suplementos" },
       { name: "description", content: "Cadastre e edite planos, valores, pontos e benefícios." },
-      { property: "og:title", content: "Gestão de planos — Arena Saúde" },
+      { property: "og:title", content: "Gestão de planos — Arena Suplementos" },
       { property: "og:description", content: "Administração dos planos da plataforma." },
     ],
   }),

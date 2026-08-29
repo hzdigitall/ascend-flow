@@ -98,8 +98,8 @@ export const createPixDeposit = createServerFn({ method: "POST" })
         items: [
           {
             id: deposit.id,
-            title: "Depósito em conta Arena Saúde",
-            description: "Depósito em conta Arena Saúde",
+            title: "Depósito em conta Arena Suplementos",
+            description: "Depósito em conta Arena Suplementos",
             price: amount,
             quantity: 1,
             is_physical: false,

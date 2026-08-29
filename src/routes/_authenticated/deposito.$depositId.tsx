@@ -19,15 +19,15 @@ import { refreshDepositStatus } from "@/lib/deposits.functions";
 export const Route = createFileRoute("/_authenticated/deposito/$depositId")({
   head: () => ({
     meta: [
-      { title: "Depósito — Arena Saúde" },
+      { title: "Depósito — Arena Suplementos" },
       {
         name: "description",
-        content: "Acompanhe a confirmação do seu depósito PIX ou USDT BEP20 na Arena Saúde.",
+        content: "Acompanhe a confirmação do seu depósito PIX ou USDT BEP20 na Arena Suplementos.",
       },
-      { property: "og:title", content: "Depósito — Arena Saúde" },
+      { property: "og:title", content: "Depósito — Arena Suplementos" },
       {
         property: "og:description",
-        content: "Acompanhe a confirmação do seu depósito PIX ou USDT BEP20 na Arena Saúde.",
+        content: "Acompanhe a confirmação do seu depósito PIX ou USDT BEP20 na Arena Suplementos.",
       },
     ],
   }),

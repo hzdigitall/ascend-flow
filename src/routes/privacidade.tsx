@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/privacidade")({
   head: () => ({
     meta: [
-      { title: "Política de Privacidade — Arena Saúde" },
+      { title: "Política de Privacidade — Arena Suplementos" },
       {
         name: "description",
-        content: "Como a Arena Saúde coleta, usa e protege seus dados pessoais conforme a LGPD.",
+        content: "Como a Arena Suplementos coleta, usa e protege seus dados pessoais conforme a LGPD.",
       },
-      { property: "og:title", content: "Política de Privacidade — Arena Saúde" },
-      { property: "og:description", content: "Tratamento de dados pessoais na plataforma Arena Saúde." },
+      { property: "og:title", content: "Política de Privacidade — Arena Suplementos" },
+      { property: "og:description", content: "Tratamento de dados pessoais na plataforma Arena Suplementos." },
     ],
   }),
   component: PrivacyPage,

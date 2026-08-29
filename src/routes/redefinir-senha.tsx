@@ -14,9 +14,9 @@ export const Route = createFileRoute("/redefinir-senha")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Definir nova senha — Arena Saúde" },
-      { name: "description", content: "Escolha uma nova senha para acessar sua conta Arena Saúde." },
-      { property: "og:title", content: "Definir nova senha — Arena Saúde" },
+      { title: "Definir nova senha — Arena Suplementos" },
+      { name: "description", content: "Escolha uma nova senha para acessar sua conta Arena Suplementos." },
+      { property: "og:title", content: "Definir nova senha — Arena Suplementos" },
       { property: "og:description", content: "Conclua a redefinição de senha da sua conta." },
     ],
   }),

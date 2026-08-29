@@ -23,10 +23,10 @@ import { brlToUsdt, fmtUsdt } from "@/lib/usdt";
 export const Route = createFileRoute("/_authenticated/carteira")({
   head: () => ({
     meta: [
-      { title: "Carteira — Arena Saúde" },
-      { name: "description", content: "Saldos, extrato completo e comissões recebidas na sua carteira na Arena Saúde." },
-      { property: "og:title", content: "Carteira — Arena Saúde" },
-      { property: "og:description", content: "Extrato e saldos da sua conta Arena Saúde." },
+      { title: "Carteira — Arena Suplementos" },
+      { name: "description", content: "Saldos, extrato completo e comissões recebidas na sua carteira na Arena Suplementos." },
+      { property: "og:title", content: "Carteira — Arena Suplementos" },
+      { property: "og:description", content: "Extrato e saldos da sua conta Arena Suplementos." },
     ],
   }),
   component: WalletPage,

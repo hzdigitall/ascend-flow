@@ -24,10 +24,10 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Meu painel — Arena Saúde" },
-      { name: "description", content: "Resumo dos seus saldos, pontos, plano ativo e indicações na Arena Saúde." },
-      { property: "og:title", content: "Meu painel — Arena Saúde" },
-      { property: "og:description", content: "Acompanhe saldos, pontos e indicações na Arena Saúde." },
+      { title: "Meu painel — Arena Suplementos" },
+      { name: "description", content: "Resumo dos seus saldos, pontos, plano ativo e indicações na Arena Suplementos." },
+      { property: "og:title", content: "Meu painel — Arena Suplementos" },
+      { property: "og:description", content: "Acompanhe saldos, pontos e indicações na Arena Suplementos." },
     ],
   }),
   component: DashboardPage,

@@ -34,9 +34,9 @@ const items: NavItem[] = [
 export const Route = createFileRoute("/_authenticated/admin/dashboard")({
   head: () => ({
     meta: [
-      { title: "Painel administrativo — Arena Saúde" },
+      { title: "Painel administrativo — Arena Suplementos" },
       { name: "description", content: "Indicadores gerais de usuários, pagamentos e saques." },
-      { property: "og:title", content: "Painel administrativo — Arena Saúde" },
+      { property: "og:title", content: "Painel administrativo — Arena Suplementos" },
       { property: "og:description", content: "Indicadores gerais da plataforma." },
     ],
   }),

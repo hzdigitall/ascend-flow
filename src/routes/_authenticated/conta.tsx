@@ -19,10 +19,10 @@ import { AvatarCropDialog } from "@/components/profile/AvatarCropDialog";
 export const Route = createFileRoute("/_authenticated/conta")({
   head: () => ({
     meta: [
-      { title: "Minha conta — Arena Saúde" },
-      { name: "description", content: "Seus dados cadastrais, código de indicação e preferências de contato na Arena Saúde." },
-      { property: "og:title", content: "Minha conta — Arena Saúde" },
-      { property: "og:description", content: "Seus dados cadastrais, código de indicação e preferências de contato na Arena Saúde." },
+      { title: "Minha conta — Arena Suplementos" },
+      { name: "description", content: "Seus dados cadastrais, código de indicação e preferências de contato na Arena Suplementos." },
+      { property: "og:title", content: "Minha conta — Arena Suplementos" },
+      { property: "og:description", content: "Seus dados cadastrais, código de indicação e preferências de contato na Arena Suplementos." },
     ],
   }),
   component: Page,

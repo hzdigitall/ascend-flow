@@ -21,9 +21,9 @@ import { useServerFn } from "@tanstack/react-start";
 export const Route = createFileRoute("/_authenticated/loja")({
   head: () => ({
     meta: [
-      { title: "Loja de prêmios — Arena Saúde" },
+      { title: "Loja de prêmios — Arena Suplementos" },
       { name: "description", content: "Troque seus pontos Arena por produtos disponíveis no catálogo." },
-      { property: "og:title", content: "Loja de prêmios — Arena Saúde" },
+      { property: "og:title", content: "Loja de prêmios — Arena Suplementos" },
       { property: "og:description", content: "Troque seus pontos Arena por produtos disponíveis no catálogo." },
     ],
   }),

@@ -16,10 +16,10 @@ import ceoAsset from "@/assets/arena-ceo.png.asset.json";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Entrar — Arena Saúde" },
-      { name: "description", content: "Acesse sua conta Arena Saúde para ver planos, pontos e indicações." },
-      { property: "og:title", content: "Entrar — Arena Saúde" },
-      { property: "og:description", content: "Acesse sua conta Arena Saúde." },
+      { title: "Entrar — Arena Suplementos" },
+      { name: "description", content: "Acesse sua conta Arena Suplementos para ver planos, pontos e indicações." },
+      { property: "og:title", content: "Entrar — Arena Suplementos" },
+      { property: "og:description", content: "Acesse sua conta Arena Suplementos." },
     ],
   }),
   component: LoginPage,
@@ -80,7 +80,7 @@ function LoginPage() {
           </p>
         </div>
         <p className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-sm text-white/80">
-          © {new Date().getFullYear()} Arena Saúde
+          © {new Date().getFullYear()} Arena Suplementos
         </p>
       </div>
 

@@ -143,7 +143,7 @@ export async function notifyDepositCredited(admin: AdminClient, depositId: strin
       admin,
       deposit.user_id,
       "deposit",
-      `✅ *Depósito confirmado!*\n\nOlá {nome}, recebemos seu depósito de ${detail}.\nO valor já está disponível na sua conta Arena Saúde.`,
+      `✅ *Depósito confirmado!*\n\nOlá {nome}, recebemos seu depósito de ${detail}.\nO valor já está disponível na sua conta Arena Suplementos.`,
     );
 
     if (deposit.payment_id) await notifyCommissionsForPayment(admin, deposit.payment_id);
