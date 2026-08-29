@@ -217,7 +217,7 @@ export const en: Record<TranslationKey, string> = {
   "home.ceo.badge": "Who leads",
   "home.ceo.role": "CEO · Arena Suplementos",
   "home.ceo.bio":
-    "Founder and the driving force behind Arena Suplementos's vision, Alicia Franco believes health, purpose and opportunity go hand in hand. Under her leadership, the brand combines premium products, a points ecosystem and a career plan to turn choices into real achievements for every participant.",
+    "Founder and the driving force behind Arena Suplementos, Alicia Franco believes health, purpose and opportunity go hand in hand. Under her leadership, the brand combines premium products, a points ecosystem and a career plan to turn choices into real achievements for every participant.",
   "home.ceo.quote":
     "\"Our purpose is to build a future where everyone has access to health and the opportunity to grow.\"",
   "home.plans.title": "Choose your plan | Activate | Participate",
