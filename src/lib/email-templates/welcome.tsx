@@ -15,8 +15,10 @@ import {
 } from '@react-email/components'
 import type { TemplateEntry } from './registry'
 import logoAsset from '@/assets/arena-logo.png.asset.json'
+import bannerAsset from '@/assets/arena-email-banner.png.asset.json'
 
 const LOGO_URL = `https://www.arenasuplementos.com${logoAsset.url}`
+const BANNER_URL = `https://www.arenasuplementos.com${bannerAsset.url}`
 
 interface Props {
   name?: string
@@ -36,6 +38,9 @@ const Email = ({ name, email, password, url, whatsappUrl, groupUrl }: Props) => 
         <Section style={header}>
           <Img src={LOGO_URL} alt="Arena Suplementos" width="72" height="72" style={logo} />
           <Text style={brand}>ARENA SUPLEMENTOS</Text>
+        </Section>
+        <Section style={bannerSection}>
+          <Img src={BANNER_URL} alt="Arena Suplementos" width="260" height="260" style={banner} />
         </Section>
         <Heading style={heading}>Bem-vindo(a) à Arena!</Heading>
         <Text style={text}>{name ? `Olá, ${name}!` : 'Olá!'}</Text>
@@ -147,3 +152,5 @@ const hr = { borderColor: '#e5e7eb', margin: '28px 0 16px' }
 const footer = { fontSize: '12px', color: '#6b7280', textAlign: 'center' as const }
 const header = { textAlign: 'center' as const, padding: '8px 0 20px' }
 const logo = { display: 'block', margin: '0 auto 10px', borderRadius: '14px' }
+const bannerSection = { textAlign: 'center' as const, padding: '4px 0 16px' }
+const banner = { display: 'block', margin: '0 auto', borderRadius: '16px', maxWidth: '260px', width: '100%', height: 'auto' }
