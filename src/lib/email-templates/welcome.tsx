@@ -7,12 +7,16 @@ import {
   Heading,
   Hr,
   Html,
+  Img,
   Link,
   Preview,
   Section,
   Text,
 } from '@react-email/components'
 import type { TemplateEntry } from './registry'
+import logoAsset from '@/assets/arena-logo.png.asset.json'
+
+const LOGO_URL = `https://www.arenasuplementos.com${logoAsset.url}`
 
 interface Props {
   name?: string
@@ -29,7 +33,10 @@ const Email = ({ name, email, password, url, whatsappUrl, groupUrl }: Props) => 
     <Preview>Bem-vindo(a) à Arena Suplementos — seus dados de acesso e bônus de R$ 30</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>Arena Suplementos</Text>
+        <Section style={header}>
+          <Img src={LOGO_URL} alt="Arena Suplementos" width="72" height="72" style={logo} />
+          <Text style={brand}>ARENA SUPLEMENTOS</Text>
+        </Section>
         <Heading style={heading}>Bem-vindo(a) à Arena!</Heading>
         <Text style={text}>{name ? `Olá, ${name}!` : 'Olá!'}</Text>
         <Text style={text}>
@@ -101,9 +108,9 @@ export const template = {
 } satisfies TemplateEntry
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, Helvetica, sans-serif' }
-const container = { padding: '32px 28px', maxWidth: '560px' }
-const brand = { color: '#FB096E', fontWeight: 700, fontSize: '14px', letterSpacing: '1px', margin: '0 0 8px' }
-const heading = { fontSize: '24px', color: '#111827', margin: '0 0 16px' }
+const container = { padding: '28px 24px', maxWidth: '560px', border: '1px solid #f1f1f4', borderRadius: '18px' }
+const brand = { color: '#FB096E', fontWeight: 700, fontSize: '13px', letterSpacing: '2px', margin: 0, textAlign: 'center' as const }
+const heading = { fontSize: '24px', color: '#111827', margin: '0 0 16px', textAlign: 'center' as const }
 const text = { fontSize: '15px', lineHeight: '24px', color: '#374151' }
 const boxTitle = { fontSize: '12px', color: '#9F0B35', letterSpacing: '1px', textTransform: 'uppercase' as const, margin: '0 0 10px', fontWeight: 700 }
 const credentialsBox = {
@@ -137,4 +144,6 @@ const button = {
 }
 const link = { color: '#FB096E', textDecoration: 'underline' }
 const hr = { borderColor: '#e5e7eb', margin: '28px 0 16px' }
-const footer = { fontSize: '12px', color: '#6b7280' }
+const footer = { fontSize: '12px', color: '#6b7280', textAlign: 'center' as const }
+const header = { textAlign: 'center' as const, padding: '8px 0 20px' }
+const logo = { display: 'block', margin: '0 auto 10px', borderRadius: '14px' }

@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import ceoAsset from "@/assets/arena-ceo.png.asset.json";
-import signupSound from "@/assets/toque-demo-1.mp3.asset.json";
+import signupSound from "@/assets/caching-demo-1.mp3.asset.json";
 
 const searchSchema = z.object({ ref: z.string().optional() });
 
