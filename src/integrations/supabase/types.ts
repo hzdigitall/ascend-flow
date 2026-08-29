@@ -1567,6 +1567,18 @@ export type Database = {
       }
       expire_due_plans: { Args: { _user?: string }; Returns: number }
       generate_referral_code: { Args: never; Returns: string }
+      get_my_network: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          level: number
+          phone: string
+          referred_id: string
+        }[]
+      }
       get_my_sponsor: {
         Args: never
         Returns: {
