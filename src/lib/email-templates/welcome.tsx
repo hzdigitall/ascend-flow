@@ -15,8 +15,10 @@ import {
 } from '@react-email/components'
 import type { TemplateEntry } from './registry'
 import logoAsset from '@/assets/arena-logo.png.asset.json'
+import bannerAsset from '@/assets/arena-email-banner.png.asset.json'
 
 const LOGO_URL = `https://www.arenasuplementos.com${logoAsset.url}`
+const BANNER_URL = `https://www.arenasuplementos.com${bannerAsset.url}`
 
 interface Props {
   name?: string
