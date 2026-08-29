@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import ceoAsset from "@/assets/arena-ceo.png.asset.json";
+import signupSound from "@/assets/toque-demo-1.mp3.asset.json";
 
 const searchSchema = z.object({ ref: z.string().optional() });
 
@@ -73,8 +74,10 @@ function SignUpPage() {
       setErrors(map);
       return;
     }
-    setErrors({});
+setErrors({});
     setLoading(true);
+    // Pré-carrega o som dentro do gesto do usuário para liberar o autoplay
+    const sound = new Audio(signupSound.url);
     const cpfDigits = requireCpf ? onlyDigits(parsed.data.cpf ?? "") : null;
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
@@ -100,7 +103,12 @@ function SignUpPage() {
       return;
     }
 
-    if (data.user || data.session) {
+if (data.user || data.session) {
+      try {
+        await sound.play();
+      } catch {
+        // autoplay bloqueado: nunca bloqueia o cadastro
+      }
       if (data.session) {
         try {
           await notifyMySignup({ data: undefined });
