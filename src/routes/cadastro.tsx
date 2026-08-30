@@ -27,6 +27,15 @@ const searchSchema = z.object({
     .transform((v) => (v === undefined ? undefined : String(v))),
 });
 
+function normalizeReferralCode(value: string | null | undefined) {
+  const trimmed = (value ?? "").trim();
+  const unquoted =
+    trimmed.length >= 2 && trimmed.startsWith('"') && trimmed.endsWith('"')
+      ? trimmed.slice(1, -1)
+      : trimmed;
+  return unquoted.trim().toUpperCase();
+}
+
 export const Route = createFileRoute("/cadastro")({
   validateSearch: searchSchema,
   head: () => ({
@@ -93,6 +102,7 @@ function SignUpForm() {
 
   const [sponsorName, setSponsorName] = useState<string | null>(null);
   const [refInvalid, setRefInvalid] = useState(false);
+  const [refChecking, setRefChecking] = useState(false);
 
   useEffect(() => {
     // Lê o parâmetro cru da URL para não perder zeros à esquerda (ex.: 00683797).
@@ -100,21 +110,29 @@ function SignUpForm() {
       typeof window !== "undefined"
         ? new URLSearchParams(window.location.search).get("ref")
         : null;
-    const code = (raw ?? (search.ref ? String(search.ref) : "")).trim().toUpperCase();
+    const code = normalizeReferralCode(raw ?? (search.ref ? String(search.ref) : ""));
     if (code) setForm((f) => ({ ...f, referralCode: code }));
   }, [search.ref]);
 
-  const referralCode = form.referralCode.trim().toUpperCase();
+  const referralCode = normalizeReferralCode(form.referralCode);
   useEffect(() => {
     let cancelled = false;
     if (!referralCode) {
       setSponsorName(null);
       setRefInvalid(false);
+      setRefChecking(false);
       return;
     }
+    setRefChecking(true);
     const timer = setTimeout(async () => {
-      const { data } = await supabase.rpc("resolve_referral_code", { _code: referralCode });
+      const { data, error } = await supabase.rpc("resolve_referral_code", { _code: referralCode });
       if (cancelled) return;
+      setRefChecking(false);
+      if (error) {
+        setSponsorName(null);
+        setRefInvalid(false);
+        return;
+      }
       const row = Array.isArray(data) ? data[0] : null;
       setSponsorName(row?.sponsor_name ?? null);
       setRefInvalid(!row);
@@ -138,14 +156,37 @@ function SignUpForm() {
       setErrors(map);
       return;
     }
-    if (referralCode && refInvalid) {
-      setErrors({
-        referralCode:
+    if (referralCode) {
+      setRefChecking(true);
+      const { data: sponsorRows, error: sponsorError } = await supabase.rpc(
+        "resolve_referral_code",
+        { _code: referralCode },
+      );
+      setRefChecking(false);
+
+      if (sponsorError) {
+        toast.error(
           lang === "en"
-            ? "Invalid referral code. Check the code or clear the field."
-            : "Código de indicação inválido. Confira o código ou apague o campo.",
-      });
-      return;
+            ? "We could not verify the referral right now. Check your connection and try again."
+            : "Não foi possível verificar a indicação agora. Confira sua conexão e tente novamente.",
+        );
+        return;
+      }
+
+      const sponsor = Array.isArray(sponsorRows) ? sponsorRows[0] : null;
+      if (!sponsor) {
+        setRefInvalid(true);
+        setErrors({
+          referralCode:
+            lang === "en"
+              ? "Invalid referral code. Check the code or clear the field."
+              : "Código de indicação inválido. Confira o código ou apague o campo.",
+        });
+        return;
+      }
+
+      setSponsorName(sponsor.sponsor_name ?? null);
+      setRefInvalid(false);
     }
 setErrors({});
 
@@ -197,7 +238,19 @@ setErrors({});
 
     if (error) {
       const msg = error.message.toLowerCase();
-      if (msg.includes("already registered")) {
+      if (msg.includes("cpf_ja_cadastrado") || (msg.includes("duplicate") && msg.includes("cpf"))) {
+        setErrors({
+          cpf:
+            lang === "en"
+              ? "This CPF is already registered. Only one account per CPF is allowed."
+              : "Este CPF já possui cadastro. É permitida apenas 1 conta por CPF.",
+        });
+        toast.error(
+          lang === "en"
+            ? "This CPF already has an account."
+            : "Este CPF já possui uma conta cadastrada.",
+        );
+      } else if (msg.includes("already registered")) {
         toast.error(t("signup.error.exists"));
       } else if (msg.includes("weak") || msg.includes("password")) {
         toast.error(
@@ -210,6 +263,12 @@ setErrors({});
           lang === "en"
             ? "Too many attempts. Please wait a few minutes and try again."
             : "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
+        );
+      } else if (msg.includes("referral_code_invalid")) {
+        toast.error(
+          lang === "en"
+            ? "This referral link is no longer valid. Ask your sponsor for a new link."
+            : "Este link de indicação não é mais válido. Peça um novo link ao seu patrocinador.",
         );
       } else {
         toast.error(`${t("signup.error.generic")} (${error.message})`);
@@ -412,7 +471,12 @@ if (data.session) {
                   onChange={(e) => set("referralCode", e.target.value.toUpperCase())}
                   placeholder={t("signup.referralPlaceholder")}
                 />
-                {errors["referralCode"] ? (
+                {refChecking ? (
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    {lang === "en" ? "Checking referral..." : "Verificando indicação..."}
+                  </p>
+                ) : errors["referralCode"] ? (
                   <p className="text-xs text-destructive">{errors["referralCode"]}</p>
                 ) : sponsorName ? (
                   <p className="text-xs text-muted-foreground">
@@ -450,7 +514,7 @@ if (data.session) {
               </div>
               {errors["terms"] ? <p className="text-xs text-destructive">{errors["terms"]}</p> : null}
 
-              <Button type="submit" size="lg" className="w-full" disabled={loading}>
+              <Button type="submit" size="lg" className="w-full" disabled={loading || refChecking}>
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 {t("signup.submit")}
               </Button>
