@@ -12,8 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as CadastroRouteImport } from './routes/cadastro'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as QuemSomosRouteImport } from './routes/quem-somos'
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as TermosRouteImport } from './routes/termos'
@@ -62,6 +64,11 @@ const CadastroRoute = CadastroRouteImport.update({
   path: '/cadastro',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -70,6 +77,11 @@ const LoginRoute = LoginRouteImport.update({
 const PrivacidadeRoute = PrivacidadeRouteImport.update({
   id: '/privacidade',
   path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuemSomosRoute = QuemSomosRouteImport.update({
+  id: '/quem-somos',
+  path: '/quem-somos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
@@ -259,8 +271,10 @@ const ApiPublicWebhooksConnectpayPixRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/quem-somos': typeof QuemSomosRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/termos': typeof TermosRoute
@@ -298,8 +312,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/quem-somos': typeof QuemSomosRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/termos': typeof TermosRoute
@@ -339,8 +355,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/cadastro': typeof CadastroRoute
+  '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/quem-somos': typeof QuemSomosRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/termos': typeof TermosRoute
@@ -380,8 +398,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/cadastro'
+    | '/faq'
     | '/login'
     | '/privacidade'
+    | '/quem-somos'
     | '/recuperar-senha'
     | '/redefinir-senha'
     | '/termos'
@@ -419,8 +439,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/cadastro'
+    | '/faq'
     | '/login'
     | '/privacidade'
+    | '/quem-somos'
     | '/recuperar-senha'
     | '/redefinir-senha'
     | '/termos'
@@ -459,8 +481,10 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/cadastro'
+    | '/faq'
     | '/login'
     | '/privacidade'
+    | '/quem-somos'
     | '/recuperar-senha'
     | '/redefinir-senha'
     | '/termos'
@@ -500,8 +524,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   CadastroRoute: typeof CadastroRoute
+  FaqRoute: typeof FaqRoute
   LoginRoute: typeof LoginRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
+  QuemSomosRoute: typeof QuemSomosRoute
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
   TermosRoute: typeof TermosRoute
@@ -536,6 +562,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CadastroRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -548,6 +581,13 @@ declare module '@tanstack/react-router' {
       path: '/privacidade'
       fullPath: '/privacidade'
       preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quem-somos': {
+      id: '/quem-somos'
+      path: '/quem-somos'
+      fullPath: '/quem-somos'
+      preLoaderRoute: typeof QuemSomosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/recuperar-senha': {
@@ -846,8 +886,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   CadastroRoute: CadastroRoute,
+  FaqRoute: FaqRoute,
   LoginRoute: LoginRoute,
   PrivacidadeRoute: PrivacidadeRoute,
+  QuemSomosRoute: QuemSomosRoute,
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
   TermosRoute: TermosRoute,

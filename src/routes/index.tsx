@@ -249,7 +249,13 @@ function Landing() {
       <footer className="border-t">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-6 text-sm text-muted-foreground">
           <span>© {new Date().getFullYear()} Arena Suplementos</span>
-          <nav className="flex gap-4">
+          <nav className="flex flex-wrap gap-4">
+            <Link to="/quem-somos" className="hover:text-foreground">
+              {t("common.about")}
+            </Link>
+            <Link to="/faq" className="hover:text-foreground">
+              FAQ
+            </Link>
             <Link to="/termos" className="hover:text-foreground">
               {t("common.terms")}
             </Link>

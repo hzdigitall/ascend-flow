@@ -1,0 +1,21 @@
+# Arena Suplementos
+
+> Arena Suplementos é uma plataforma brasileira de saúde e bem-estar que combina suplementos premium (linhas Glow, Shape, Mind e Burn), um programa de pontos, indicação em 8 níveis e plano de carreira. Site em português (pt-BR) com suporte a inglês.
+
+## Páginas principais
+
+- [Início](https://arenasuplementos.com/): visão geral da marca, planos, regras e benefícios
+- [Quem Somos](https://arenasuplementos.com/quem-somos): história, propósito e liderança da Arena Suplementos
+- [Perguntas Frequentes](https://arenasuplementos.com/faq): respostas diretas sobre planos, rendimentos, saques, indicações e pontos
+- [Criar conta](https://arenasuplementos.com/cadastro): cadastro de novos participantes
+- [Entrar](https://arenasuplementos.com/login): acesso de participantes
+- [Termos de Uso](https://arenasuplementos.com/termos): condições de uso da plataforma
+- [Política de Privacidade](https://arenasuplementos.com/privacidade): tratamento de dados pessoais conforme a LGPD
+
+## Resumo do funcionamento
+
+- Planos de participação de R$ 50 a R$ 5.000, ativados via PIX ou USDT BEP20
+- Rendimento diário de 3,5% a 7,5% conforme o plano, com limite de 200% do valor investido
+- Programa de indicação em 8 níveis: 12%, 5%, 3%, 2%, 1%, 1%, 1%, 1%
+- Pontos Arena: a cada R$ 50 investidos, o participante recebe 5 pontos para trocar por produtos
+- Saques com taxa de 2%; rendimentos às segundas-feiras (10h–17h) e bônus diariamente (9h–17h), horário de Brasília
