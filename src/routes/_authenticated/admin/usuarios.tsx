@@ -241,7 +241,7 @@ function UsersPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {data!.map((u) => (
+                  {filtered.map((u) => (
                     <tr key={u.id} className="group hover:bg-muted/30">
                       <td className="px-6 py-4">
                         <p className="font-semibold">{u.full_name}</p>
@@ -249,22 +249,25 @@ function UsersPage() {
                         <p className="text-xs text-muted-foreground">{u.cpf || "—"} · {u.phone || "—"}</p>
                       </td>
                       <td className="px-6 py-4">
-                        {u.sponsorName ? (
-                          <span
-                            className="inline-flex items-center gap-1 rounded-full bg-primary/12 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary"
-                            title={`Patrocinado por ${u.sponsorName}`}
-                          >
-                            Patrocinado
-                          </span>
-                        ) : (
-                          <span className="inline-flex rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                            Direto
-                          </span>
-                        )}
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          {u.sponsorName ?? "Sem patrocinador"}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            checked={Boolean(u.sponsor_badge)}
+                            onCheckedChange={(v) =>
+                              mutateUser.mutate({ userId: u.id, sponsorBadge: v })
+                            }
+                          />
+                          {u.sponsor_badge ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-primary/12 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                              Patrocínio
+                            </span>
+                          ) : (
+                            <span className="inline-flex rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                              Sem selo
+                            </span>
+                          )}
+                        </div>
                       </td>
+
                       <td className="px-6 py-4 text-xs text-muted-foreground">
                         <p>Principal: {brl(Number(u.wallet?.main_balance ?? 0))}</p>
                         <p>Rend.: {brl(Number(u.wallet?.earnings_balance ?? 0))}</p>
