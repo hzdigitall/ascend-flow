@@ -128,6 +128,17 @@ function UsersPage() {
     [plans, planId],
   );
 
+  const filtered = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return data ?? [];
+    return (data ?? []).filter(
+      (u) =>
+        u.email.toLowerCase().includes(term) ||
+        u.full_name.toLowerCase().includes(term),
+    );
+  }, [data, search]);
+
+
   const mutateUser = useMutation({
     mutationFn: (v: { userId: string; blocked?: boolean; makeAdmin?: boolean; sponsorBadge?: boolean }) =>
       updateUser({ data: v }),
