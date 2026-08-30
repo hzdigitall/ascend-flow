@@ -27,6 +27,15 @@ const searchSchema = z.object({
     .transform((v) => (v === undefined ? undefined : String(v))),
 });
 
+function normalizeReferralCode(value: string | null | undefined) {
+  const trimmed = (value ?? "").trim();
+  const unquoted =
+    trimmed.length >= 2 && trimmed.startsWith('"') && trimmed.endsWith('"')
+      ? trimmed.slice(1, -1)
+      : trimmed;
+  return unquoted.trim().toUpperCase();
+}
+
 export const Route = createFileRoute("/cadastro")({
   validateSearch: searchSchema,
   head: () => ({
@@ -101,11 +110,11 @@ function SignUpForm() {
       typeof window !== "undefined"
         ? new URLSearchParams(window.location.search).get("ref")
         : null;
-    const code = (raw ?? (search.ref ? String(search.ref) : "")).trim().toUpperCase();
+    const code = normalizeReferralCode(raw ?? (search.ref ? String(search.ref) : ""));
     if (code) setForm((f) => ({ ...f, referralCode: code }));
   }, [search.ref]);
 
-  const referralCode = form.referralCode.trim().toUpperCase();
+  const referralCode = normalizeReferralCode(form.referralCode);
   useEffect(() => {
     let cancelled = false;
     if (!referralCode) {
@@ -229,7 +238,19 @@ setErrors({});
 
     if (error) {
       const msg = error.message.toLowerCase();
-      if (msg.includes("already registered")) {
+      if (msg.includes("cpf_ja_cadastrado") || (msg.includes("duplicate") && msg.includes("cpf"))) {
+        setErrors({
+          cpf:
+            lang === "en"
+              ? "This CPF is already registered. Only one account per CPF is allowed."
+              : "Este CPF já possui cadastro. É permitida apenas 1 conta por CPF.",
+        });
+        toast.error(
+          lang === "en"
+            ? "This CPF already has an account."
+            : "Este CPF já possui uma conta cadastrada.",
+        );
+      } else if (msg.includes("already registered")) {
         toast.error(t("signup.error.exists"));
       } else if (msg.includes("weak") || msg.includes("password")) {
         toast.error(
