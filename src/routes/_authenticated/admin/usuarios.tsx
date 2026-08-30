@@ -129,8 +129,9 @@ function UsersPage() {
   );
 
   const mutateUser = useMutation({
-    mutationFn: (v: { userId: string; blocked?: boolean; makeAdmin?: boolean }) =>
+    mutationFn: (v: { userId: string; blocked?: boolean; makeAdmin?: boolean; sponsorBadge?: boolean }) =>
       updateUser({ data: v }),
+
     onSuccess: () => {
       toast.success("Usuário atualizado.");
       void qc.invalidateQueries({ queryKey: ["admin", "users"] });
