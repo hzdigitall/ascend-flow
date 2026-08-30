@@ -192,6 +192,7 @@ export const en: Record<TranslationKey, string> = {
   "common.signup": "Sign up",
   "common.terms": "Terms",
   "common.privacy": "Privacy",
+  "common.about": "About us",
   "common.loading": "Loading…",
   "common.seeAll": "See all",
   "common.copy": "Copy",
@@ -222,8 +223,8 @@ export const en: Record<TranslationKey, string> = {
     "Founder and the driving force behind Arena Suplementos, Alicia Franco believes health, purpose and opportunity go hand in hand. Under her leadership, the brand combines premium products, a points ecosystem and a career plan to turn choices into real achievements for every participant.",
   "home.ceo.quote":
     "\"Our purpose is to build a future where everyone has access to health and the opportunity to grow.\"",
-  "home.plans.title": "Choose your plan | Activate | Participate",
-  "home.plans.subtitle": "All plans yield until your investment doubles.",
+  "home.plans.title": "Choose your plan and start today",
+  "home.plans.subtitle": "Every plan yields until your investment doubles. No fine print.",
   "home.plans.perDay": "per day",
   "home.plans.doubles": "Doubles in {days}",
   "home.plans.yields": "Yields up to {total}",
