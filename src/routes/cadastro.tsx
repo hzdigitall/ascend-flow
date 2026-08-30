@@ -450,7 +450,12 @@ if (data.session) {
                   onChange={(e) => set("referralCode", e.target.value.toUpperCase())}
                   placeholder={t("signup.referralPlaceholder")}
                 />
-                {errors["referralCode"] ? (
+                {refChecking ? (
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    {lang === "en" ? "Checking referral..." : "Verificando indicação..."}
+                  </p>
+                ) : errors["referralCode"] ? (
                   <p className="text-xs text-destructive">{errors["referralCode"]}</p>
                 ) : sponsorName ? (
                   <p className="text-xs text-muted-foreground">
@@ -488,7 +493,7 @@ if (data.session) {
               </div>
               {errors["terms"] ? <p className="text-xs text-destructive">{errors["terms"]}</p> : null}
 
-              <Button type="submit" size="lg" className="w-full" disabled={loading}>
+              <Button type="submit" size="lg" className="w-full" disabled={loading || refChecking}>
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 {t("signup.submit")}
               </Button>
