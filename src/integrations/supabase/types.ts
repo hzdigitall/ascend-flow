@@ -1046,6 +1046,7 @@ export type Database = {
           notify_whatsapp: boolean
           phone: string | null
           referral_code: string
+          sponsor_badge: boolean
           sponsor_id: string | null
           updated_at: string
         }
@@ -1061,6 +1062,7 @@ export type Database = {
           notify_whatsapp?: boolean
           phone?: string | null
           referral_code: string
+          sponsor_badge?: boolean
           sponsor_id?: string | null
           updated_at?: string
         }
@@ -1076,6 +1078,7 @@ export type Database = {
           notify_whatsapp?: boolean
           phone?: string | null
           referral_code?: string
+          sponsor_badge?: boolean
           sponsor_id?: string | null
           updated_at?: string
         }

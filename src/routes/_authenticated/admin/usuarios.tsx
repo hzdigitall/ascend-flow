@@ -70,7 +70,9 @@ function UsersPage() {
   const deleteUser = useServerFn(adminDeleteUser);
   const sendReset = useServerFn(adminSendPasswordReset);
 
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+
   const [target, setTarget] = useState<Target | null>(null);
   const [points, setPoints] = useState("0");
   const [reason, setReason] = useState("");
@@ -128,9 +130,21 @@ function UsersPage() {
     [plans, planId],
   );
 
+  const filtered = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return data ?? [];
+    return (data ?? []).filter(
+      (u) =>
+        u.email.toLowerCase().includes(term) ||
+        u.full_name.toLowerCase().includes(term),
+    );
+  }, [data, search]);
+
+
   const mutateUser = useMutation({
-    mutationFn: (v: { userId: string; blocked?: boolean; makeAdmin?: boolean }) =>
+    mutationFn: (v: { userId: string; blocked?: boolean; makeAdmin?: boolean; sponsorBadge?: boolean }) =>
       updateUser({ data: v }),
+
     onSuccess: () => {
       toast.success("Usuário atualizado.");
       void qc.invalidateQueries({ queryKey: ["admin", "users"] });
@@ -210,6 +224,18 @@ function UsersPage() {
   return (
     <AppShell items={adminNav} variant="admin">
       <PageHeader title="Usuários" description="Gerencie os usuários da plataforma." />
+      <div className="mb-4 max-w-md">
+        <Label htmlFor="user-search" className="sr-only">
+          Buscar por e-mail
+        </Label>
+        <Input
+          id="user-search"
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar por e-mail ou nome"
+        />
+      </div>
       <Card className="shadow-card">
         <CardContent className="p-0">
           {isLoading ? (
@@ -218,15 +244,20 @@ function UsersPage() {
             <div className="p-6">
               <ErrorState onRetry={() => refetch()} />
             </div>
-          ) : (data?.length ?? 0) === 0 ? (
+          ) : filtered.length === 0 ? (
             <div className="p-6">
               <EmptyState
                 icon={Users}
                 title="Nenhum usuário"
-                description="Ainda não há usuários cadastrados."
+                description={
+                  search.trim()
+                    ? "Nenhum usuário encontrado para essa busca."
+                    : "Ainda não há usuários cadastrados."
+                }
               />
             </div>
           ) : (
+
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
@@ -241,7 +272,7 @@ function UsersPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {data!.map((u) => (
+                  {filtered.map((u) => (
                     <tr key={u.id} className="group hover:bg-muted/30">
                       <td className="px-6 py-4">
                         <p className="font-semibold">{u.full_name}</p>
@@ -249,22 +280,25 @@ function UsersPage() {
                         <p className="text-xs text-muted-foreground">{u.cpf || "—"} · {u.phone || "—"}</p>
                       </td>
                       <td className="px-6 py-4">
-                        {u.sponsorName ? (
-                          <span
-                            className="inline-flex items-center gap-1 rounded-full bg-primary/12 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary"
-                            title={`Patrocinado por ${u.sponsorName}`}
-                          >
-                            Patrocinado
-                          </span>
-                        ) : (
-                          <span className="inline-flex rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                            Direto
-                          </span>
-                        )}
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          {u.sponsorName ?? "Sem patrocinador"}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            checked={Boolean(u.sponsor_badge)}
+                            onCheckedChange={(v) =>
+                              mutateUser.mutate({ userId: u.id, sponsorBadge: v })
+                            }
+                          />
+                          {u.sponsor_badge ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-primary/12 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                              Patrocínio
+                            </span>
+                          ) : (
+                            <span className="inline-flex rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                              Sem selo
+                            </span>
+                          )}
+                        </div>
                       </td>
+
                       <td className="px-6 py-4 text-xs text-muted-foreground">
                         <p>Principal: {brl(Number(u.wallet?.main_balance ?? 0))}</p>
                         <p>Rend.: {brl(Number(u.wallet?.earnings_balance ?? 0))}</p>
