@@ -323,6 +323,50 @@ export type Database = {
           },
         ]
       }
+      email_change_requests: {
+        Row: {
+          attempts: number
+          code_hash: string
+          created_at: string
+          expires_at: string
+          id: string
+          new_email: string
+          updated_at: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          code_hash: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          new_email: string
+          updated_at?: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          code_hash?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          new_email?: string
+          updated_at?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_change_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gateway_credentials: {
         Row: {
           ciphertext: string
