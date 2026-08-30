@@ -138,7 +138,17 @@ function SignUpForm() {
       setErrors(map);
       return;
     }
+    if (referralCode && refInvalid) {
+      setErrors({
+        referralCode:
+          lang === "en"
+            ? "Invalid referral code. Check the code or clear the field."
+            : "Código de indicação inválido. Confira o código ou apague o campo.",
+      });
+      return;
+    }
 setErrors({});
+
     setLoading(true);
     // Desbloqueia o áudio dentro do gesto do usuário (obrigatório no iOS/Android):
     // inicia mudo agora e só depois do cadastro reproduz com som.
