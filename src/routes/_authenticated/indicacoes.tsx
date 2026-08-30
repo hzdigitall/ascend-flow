@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { dateBR } from "@/lib/format";
 import { referralLink } from "@/lib/site";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import careerPlanAsset from "@/assets/career-plan.png.asset.json";
 import { Progress } from "@/components/ui/progress";
 import { pts as formatPoints } from "@/lib/format";
