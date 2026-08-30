@@ -312,56 +312,7 @@ function Page() {
                   <Card className="shadow-card">
                     <CardContent className="p-4 sm:p-6">
                       {items && items.length > 0 ? (
-                        <ul className="divide-y">
-                          {items.map((r) => (
-<li
-                              key={r.id}
-                              className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 py-4 sm:gap-3"
-                            >
-                              <div className="flex min-w-0 items-center gap-3">
-                                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
-                                  <UserCheck className="h-5 w-5" />
-                                </div>
-                                <div className="min-w-0">
-                                  <p className="truncate text-sm font-semibold text-foreground">
-                                    {(r.profiles as { full_name?: string } | null)?.full_name?.trim() ||
-                                      "Sem nome"}
-                                  </p>
-                                  {(r.profiles as { email?: string } | null)?.email && (
-                                    <p className="truncate text-xs text-muted-foreground">
-                                      {(r.profiles as { email?: string } | null)?.email}
-                                    </p>
-                                  )}
-                                  <p className="truncate text-xs text-muted-foreground">
-                                    Cadastro em {dateBR(r.created_at)}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex shrink-0 items-center gap-2">
-                                {whatsappHref((r.profiles as { phone?: string } | null)?.phone) && (
-<a
-                                    href={whatsappHref((r.profiles as { phone?: string } | null)?.phone)!}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    aria-label="Conversar no WhatsApp"
-                                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#25D366]/12 text-[#25D366] ring-1 ring-inset ring-[#25D366]/25 transition-opacity hover:opacity-80"
-                                  >
-                                    <WhatsAppIcon className="h-5 w-5" />
-                                  </a>
-                                )}
-                                <StatusBadge status={r.is_active ? "active" : "inactive"} />
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 shrink-0 text-muted-foreground"
-                                  onClick={() => setSelectedReferral(r)}
-                                >
-                                  <Info className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
+                        <LevelList items={items} onSelect={setSelectedReferral} />
                       ) : (
                         <EmptyState
                           icon={Users}
