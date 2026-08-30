@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 
 interface Props {
-  currentEmail?: string | null;
+  currentEmail?: string | null | undefined;
   onChanged?: () => void | Promise<void>;
 }
 
