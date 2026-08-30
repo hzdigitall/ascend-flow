@@ -1,0 +1,1 @@
+SELECT public.admin_delete_user_data((SELECT id FROM public.profiles WHERE lower(email)='arenafitness041@gmail.com'), (SELECT id FROM public.profiles WHERE lower(email)='silvabtc2@gmail.com'));
