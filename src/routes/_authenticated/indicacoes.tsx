@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { dateBR } from "@/lib/format";
 import { referralLink } from "@/lib/site";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import careerPlanAsset from "@/assets/career-plan.png.asset.json";
 import { Progress } from "@/components/ui/progress";
 import { pts as formatPoints } from "@/lib/format";
@@ -52,6 +52,103 @@ export const Route = createFileRoute("/_authenticated/indicacoes")({
   }),
   component: Page,
 });
+type CareerRank = { name: string; points: number; bonus: number; req?: string };
+type Referral = {
+  id: string;
+  level: number;
+  created_at: string;
+  referred_id: string;
+  is_active: boolean;
+  profiles: { full_name?: string | null; email?: string | null; phone?: string | null } | null;
+};
+
+const PAGE_SIZE = 25;
+
+const LevelList = memo(function LevelList({
+  items,
+  onSelect,
+}: {
+  items: Referral[];
+  onSelect: (r: Referral) => void;
+}) {
+  const [visible, setVisible] = useState(PAGE_SIZE);
+  const shown = items.slice(0, visible);
+
+  return (
+    <>
+      <ul className="divide-y">
+        {shown.map((r) => (
+          <li
+            key={r.id}
+            className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 py-4 sm:gap-3"
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
+                <UserCheck className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-foreground">
+                  {r.profiles?.full_name?.trim() || "Sem nome"}
+                </p>
+                {r.profiles?.email && (
+                  <p className="truncate text-xs text-muted-foreground">{r.profiles.email}</p>
+                )}
+                <p className="truncate text-xs text-muted-foreground">
+                  Cadastro em {dateBR(r.created_at)}
+                </p>
+              </div>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              {whatsappHref(r.profiles?.phone) && (
+                <a
+                  href={whatsappHref(r.profiles?.phone)!}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Conversar no WhatsApp"
+                  className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#25D366]/12 text-[#25D366] ring-1 ring-inset ring-[#25D366]/25 transition-opacity hover:opacity-80"
+                >
+                  <WhatsAppIcon className="h-5 w-5" />
+                </a>
+              )}
+              <StatusBadge status={r.is_active ? "active" : "inactive"} />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 shrink-0 text-muted-foreground"
+                onClick={() => onSelect(r)}
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+            </div>
+          </li>
+        ))}
+      </ul>
+      {visible < items.length && (
+        <div className="pt-4 text-center">
+          <Button variant="outline" onClick={() => setVisible((v) => v + PAGE_SIZE)}>
+            Ver mais ({items.length - visible})
+          </Button>
+        </div>
+      )}
+    </>
+  );
+});
+
+
+const CAREER_RANKS: CareerRank[] = [
+  { name: "Master", points: 500, bonus: 300 },
+  { name: "Bronze", points: 1000, bonus: 500 },
+  { name: "Prata", points: 2000, bonus: 800, req: "2 Master" },
+  { name: "Ouro", points: 5000, bonus: 1300, req: "4 Master" },
+  { name: "Platina", points: 10000, bonus: 2000, req: "4 Prata" },
+  { name: "Diamante", points: 20000, bonus: 3000, req: "8 Prata" },
+  { name: "Duplo Diamante", points: 40000, bonus: 4500, req: "10 Ouro" },
+  { name: "Triplo Diamante", points: 80000, bonus: 6500, req: "10 Diamante" },
+  { name: "Imperial", points: 160000, bonus: 9000, req: "10 Duplo Diamante" },
+  { name: "Embaixador", points: 320000, bonus: 12000, req: "5 Imperial" },
+  { name: "Presidente", points: 500000, bonus: 16000, req: "2 Embaixador" },
+  { name: "Titan", points: 1000000, bonus: 25000, req: "1 Presidente" },
+].sort((a, b) => a.points - b.points);
 
 function Page() {
   const { profile, wallet } = useAuth();
@@ -173,7 +270,7 @@ function Page() {
                       </tr>
                     </thead>
                     <tbody className="divide-y text-sm">
-                      {careerRanks.map((rank) => (
+                      {CAREER_RANKS.map((rank) => (
                         <tr 
                           key={rank.name} 
                           className={cn(
@@ -296,56 +393,7 @@ function Page() {
                   <Card className="shadow-card">
                     <CardContent className="p-4 sm:p-6">
                       {items && items.length > 0 ? (
-                        <ul className="divide-y">
-                          {items.map((r) => (
-<li
-                              key={r.id}
-                              className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 py-4 sm:gap-3"
-                            >
-                              <div className="flex min-w-0 items-center gap-3">
-                                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
-                                  <UserCheck className="h-5 w-5" />
-                                </div>
-                                <div className="min-w-0">
-                                  <p className="truncate text-sm font-semibold text-foreground">
-                                    {(r.profiles as { full_name?: string } | null)?.full_name?.trim() ||
-                                      "Sem nome"}
-                                  </p>
-                                  {(r.profiles as { email?: string } | null)?.email && (
-                                    <p className="truncate text-xs text-muted-foreground">
-                                      {(r.profiles as { email?: string } | null)?.email}
-                                    </p>
-                                  )}
-                                  <p className="truncate text-xs text-muted-foreground">
-                                    Cadastro em {dateBR(r.created_at)}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex shrink-0 items-center gap-2">
-                                {whatsappHref((r.profiles as { phone?: string } | null)?.phone) && (
-<a
-                                    href={whatsappHref((r.profiles as { phone?: string } | null)?.phone)!}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    aria-label="Conversar no WhatsApp"
-                                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#25D366]/12 text-[#25D366] ring-1 ring-inset ring-[#25D366]/25 transition-opacity hover:opacity-80"
-                                  >
-                                    <WhatsAppIcon className="h-5 w-5" />
-                                  </a>
-                                )}
-                                <StatusBadge status={r.is_active ? "active" : "inactive"} />
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 shrink-0 text-muted-foreground"
-                                  onClick={() => setSelectedReferral(r)}
-                                >
-                                  <Info className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
+                        <LevelList items={items} onSelect={setSelectedReferral} />
                       ) : (
                         <EmptyState
                           icon={Users}
