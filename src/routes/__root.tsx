@@ -95,11 +95,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      // Abre a conexão com o backend antes da primeira query (economiza DNS+TLS).
+      { rel: "preconnect", href: "https://hzkjyqvnupbeaxexnquk.supabase.co", crossOrigin: "anonymous" },
+      { rel: "dns-prefetch", href: "https://hzkjyqvnupbeaxexnquk.supabase.co" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
       },
     ],
+
   }),
   shellComponent: RootShell,
   component: RootComponent,
