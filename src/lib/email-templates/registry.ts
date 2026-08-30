@@ -20,7 +20,7 @@ export interface TemplateEntry {
  *
  * Example:
  *   import { template as welcomeTemplate } from './welcome'
-import { template as emailChangeCodeTemplate } from './email-change-code'
+ *
  *   // then add to TEMPLATES: 'welcome': welcomeTemplate
  */
 export const TEMPLATES: Record<string, TemplateEntry> = {
