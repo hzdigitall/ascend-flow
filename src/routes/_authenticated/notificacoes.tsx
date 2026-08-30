@@ -21,12 +21,15 @@ export const Route = createFileRoute("/_authenticated/notificacoes")({
 });
 
 function Page() {
+  const { profile } = useAuth();
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["notifications"],
+    queryKey: ["notifications", profile?.id],
+    enabled: Boolean(profile?.id),
     queryFn: async () => {
       const { data, error } = await supabase
         .from("notifications")
         .select("*")
+        .eq("user_id", profile!.id)
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw error;

@@ -53,6 +53,7 @@ function DashboardPage() {
         supabase
           .from("wallet_transactions")
           .select("*")
+          .eq("user_id", profile!.id)
           .order("created_at", { ascending: false })
           .limit(6),
         supabase.from("referrals").select("id, level").eq("sponsor_id", profile!.id),

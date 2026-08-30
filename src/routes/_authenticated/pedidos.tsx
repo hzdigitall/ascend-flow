@@ -22,13 +22,17 @@ export const Route = createFileRoute("/_authenticated/pedidos")({
 });
 
 function Page() {
+  const { profile } = useAuth();
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["orders"],
+    queryKey: ["orders", profile?.id],
+    enabled: Boolean(profile?.id),
     queryFn: async () => {
       const { data, error } = await supabase
         .from("orders")
         .select("*")
-        .order("created_at", { ascending: false });
+        .eq("user_id", profile!.id)
+        .order("created_at", { ascending: false })
+        .limit(100);
       if (error) throw error;
       return data;
     },
