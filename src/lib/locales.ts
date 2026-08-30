@@ -6,6 +6,7 @@ export const pt = {
   "common.signup": "Criar conta",
   "common.terms": "Termos",
   "common.privacy": "Privacidade",
+  "common.about": "Quem somos",
   "common.loading": "Carregando…",
   "common.seeAll": "Ver tudo",
   "common.copy": "Copiar",
@@ -37,8 +38,8 @@ export const pt = {
     "Fundadora e responsável por guiar a visão da Arena Suplementos, Alicia Franco acredita que saúde, propósito e oportunidade caminham juntos. Sob sua liderança, a marca une produtos premium, um ecossistema de pontos e um plano de carreira para transformar escolhas em conquistas reais na vida de cada participante.",
   "home.ceo.quote":
     "\"Nosso propósito é construir um futuro onde cada pessoa tem acesso à saúde e à oportunidade de crescer.\"",
-  "home.plans.title": "Escolha seu plano | Ative | Participe",
-  "home.plans.subtitle": "Todos os planos rendem até dobrar o investimento.",
+  "home.plans.title": "Escolha seu plano e comece hoje",
+  "home.plans.subtitle": "Todos os planos rendem até dobrar o valor investido. Sem pegadinha.",
   "home.plans.perDay": "ao dia",
   "home.plans.doubles": "Dobra em {days}",
   "home.plans.yields": "Rende até {total}",

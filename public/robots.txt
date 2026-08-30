@@ -1,8 +1,26 @@
 User-agent: Googlebot
 Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /carteira
+Disallow: /saques
+Disallow: /depositar
+Disallow: /deposito
+Disallow: /pagamento
+Disallow: /pedidos
+Disallow: /notificacoes
+Disallow: /conta
+Disallow: /pontos
+Disallow: /planos
+Disallow: /indicacoes
+Disallow: /loja
+Disallow: /api/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /api/
 
 User-agent: Twitterbot
 Allow: /
@@ -12,3 +30,18 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /carteira
+Disallow: /saques
+Disallow: /depositar
+Disallow: /deposito
+Disallow: /pagamento
+Disallow: /pedidos
+Disallow: /notificacoes
+Disallow: /conta
+Disallow: /pontos
+Disallow: /planos
+Disallow: /indicacoes
+Disallow: /loja
+Disallow: /api/
