@@ -52,6 +52,22 @@ export const Route = createFileRoute("/_authenticated/indicacoes")({
   }),
   component: Page,
 });
+type CareerRank = { name: string; points: number; bonus: number; req?: string };
+
+const CAREER_RANKS: CareerRank[] = [
+  { name: "Master", points: 500, bonus: 300 },
+  { name: "Bronze", points: 1000, bonus: 500 },
+  { name: "Prata", points: 2000, bonus: 800, req: "2 Master" },
+  { name: "Ouro", points: 5000, bonus: 1300, req: "4 Master" },
+  { name: "Platina", points: 10000, bonus: 2000, req: "4 Prata" },
+  { name: "Diamante", points: 20000, bonus: 3000, req: "8 Prata" },
+  { name: "Duplo Diamante", points: 40000, bonus: 4500, req: "10 Ouro" },
+  { name: "Triplo Diamante", points: 80000, bonus: 6500, req: "10 Diamante" },
+  { name: "Imperial", points: 160000, bonus: 9000, req: "10 Duplo Diamante" },
+  { name: "Embaixador", points: 320000, bonus: 12000, req: "5 Imperial" },
+  { name: "Presidente", points: 500000, bonus: 16000, req: "2 Embaixador" },
+  { name: "Titan", points: 1000000, bonus: 25000, req: "1 Presidente" },
+].sort((a, b) => a.points - b.points);
 
 function Page() {
   const { profile, wallet } = useAuth();
