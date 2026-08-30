@@ -70,7 +70,9 @@ function UsersPage() {
   const deleteUser = useServerFn(adminDeleteUser);
   const sendReset = useServerFn(adminSendPasswordReset);
 
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+
   const [target, setTarget] = useState<Target | null>(null);
   const [points, setPoints] = useState("0");
   const [reason, setReason] = useState("");
