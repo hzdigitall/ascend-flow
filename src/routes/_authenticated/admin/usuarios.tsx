@@ -94,9 +94,19 @@ function UsersPage() {
     queryKey: ["admin", "users"],
     queryFn: async () => {
       const [profiles, roles, wallets] = await Promise.all([
-        supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+        // Só as colunas usadas na tela: payload muito menor.
+        supabase
+          .from("profiles")
+          .select(
+            "id, full_name, email, cpf, phone, blocked, sponsor_id, sponsor_badge, created_at",
+          )
+          .order("created_at", { ascending: false }),
         supabase.from("user_roles").select("user_id, role"),
-        supabase.from("wallets").select("*"),
+        supabase
+          .from("wallets")
+          .select(
+            "user_id, main_balance, earnings_balance, referral_balance, usdt_balance, points_balance",
+          ),
       ]);
       if (profiles.error) throw profiles.error;
       const adminIds = new Set(
@@ -139,6 +149,17 @@ function UsersPage() {
         u.full_name.toLowerCase().includes(term),
     );
   }, [data, search]);
+
+  // Renderiza em lotes: evita montar centenas de linhas de uma vez.
+  const PAGE_SIZE = 50;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [search]);
+  const visibleUsers = useMemo(
+    () => filtered.slice(0, visibleCount),
+    [filtered, visibleCount],
+  );
 
 
   const mutateUser = useMutation({
@@ -272,7 +293,7 @@ function UsersPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {filtered.map((u) => (
+                  {visibleUsers.map((u) => (
                     <tr key={u.id} className="group hover:bg-muted/30">
                       <td className="px-6 py-4">
                         <p className="font-semibold">{u.full_name}</p>
@@ -391,6 +412,17 @@ function UsersPage() {
                   ))}
                 </tbody>
               </table>
+              {filtered.length > visibleUsers.length ? (
+                <div className="flex justify-center border-t p-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                  >
+                    Carregar mais ({filtered.length - visibleUsers.length} restantes)
+                  </Button>
+                </div>
+              ) : null}
             </div>
           )}
         </CardContent>
