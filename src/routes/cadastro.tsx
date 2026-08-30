@@ -119,6 +119,26 @@ setErrors({});
     });
     const cpfDigits = requireCpf ? onlyDigits(parsed.data.cpf ?? "") : null;
 
+    if (cpfDigits) {
+      const { data: cpfOk } = await supabase.rpc("cpf_available", { _cpf: cpfDigits });
+      if (cpfOk === false) {
+        setLoading(false);
+        setErrors({
+          cpf:
+            lang === "en"
+              ? "This CPF is already registered. Only one account per CPF is allowed."
+              : "Este CPF já possui cadastro. É permitida apenas 1 conta por CPF.",
+        });
+        toast.error(
+          lang === "en"
+            ? "This CPF already has an account."
+            : "Este CPF já possui uma conta cadastrada.",
+        );
+        return;
+      }
+    }
+
+
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,

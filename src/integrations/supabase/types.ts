@@ -1527,6 +1527,7 @@ export type Database = {
         Args: { _payload: Json; _payment: string }
         Returns: boolean
       }
+      cpf_available: { Args: { _cpf: string }; Returns: boolean }
       create_plan_checkout: {
         Args: { _plan: string; _provider: string; _user: string }
         Returns: {
