@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -13,15 +14,25 @@ export function useSettings() {
       for (const row of data ?? []) map[row.key] = row.value;
       return map;
     },
-    staleTime: 60_000,
+    // Configurações mudam raramente: cache longo evita request a cada tela.
+    staleTime: 10 * 60_000,
+    gcTime: 30 * 60_000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
-  const get = <T,>(key: string, fallback: T): T => {
-    const value = query.data?.[key];
-    return (value === undefined || value === null ? fallback : value) as T;
-  };
+  const data = query.data;
 
-  return { ...query, get };
+  // `get` estável entre renders para não invalidar memos dos consumidores.
+  const get = useCallback(
+    <T,>(key: string, fallback: T): T => {
+      const value = data?.[key];
+      return (value === undefined || value === null ? fallback : value) as T;
+    },
+    [data],
+  );
+
+  return useMemo(() => ({ ...query, get }), [query, get]);
 }
 
 export function usePlatformName() {

@@ -30,14 +30,16 @@ export const Route = createFileRoute("/_authenticated/pontos")({
 });
 
 function PointsPage() {
-  const { wallet } = useAuth();
+  const { wallet, profile } = useAuth();
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["points-transactions"],
+    queryKey: ["points-transactions", profile?.id],
+    enabled: Boolean(profile?.id),
     queryFn: async () => {
       const { data, error } = await supabase
         .from("points_transactions")
         .select("*")
+        .eq("user_id", profile!.id)
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw error;

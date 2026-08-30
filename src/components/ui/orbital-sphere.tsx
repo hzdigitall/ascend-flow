@@ -23,6 +23,8 @@ export function OrbitalSphereBackground({ className = "", ...props }: OrbitalSph
     const renderer = createOrbitalSphereRenderer(canvas, () => optionsRef.current);
     let frame = 0;
     let visible = true;
+    const reducedMotion =
+      typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const resize = () => {
       const bounds = host.getBoundingClientRect();
@@ -32,13 +34,14 @@ export function OrbitalSphereBackground({ className = "", ...props }: OrbitalSph
 
     const tick = () => {
       renderer.render();
-      frame = visible && !document.hidden ? requestAnimationFrame(tick) : 0;
+      // Respeita "reduzir movimento" e pausa fora da tela / aba oculta.
+      frame = visible && !document.hidden && !reducedMotion ? requestAnimationFrame(tick) : 0;
     };
 
     const resizeObserver = new ResizeObserver(resize);
     const intersection = new IntersectionObserver(([entry]) => {
       visible = entry?.isIntersecting ?? true;
-      if (visible && !frame) frame = requestAnimationFrame(tick);
+      if (visible && !frame && !reducedMotion) frame = requestAnimationFrame(tick);
       if (!visible && frame) {
         cancelAnimationFrame(frame);
         frame = 0;
@@ -48,10 +51,16 @@ export function OrbitalSphereBackground({ className = "", ...props }: OrbitalSph
     resizeObserver.observe(host);
     intersection.observe(host);
     resize();
-    frame = requestAnimationFrame(tick);
+    if (!reducedMotion) frame = requestAnimationFrame(tick);
+
+    const onVisibility = () => {
+      if (!document.hidden && visible && !frame && !reducedMotion) frame = requestAnimationFrame(tick);
+    };
+    document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
       if (frame) cancelAnimationFrame(frame);
+      document.removeEventListener("visibilitychange", onVisibility);
       resizeObserver.disconnect();
       intersection.disconnect();
       renderer.dispose();

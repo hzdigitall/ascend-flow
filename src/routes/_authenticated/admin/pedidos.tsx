@@ -65,7 +65,8 @@ function AdminOrdersPage() {
       const { data, error } = await supabase
         .from("orders")
         .select("*, profiles(full_name, email), order_items(product_name, quantity)")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(300);
       if (error) throw error;
       return data;
     },

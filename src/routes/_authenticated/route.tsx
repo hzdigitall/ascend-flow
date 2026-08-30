@@ -10,13 +10,15 @@ export const Route = createFileRoute("/_authenticated")({
 
     let { data } = await supabase.auth.getSession();
 
-    // On a hard refresh the session may still be restoring from storage.
-    if (!data.session) {
-      await new Promise((r) => setTimeout(r, 250));
+    // Em hard refresh a sessão ainda pode estar sendo restaurada do storage.
+    // Poll curto (até ~300ms) em vez de espera fixa: entra mais rápido.
+    for (let i = 0; i < 6 && !data.session; i++) {
+      await new Promise((r) => setTimeout(r, 50));
       data = (await supabase.auth.getSession()).data;
     }
 
     if (!data.session) throw redirect({ to: "/login" });
+
     return { user: data.session.user };
   },
   component: () => <Outlet />,

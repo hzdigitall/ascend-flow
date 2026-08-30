@@ -87,7 +87,8 @@ function WithdrawalsPage() {
       const { data, error } = await supabase
         .from("withdrawals")
         .select("*, profiles(full_name, email)")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(300);
       if (error) throw error;
       return data as unknown as Row[];
     },

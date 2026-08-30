@@ -39,21 +39,24 @@ const WALLET_LABEL: Record<string, string> = {
 };
 
 function WalletPage() {
-  const { wallet } = useAuth();
+  const { wallet, profile } = useAuth();
   const usdtRate = useUsdtRate();
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["wallet-transactions"],
+    queryKey: ["wallet-transactions", profile?.id],
+    enabled: Boolean(profile?.id),
     queryFn: async () => {
       const [txRes, commRes] = await Promise.all([
         supabase
           .from("wallet_transactions")
           .select("*")
+          .eq("user_id", profile!.id)
           .order("created_at", { ascending: false })
           .limit(100),
         supabase
           .from("commissions")
           .select("*")
+          .eq("sponsor_id", profile!.id)
           .order("created_at", { ascending: false })
           .limit(50),
       ]);

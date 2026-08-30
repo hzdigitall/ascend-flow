@@ -269,6 +269,10 @@ if (data.session) {
           src={ceoAsset.url}
           alt={t("auth.hero.alt")}
           className="absolute inset-0 h-full w-full object-cover object-top"
+          decoding="async"
+          fetchPriority="high"
+          width={960}
+          height={1200}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
         <div className="relative z-10 flex h-full flex-col items-center justify-center px-12 text-center text-white">

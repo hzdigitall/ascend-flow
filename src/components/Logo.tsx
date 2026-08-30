@@ -10,7 +10,14 @@ export function Logo({ className, to = "/" }: { className?: string; to?: string 
 
   return (
     <Link to={to} className={cn("flex items-center min-w-0", className)}>
-      <img src={logoUrl || ""} alt={name} className="h-9 w-auto shrink-0 object-contain" />
+      <img
+        src={logoUrl || ""}
+        alt={name}
+        width={144}
+        height={36}
+        decoding="async"
+        className="h-9 w-auto shrink-0 object-contain"
+      />
     </Link>
   );
 }
