@@ -408,7 +408,22 @@ if (data.session) {
                   onChange={(e) => set("referralCode", e.target.value.toUpperCase())}
                   placeholder={t("signup.referralPlaceholder")}
                 />
+                {errors["referralCode"] ? (
+                  <p className="text-xs text-destructive">{errors["referralCode"]}</p>
+                ) : sponsorName ? (
+                  <p className="text-xs text-muted-foreground">
+                    {lang === "en" ? "Referred by" : "Indicado por"}:{" "}
+                    <span className="font-semibold text-foreground">{sponsorName}</span>
+                  </p>
+                ) : referralCode && refInvalid ? (
+                  <p className="text-xs text-destructive">
+                    {lang === "en"
+                      ? "Referral code not found."
+                      : "Código de indicação não encontrado."}
+                  </p>
+                ) : null}
               </div>
+
 
               <div className="flex items-start gap-3 rounded-xl bg-white border border-[var(--color-border)] p-3">
                 <Checkbox
