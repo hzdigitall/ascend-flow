@@ -79,7 +79,7 @@ function RegistryPage() {
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ["admin", "registry", search, page],
-    queryFn: () => listFn({ data: { search: search || undefined, page, pageSize } }),
+    queryFn: () => listFn({ data: search ? { search, page, pageSize } : { page, pageSize } }),
     staleTime: 30_000,
   });
 
@@ -131,7 +131,7 @@ function RegistryPage() {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   return (
-    <AppShell nav={adminNav} title="Registros">
+    <AppShell items={adminNav} variant="admin">
       <PageHeader
         title="Registros do site"
         description="Consulte livremente os cadastros, edite nome, e-mail e senha, veja a rede de indicações e exclua contas."
@@ -168,6 +168,7 @@ function RegistryPage() {
             <ErrorState onRetry={() => refetch()} />
           ) : rows.length === 0 ? (
             <EmptyState
+              icon={Search}
               title="Nenhum registro encontrado"
               description="Ajuste a busca e tente novamente."
             />
