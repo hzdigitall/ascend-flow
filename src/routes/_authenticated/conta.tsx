@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { Loader2, User, Phone, CreditCard, Mail, Key, Camera, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AvatarCropDialog } from "@/components/profile/AvatarCropDialog";
+import { EmailChangeDialog } from "@/components/profile/EmailChangeDialog";
 
 
 export const Route = createFileRoute("/_authenticated/conta")({
