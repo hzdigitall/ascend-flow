@@ -189,7 +189,7 @@ function Page() {
                       </tr>
                     </thead>
                     <tbody className="divide-y text-sm">
-                      {careerRanks.map((rank) => (
+                      {CAREER_RANKS.map((rank) => (
                         <tr 
                           key={rank.name} 
                           className={cn(
