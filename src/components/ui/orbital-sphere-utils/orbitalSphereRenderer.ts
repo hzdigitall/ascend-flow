@@ -88,7 +88,8 @@ export function createOrbitalSphereRenderer(
 
   return {
     resize(nextWidth: number, nextHeight: number) {
-      dpr = Math.min(2, globalThis.devicePixelRatio || 1);
+      // Limita a resolução do canvas: 1.5x já é nítido e reduz muito o custo por frame no mobile.
+      dpr = Math.min(1.5, globalThis.devicePixelRatio || 1);
       width = Math.max(1, nextWidth);
       height = Math.max(1, nextHeight);
       canvas.width = Math.floor(width * dpr);
