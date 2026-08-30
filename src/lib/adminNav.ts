@@ -7,6 +7,7 @@ import {
   ShieldCheck,
   ShoppingCart,
   Users,
+  FileSearch,
   History,
   Wallet,
   PlugZap,
@@ -16,6 +17,7 @@ import type { NavItem } from "@/components/layout/AppShell";
 export const adminNav: NavItem[] = [
   { label: "Visão geral", to: "/admin/dashboard", icon: LayoutDashboard, section: "Administração" },
   { label: "Usuários", to: "/admin/usuarios", icon: Users, section: "Gestão" },
+  { label: "Registros", to: "/admin/registros", icon: FileSearch, section: "Gestão" },
   { label: "Planos", to: "/admin/planos", icon: ShieldCheck, section: "Gestão" },
   { label: "Auditoria de planos", to: "/admin/auditoria-planos", icon: History, section: "Gestão" },
   { label: "Pagamentos", to: "/admin/pagamentos", icon: Wallet, section: "Financeiro" },

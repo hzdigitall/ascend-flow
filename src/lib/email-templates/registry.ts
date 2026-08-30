@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 import { template as planExpiringTemplate } from './plan-expiring'
 import { template as planExpiredTemplate } from './plan-expired'
 import { template as welcomeTemplate } from './welcome'
+import { template as emailChangeCodeTemplate } from './email-change-code'
 
 
 export interface TemplateEntry {
@@ -19,11 +20,13 @@ export interface TemplateEntry {
  *
  * Example:
  *   import { template as welcomeTemplate } from './welcome'
+ *
  *   // then add to TEMPLATES: 'welcome': welcomeTemplate
  */
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'plan-expiring': planExpiringTemplate,
   'plan-expired': planExpiredTemplate,
   'welcome': welcomeTemplate,
+  'email-change-code': emailChangeCodeTemplate,
 }
 

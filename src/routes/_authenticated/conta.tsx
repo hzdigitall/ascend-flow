@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { Loader2, User, Phone, CreditCard, Mail, Key, Camera, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AvatarCropDialog } from "@/components/profile/AvatarCropDialog";
+import { EmailChangeDialog } from "@/components/profile/EmailChangeDialog";
 
 
 export const Route = createFileRoute("/_authenticated/conta")({
@@ -382,6 +383,14 @@ function Page() {
             </div>
 
             <div className="pt-4 border-t">
+              <h3 className="text-sm font-bold mb-2">E-mail de acesso</h3>
+              <p className="text-xs text-muted-foreground mb-4">
+                Para trocar o e-mail, enviaremos um código de confirmação para o novo endereço.
+              </p>
+              <EmailChangeDialog currentEmail={profile?.email} onChanged={refresh} />
+            </div>
+
+            <div className="pt-4 border-t">
               <h3 className="text-sm font-bold mb-2">Redefinir senha</h3>
               <p className="text-xs text-muted-foreground mb-4">
                 Por motivos de segurança, a alteração de senha deve ser feita através do processo de recuperação.
@@ -394,6 +403,7 @@ function Page() {
                 Solicitar redefinição
               </Button>
             </div>
+
           </CardContent>
         </Card>
       </div>
