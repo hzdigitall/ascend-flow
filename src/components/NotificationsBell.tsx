@@ -19,15 +19,21 @@ export function NotificationsBell({ userId }: { userId?: string | undefined }) {
       const { data, error } = await supabase
         .from("notifications")
         .select("id, title, body, read_at, created_at")
+        // Filtro explícito: usa o índice por usuário em vez de varrer a tabela.
+        .eq("user_id", userId!)
         .order("created_at", { ascending: false })
         .limit(12);
       if (error) throw error;
       return data;
     },
-    refetchInterval: 60_000,
+    staleTime: 60_000,
+    refetchInterval: 120_000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: false,
   });
 
-  const unread = data.filter((n) => !n.read_at).length;
+  const unread = useMemo(() => data.filter((n) => !n.read_at).length, [data]);
+
 
   const markAllRead = async () => {
     const ids = data.filter((n) => !n.read_at).map((n) => n.id);
