@@ -91,9 +91,40 @@ function SignUpForm() {
   const [sent, setSent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const [sponsorName, setSponsorName] = useState<string | null>(null);
+  const [refInvalid, setRefInvalid] = useState(false);
+
   useEffect(() => {
-    if (search.ref) setForm((f) => ({ ...f, referralCode: search.ref!.toUpperCase() }));
+    // Lê o parâmetro cru da URL para não perder zeros à esquerda (ex.: 00683797).
+    const raw =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("ref")
+        : null;
+    const code = (raw ?? (search.ref ? String(search.ref) : "")).trim().toUpperCase();
+    if (code) setForm((f) => ({ ...f, referralCode: code }));
   }, [search.ref]);
+
+  const referralCode = form.referralCode.trim().toUpperCase();
+  useEffect(() => {
+    let cancelled = false;
+    if (!referralCode) {
+      setSponsorName(null);
+      setRefInvalid(false);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      const { data } = await supabase.rpc("resolve_referral_code", { _code: referralCode });
+      if (cancelled) return;
+      const row = Array.isArray(data) ? data[0] : null;
+      setSponsorName(row?.sponsor_name ?? null);
+      setRefInvalid(!row);
+    }, 350);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [referralCode]);
+
 
   const set = (key: keyof typeof form, value: string | boolean) =>
     setForm((f) => ({ ...f, [key]: value }));
@@ -107,7 +138,17 @@ function SignUpForm() {
       setErrors(map);
       return;
     }
+    if (referralCode && refInvalid) {
+      setErrors({
+        referralCode:
+          lang === "en"
+            ? "Invalid referral code. Check the code or clear the field."
+            : "Código de indicação inválido. Confira o código ou apague o campo.",
+      });
+      return;
+    }
 setErrors({});
+
     setLoading(true);
     // Desbloqueia o áudio dentro do gesto do usuário (obrigatório no iOS/Android):
     // inicia mudo agora e só depois do cadastro reproduz com som.
@@ -367,7 +408,22 @@ if (data.session) {
                   onChange={(e) => set("referralCode", e.target.value.toUpperCase())}
                   placeholder={t("signup.referralPlaceholder")}
                 />
+                {errors["referralCode"] ? (
+                  <p className="text-xs text-destructive">{errors["referralCode"]}</p>
+                ) : sponsorName ? (
+                  <p className="text-xs text-muted-foreground">
+                    {lang === "en" ? "Referred by" : "Indicado por"}:{" "}
+                    <span className="font-semibold text-foreground">{sponsorName}</span>
+                  </p>
+                ) : referralCode && refInvalid ? (
+                  <p className="text-xs text-destructive">
+                    {lang === "en"
+                      ? "Referral code not found."
+                      : "Código de indicação não encontrado."}
+                  </p>
+                ) : null}
               </div>
+
 
               <div className="flex items-start gap-3 rounded-xl bg-white border border-[var(--color-border)] p-3">
                 <Checkbox

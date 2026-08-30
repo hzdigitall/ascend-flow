@@ -1637,6 +1637,13 @@ export type Database = {
         }
         Returns: string
       }
+      resolve_referral_code: {
+        Args: { _code: string }
+        Returns: {
+          sponsor_id: string
+          sponsor_name: string
+        }[]
+      }
       usdt_brl_rate: { Args: never; Returns: number }
       withdrawal_begin_submission: {
         Args: { _admin: string; _wid: string }
