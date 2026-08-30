@@ -93,6 +93,7 @@ function SignUpForm() {
 
   const [sponsorName, setSponsorName] = useState<string | null>(null);
   const [refInvalid, setRefInvalid] = useState(false);
+  const [refChecking, setRefChecking] = useState(false);
 
   useEffect(() => {
     // Lê o parâmetro cru da URL para não perder zeros à esquerda (ex.: 00683797).
@@ -110,11 +111,19 @@ function SignUpForm() {
     if (!referralCode) {
       setSponsorName(null);
       setRefInvalid(false);
+      setRefChecking(false);
       return;
     }
+    setRefChecking(true);
     const timer = setTimeout(async () => {
-      const { data } = await supabase.rpc("resolve_referral_code", { _code: referralCode });
+      const { data, error } = await supabase.rpc("resolve_referral_code", { _code: referralCode });
       if (cancelled) return;
+      setRefChecking(false);
+      if (error) {
+        setSponsorName(null);
+        setRefInvalid(false);
+        return;
+      }
       const row = Array.isArray(data) ? data[0] : null;
       setSponsorName(row?.sponsor_name ?? null);
       setRefInvalid(!row);
@@ -138,14 +147,37 @@ function SignUpForm() {
       setErrors(map);
       return;
     }
-    if (referralCode && refInvalid) {
-      setErrors({
-        referralCode:
+    if (referralCode) {
+      setRefChecking(true);
+      const { data: sponsorRows, error: sponsorError } = await supabase.rpc(
+        "resolve_referral_code",
+        { _code: referralCode },
+      );
+      setRefChecking(false);
+
+      if (sponsorError) {
+        toast.error(
           lang === "en"
-            ? "Invalid referral code. Check the code or clear the field."
-            : "Código de indicação inválido. Confira o código ou apague o campo.",
-      });
-      return;
+            ? "We could not verify the referral right now. Check your connection and try again."
+            : "Não foi possível verificar a indicação agora. Confira sua conexão e tente novamente.",
+        );
+        return;
+      }
+
+      const sponsor = Array.isArray(sponsorRows) ? sponsorRows[0] : null;
+      if (!sponsor) {
+        setRefInvalid(true);
+        setErrors({
+          referralCode:
+            lang === "en"
+              ? "Invalid referral code. Check the code or clear the field."
+              : "Código de indicação inválido. Confira o código ou apague o campo.",
+        });
+        return;
+      }
+
+      setSponsorName(sponsor.sponsor_name ?? null);
+      setRefInvalid(false);
     }
 setErrors({});
 
@@ -210,6 +242,12 @@ setErrors({});
           lang === "en"
             ? "Too many attempts. Please wait a few minutes and try again."
             : "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
+        );
+      } else if (msg.includes("referral_code_invalid")) {
+        toast.error(
+          lang === "en"
+            ? "This referral link is no longer valid. Ask your sponsor for a new link."
+            : "Este link de indicação não é mais válido. Peça um novo link ao seu patrocinador.",
         );
       } else {
         toast.error(`${t("signup.error.generic")} (${error.message})`);
