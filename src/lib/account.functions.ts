@@ -48,7 +48,9 @@ export const requestEmailChange = createServerFn({ method: "POST" })
       throw new Error("Muitas solicitações. Tente novamente mais tarde.");
     }
 
-    const code = String(Math.floor(100000 + Math.random() * 900000));
+    const bytes = new Uint32Array(1);
+    crypto.getRandomValues(bytes);
+    const code = String(100000 + ((bytes[0] ?? 0) % 900000));
     const expiresAt = new Date(Date.now() + CODE_TTL_MINUTES * 60_000).toISOString();
 
     // Invalida pedidos anteriores em aberto.
@@ -58,22 +60,38 @@ export const requestEmailChange = createServerFn({ method: "POST" })
       .eq("user_id", context.userId)
       .is("used_at", null);
 
-    const { error } = await supabaseAdmin.from("email_change_requests").insert({
-      user_id: context.userId,
-      new_email: data.newEmail,
-      code_hash: await hashCode(code, context.userId),
-      expires_at: expiresAt,
-    });
+    const { data: inserted, error } = await supabaseAdmin
+      .from("email_change_requests")
+      .insert({
+        user_id: context.userId,
+        new_email: data.newEmail,
+        code_hash: await hashCode(code, context.userId),
+        expires_at: expiresAt,
+      })
+      .select("id")
+      .single();
     if (error) throw new Error(error.message);
 
-    const { sendTemplateEmail } = await import("./email-templates/send-email");
-    await sendTemplateEmail("email-change-code", data.newEmail, {
-      templateData: {
-        name: profile?.full_name ?? "",
-        code,
-        minutes: CODE_TTL_MINUTES,
-      },
-    });
+    try {
+      const { sendTemplateEmail } = await import("./email-templates/send-email");
+      await sendTemplateEmail("email-change-code", data.newEmail, {
+        templateData: {
+          name: profile?.full_name ?? "",
+          code,
+          minutes: CODE_TTL_MINUTES,
+        },
+      });
+    } catch (err) {
+      // Falha no envio: encerra a solicitação para não deixar pedido pendente sem código.
+      if (inserted?.id) {
+        await supabaseAdmin
+          .from("email_change_requests")
+          .update({ used_at: new Date().toISOString() })
+          .eq("id", inserted.id);
+      }
+      throw new Error("Não foi possível enviar o código. Tente novamente em instantes.");
+    }
+
 
     return { ok: true, newEmail: data.newEmail, expiresAt };
   });
