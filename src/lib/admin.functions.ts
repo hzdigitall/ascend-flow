@@ -57,12 +57,13 @@ export const adminProcessWithdrawal = createServerFn({ method: "POST" })
 
 export const adminUpdateUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { userId: string; blocked?: boolean; makeAdmin?: boolean }) =>
+  .inputValidator((data: { userId: string; blocked?: boolean; makeAdmin?: boolean; sponsorBadge?: boolean }) =>
     z
       .object({
         userId: z.string().uuid(),
         blocked: z.boolean().optional(),
         makeAdmin: z.boolean().optional(),
+        sponsorBadge: z.boolean().optional(),
       })
       .parse(data),
   )
@@ -74,6 +75,13 @@ export const adminUpdateUser = createServerFn({ method: "POST" })
       const { error } = await supabaseAdmin
         .from("profiles")
         .update({ blocked: data.blocked })
+        .eq("id", data.userId);
+      if (error) throw new Error(error.message);
+    }
+    if (typeof data.sponsorBadge === "boolean") {
+      const { error } = await supabaseAdmin
+        .from("profiles")
+        .update({ sponsor_badge: data.sponsorBadge })
         .eq("id", data.userId);
       if (error) throw new Error(error.message);
     }
@@ -95,10 +103,15 @@ export const adminUpdateUser = createServerFn({ method: "POST" })
       action: "user_updated",
       table_name: "profiles",
       record_id: data.userId,
-      new_value: { blocked: data.blocked ?? null, admin: data.makeAdmin ?? null },
+      new_value: {
+        blocked: data.blocked ?? null,
+        admin: data.makeAdmin ?? null,
+        sponsor_badge: data.sponsorBadge ?? null,
+      },
     });
     return { ok: true };
   });
+
 
 export const adminSendPasswordReset = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
