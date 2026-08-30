@@ -224,6 +224,18 @@ function UsersPage() {
   return (
     <AppShell items={adminNav} variant="admin">
       <PageHeader title="Usuários" description="Gerencie os usuários da plataforma." />
+      <div className="mb-4 max-w-md">
+        <Label htmlFor="user-search" className="sr-only">
+          Buscar por e-mail
+        </Label>
+        <Input
+          id="user-search"
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar por e-mail ou nome"
+        />
+      </div>
       <Card className="shadow-card">
         <CardContent className="p-0">
           {isLoading ? (
@@ -232,15 +244,20 @@ function UsersPage() {
             <div className="p-6">
               <ErrorState onRetry={() => refetch()} />
             </div>
-          ) : (data?.length ?? 0) === 0 ? (
+          ) : filtered.length === 0 ? (
             <div className="p-6">
               <EmptyState
                 icon={Users}
                 title="Nenhum usuário"
-                description="Ainda não há usuários cadastrados."
+                description={
+                  search.trim()
+                    ? "Nenhum usuário encontrado para essa busca."
+                    : "Ainda não há usuários cadastrados."
+                }
               />
             </div>
           ) : (
+
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
