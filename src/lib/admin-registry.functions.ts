@@ -3,6 +3,53 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "@/lib/admin-guard.server";
 
+type LookupRow = {
+  id: string;
+  full_name: string;
+  email: string;
+  referral_code: string;
+  sponsor_id?: string | null;
+};
+
+/** Busca um usuário por e-mail exato ou código de indicação, sem depender de filtros `or` (evita quebra com caracteres especiais). */
+async function findUserByEmailOrCode(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  admin: any,
+  raw: string,
+): Promise<LookupRow> {
+  const term = raw.trim();
+  if (!term) throw new Error("Informe o e-mail ou o código de indicação.");
+  const cols = "id, full_name, email, referral_code, sponsor_id";
+
+  const [byEmail, byCode] = await Promise.all([
+    admin.from("profiles").select(cols).ilike("email", term).limit(2),
+    admin.from("profiles").select(cols).ilike("referral_code", term).limit(2),
+  ]);
+  if (byEmail.error) throw new Error(byEmail.error.message);
+  if (byCode.error) throw new Error(byCode.error.message);
+
+  const found = new Map<string, LookupRow>();
+  [...(byEmail.data ?? []), ...(byCode.data ?? [])].forEach((r: LookupRow) => found.set(r.id, r));
+  const list = [...found.values()];
+
+  if (list.length === 0) {
+    throw new Error("Usuário não encontrado (informe o e-mail completo ou o código de indicação).");
+  }
+  if (list.length > 1) throw new Error("Mais de um usuário corresponde à busca.");
+  return list[0]!;
+}
+
+/** Converte erros dos gatilhos do banco em mensagens legíveis para o admin. */
+function friendlySponsorError(message: string): Error {
+  if (message.includes("SPONSOR_CYCLE_DETECTED")) {
+    return new Error("Vínculo inválido: geraria um ciclo na rede (o indicado já está acima na árvore).");
+  }
+  if (message.includes("SPONSOR_SELF_REFERENCE")) {
+    return new Error("Um usuário não pode patrocinar a si mesmo.");
+  }
+  return new Error(message);
+}
+
 /** Busca paginada de registros (usuários) para o painel administrativo. */
 export const adminListRegistry = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -196,19 +243,7 @@ export const adminSetSponsor = createServerFn({ method: "POST" })
       return { ok: true, sponsor: null as null | { id: string; full_name: string; email: string } };
     }
 
-    const clean = term.replace(/[%,]/g, "");
-    const { data: candidates, error: findErr } = await supabaseAdmin
-      .from("profiles")
-      .select("id, full_name, email, referral_code")
-      .or(`email.ilike.${clean},referral_code.ilike.${clean}`)
-      .limit(2);
-    if (findErr) throw new Error(findErr.message);
-    if (!candidates || candidates.length === 0) {
-      throw new Error("Patrocinador não encontrado (informe e-mail ou código de indicação).");
-    }
-    if (candidates.length > 1) throw new Error("Mais de um patrocinador corresponde à busca.");
-
-    const sponsor = candidates[0]!;
+    const sponsor = await findUserByEmailOrCode(supabaseAdmin, term);
     if (sponsor.id === data.userId) throw new Error("O usuário não pode patrocinar a si mesmo.");
 
     // Impede ciclo: o novo patrocinador não pode estar na descendência do usuário.
@@ -218,13 +253,15 @@ export const adminSetSponsor = createServerFn({ method: "POST" })
       .eq("sponsor_id", data.userId)
       .eq("referred_id", sponsor.id)
       .maybeSingle();
-    if (cycle) throw new Error("Vínculo inválido: geraria um ciclo na rede.");
+    if (cycle) {
+      throw new Error("Vínculo inválido: o patrocinador informado já está abaixo deste usuário na rede.");
+    }
 
     const { error } = await supabaseAdmin
       .from("profiles")
       .update({ sponsor_id: sponsor.id })
       .eq("id", data.userId);
-    if (error) throw new Error(error.message);
+    if (error) throw friendlySponsorError(error.message);
 
     await supabaseAdmin.from("admin_logs").insert({
       admin_id: context.userId,
@@ -252,20 +289,11 @@ export const adminAddReferral = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const clean = data.referred.trim().replace(/[%,]/g, "");
-    const { data: candidates, error: findErr } = await supabaseAdmin
-      .from("profiles")
-      .select("id, full_name, email, referral_code, sponsor_id")
-      .or(`email.ilike.${clean},referral_code.ilike.${clean}`)
-      .limit(2);
-    if (findErr) throw new Error(findErr.message);
-    if (!candidates || candidates.length === 0) {
-      throw new Error("Indicado não encontrado (informe e-mail ou código de indicação).");
-    }
-    if (candidates.length > 1) throw new Error("Mais de um usuário corresponde à busca.");
-
-    const referred = candidates[0]!;
+    const referred = await findUserByEmailOrCode(supabaseAdmin, data.referred);
     if (referred.id === data.sponsorId) throw new Error("O usuário não pode indicar a si mesmo.");
+    if (referred.sponsor_id === data.sponsorId) {
+      throw new Error("Este usuário já é indicado direto (nível 1) deste patrocinador.");
+    }
 
     // Impede ciclo: o patrocinador não pode estar na descendência do indicado.
     const { data: cycle } = await supabaseAdmin
@@ -274,14 +302,26 @@ export const adminAddReferral = createServerFn({ method: "POST" })
       .eq("sponsor_id", referred.id)
       .eq("referred_id", data.sponsorId)
       .maybeSingle();
-    if (cycle) throw new Error("Vínculo inválido: geraria um ciclo na rede.");
+    if (cycle) {
+      throw new Error("Vínculo inválido: este patrocinador já está abaixo do indicado na rede.");
+    }
 
-    const previousSponsor = referred.sponsor_id;
+    const previousSponsor = referred.sponsor_id ?? null;
+    let previousSponsorEmail: string | null = null;
+    if (previousSponsor) {
+      const { data: prev } = await supabaseAdmin
+        .from("profiles")
+        .select("email")
+        .eq("id", previousSponsor)
+        .maybeSingle();
+      previousSponsorEmail = prev?.email ?? null;
+    }
+
     const { error } = await supabaseAdmin
       .from("profiles")
       .update({ sponsor_id: data.sponsorId })
       .eq("id", referred.id);
-    if (error) throw new Error(error.message);
+    if (error) throw friendlySponsorError(error.message);
 
     await supabaseAdmin.from("admin_logs").insert({
       admin_id: context.userId,
@@ -295,6 +335,7 @@ export const adminAddReferral = createServerFn({ method: "POST" })
     return {
       ok: true,
       referred: { id: referred.id, full_name: referred.full_name, email: referred.email },
+      movedFrom: previousSponsorEmail,
     };
   });
 
