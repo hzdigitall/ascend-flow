@@ -246,8 +246,9 @@ export function AppShell({
   // Support links — read once, don't re-render
   const supportWhats = useMemo(() => get<string>("support_whatsapp", ""), [get]);
   const supportEmail = useMemo(() => get<string>("support_email", ""), [get]);
-  const supportLink = useMemo(() => get<string>("support_link", ""), [get]);
+const supportLink = useMemo(() => get<string>("support_link", ""), [get]);
   const supportGroup = useMemo(() => get<string>("support_group", ""), [get]);
+  const supportGroup2 = useMemo(() => get<string>("support_group_2", ""), [get]);
   const supportHref = useMemo(
     () =>
       supportLink
@@ -295,10 +296,18 @@ export function AppShell({
           </Button>
         ) : null}
 
-        {supportGroup ? (
+{supportGroup ? (
           <Button asChild variant="outline" size="sm" className="w-full">
             <a href={supportGroup} target="_blank" rel="noreferrer">
-              <Users className="mr-2 h-4 w-4" /> {t("nav.supportGroup")}
+              <Users className="mr-2 h-4 w-4" /> {t("nav.supportGroup1")}
+            </a>
+          </Button>
+        ) : null}
+
+        {supportGroup2 ? (
+          <Button asChild variant="outline" size="sm" className="w-full">
+            <a href={supportGroup2} target="_blank" rel="noreferrer">
+              <Users className="mr-2 h-4 w-4" /> {t("nav.supportGroup2")}
             </a>
           </Button>
         ) : null}
@@ -308,8 +317,9 @@ export function AppShell({
     [
       pathname,
       sponsor,
-      supportHref,
+supportHref,
       supportGroup,
+      supportGroup2,
       variant,
       items,
       lang,
