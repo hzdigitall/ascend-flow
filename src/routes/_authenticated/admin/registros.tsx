@@ -8,6 +8,8 @@ import {
   adminListRegistry,
   adminRegistryDetail,
   adminUpdateAccount,
+  adminSetSponsor,
+  adminRemoveReferral,
 } from "@/lib/admin-registry.functions";
 import { adminDeleteUser } from "@/lib/admin.functions";
 import { AppShell } from "@/components/layout/AppShell";
