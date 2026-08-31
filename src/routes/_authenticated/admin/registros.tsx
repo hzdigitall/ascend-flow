@@ -132,6 +132,28 @@ function RegistryPage() {
     onError: (e: any) => toast.error(e?.message || "Erro ao excluir usuário."),
   });
 
+  const saveSponsor = useMutation({
+    mutationFn: async (sponsor: string | null) =>
+      sponsorFn({ data: { userId: networkTarget!.id, sponsor } }),
+    onSuccess: (res: any) => {
+      toast.success(res?.sponsor ? "Patrocinador atualizado." : "Patrocinador removido.");
+      setSponsorInput("");
+      qc.invalidateQueries({ queryKey: ["admin", "registry-detail"] });
+      qc.invalidateQueries({ queryKey: ["admin", "registry"] });
+    },
+    onError: (e: any) => toast.error(e?.message || "Erro ao alterar patrocinador."),
+  });
+
+  const removeReferral = useMutation({
+    mutationFn: async (referredId: string) =>
+      removeRefFn({ data: { sponsorId: networkTarget!.id, referredId } }),
+    onSuccess: () => {
+      toast.success("Indicado removido da rede.");
+      qc.invalidateQueries({ queryKey: ["admin", "registry-detail"] });
+    },
+    onError: (e: any) => toast.error(e?.message || "Erro ao remover indicado."),
+  });
+
   const rows = (data?.rows ?? []) as Row[];
   const total = data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
