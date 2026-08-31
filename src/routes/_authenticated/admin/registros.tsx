@@ -153,7 +153,9 @@ function RegistryPage() {
     onSuccess: (res: any) => {
       toast.success(
         res?.referred
-          ? `${res.referred.full_name} vinculado(a) como indicado direto.`
+          ? `${res.referred.full_name} vinculado(a) como indicado direto.${
+              res.movedFrom ? ` Estava sob ${res.movedFrom}.` : ""
+            }`
           : "Indicado adicionado.",
       );
       setReferralInput("");
