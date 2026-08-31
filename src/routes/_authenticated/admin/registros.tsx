@@ -10,6 +10,7 @@ import {
   adminUpdateAccount,
   adminSetSponsor,
   adminRemoveReferral,
+  adminAddReferral,
 } from "@/lib/admin-registry.functions";
 import { adminDeleteUser } from "@/lib/admin.functions";
 import { AppShell } from "@/components/layout/AppShell";
@@ -67,8 +68,10 @@ function RegistryPage() {
   const deleteFn = useServerFn(adminDeleteUser);
   const sponsorFn = useServerFn(adminSetSponsor);
   const removeRefFn = useServerFn(adminRemoveReferral);
+  const addRefFn = useServerFn(adminAddReferral);
 
   const [sponsorInput, setSponsorInput] = useState("");
+  const [referralInput, setReferralInput] = useState("");
 
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
@@ -142,6 +145,21 @@ function RegistryPage() {
       qc.invalidateQueries({ queryKey: ["admin", "registry"] });
     },
     onError: (e: any) => toast.error(e?.message || "Erro ao alterar patrocinador."),
+  });
+
+  const addReferral = useMutation({
+    mutationFn: async (referred: string) =>
+      addRefFn({ data: { sponsorId: networkTarget!.id, referred } }),
+    onSuccess: (res: any) => {
+      toast.success(
+        res?.referred
+          ? `${res.referred.full_name} vinculado(a) como indicado direto.`
+          : "Indicado adicionado.",
+      );
+      setReferralInput("");
+      qc.invalidateQueries({ queryKey: ["admin", "registry-detail"] });
+    },
+    onError: (e: any) => toast.error(e?.message || "Erro ao adicionar indicado."),
   });
 
   const removeReferral = useMutation({
@@ -398,6 +416,31 @@ function RegistryPage() {
                       Remover
                     </Button>
                   </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl border p-4">
+                <Label className="text-xs uppercase tracking-wider">Adicionar indicado direto</Label>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Vincula um usuário existente como indicado de nível 1 de{" "}
+                  {networkTarget?.full_name}.
+                </p>
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                  <Input
+                    value={referralInput}
+                    onChange={(e) => setReferralInput(e.target.value)}
+                    placeholder="E-mail ou código do indicado"
+                  />
+                  <Button
+                    size="sm"
+                    disabled={addReferral.isPending || !referralInput.trim()}
+                    onClick={() => addReferral.mutate(referralInput.trim())}
+                  >
+                    {addReferral.isPending ? (
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                    ) : null}
+                    Adicionar
+                  </Button>
                 </div>
               </div>
 
