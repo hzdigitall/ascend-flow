@@ -419,6 +419,31 @@ function RegistryPage() {
                 </div>
               </div>
 
+              <div className="rounded-xl border p-4">
+                <Label className="text-xs uppercase tracking-wider">Adicionar indicado direto</Label>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Vincula um usuário existente como indicado de nível 1 de{" "}
+                  {networkTarget?.full_name}.
+                </p>
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                  <Input
+                    value={referralInput}
+                    onChange={(e) => setReferralInput(e.target.value)}
+                    placeholder="E-mail ou código do indicado"
+                  />
+                  <Button
+                    size="sm"
+                    disabled={addReferral.isPending || !referralInput.trim()}
+                    onClick={() => addReferral.mutate(referralInput.trim())}
+                  >
+                    {addReferral.isPending ? (
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                    ) : null}
+                    Adicionar
+                  </Button>
+                </div>
+              </div>
+
               <p className="text-xs text-muted-foreground">
                 Total na rede: <strong>{detail.data?.total ?? 0}</strong>
               </p>
