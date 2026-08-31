@@ -65,6 +65,10 @@ function RegistryPage() {
   const detailFn = useServerFn(adminRegistryDetail);
   const updateFn = useServerFn(adminUpdateAccount);
   const deleteFn = useServerFn(adminDeleteUser);
+  const sponsorFn = useServerFn(adminSetSponsor);
+  const removeRefFn = useServerFn(adminRemoveReferral);
+
+  const [sponsorInput, setSponsorInput] = useState("");
 
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
