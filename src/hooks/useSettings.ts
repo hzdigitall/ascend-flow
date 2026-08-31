@@ -14,10 +14,11 @@ export function useSettings() {
       for (const row of data ?? []) map[row.key] = row.value;
       return map;
     },
-    // Configurações mudam raramente: cache longo evita request a cada tela.
+// Configurações mudam raramente: cache longo evita request a cada tela,
+    // mas sempre busca a versão mais recente ao (re)abrir o painel.
     staleTime: 10 * 60_000,
     gcTime: 30 * 60_000,
-    refetchOnMount: false,
+    refetchOnMount: "always",
     refetchOnWindowFocus: false,
   });
 
