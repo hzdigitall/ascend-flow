@@ -162,3 +162,116 @@ export const adminUpdateAccount = createServerFn({ method: "POST" })
 
     return { ok: true };
   });
+
+/** Define ou remove o patrocinador (upline) de um usuário. */
+export const adminSetSponsor = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { userId: string; sponsor?: string | null }) =>
+    z
+      .object({
+        userId: z.string().uuid(),
+        sponsor: z.string().trim().max(255).nullable().optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const term = (data.sponsor ?? "").trim();
+
+    if (!term) {
+      const { error } = await supabaseAdmin
+        .from("profiles")
+        .update({ sponsor_id: null })
+        .eq("id", data.userId);
+      if (error) throw new Error(error.message);
+      await supabaseAdmin.from("admin_logs").insert({
+        admin_id: context.userId,
+        action: "sponsor_removed",
+        table_name: "profiles",
+        record_id: data.userId,
+        new_value: { sponsor_id: null },
+      });
+      return { ok: true, sponsor: null as null | { id: string; full_name: string; email: string } };
+    }
+
+    const clean = term.replace(/[%,]/g, "");
+    const { data: candidates, error: findErr } = await supabaseAdmin
+      .from("profiles")
+      .select("id, full_name, email, referral_code")
+      .or(`email.ilike.${clean},referral_code.ilike.${clean}`)
+      .limit(2);
+    if (findErr) throw new Error(findErr.message);
+    if (!candidates || candidates.length === 0) {
+      throw new Error("Patrocinador não encontrado (informe e-mail ou código de indicação).");
+    }
+    if (candidates.length > 1) throw new Error("Mais de um patrocinador corresponde à busca.");
+
+    const sponsor = candidates[0]!;
+    if (sponsor.id === data.userId) throw new Error("O usuário não pode patrocinar a si mesmo.");
+
+    // Impede ciclo: o novo patrocinador não pode estar na descendência do usuário.
+    const { data: cycle } = await supabaseAdmin
+      .from("referrals")
+      .select("id")
+      .eq("sponsor_id", data.userId)
+      .eq("referred_id", sponsor.id)
+      .maybeSingle();
+    if (cycle) throw new Error("Vínculo inválido: geraria um ciclo na rede.");
+
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({ sponsor_id: sponsor.id })
+      .eq("id", data.userId);
+    if (error) throw new Error(error.message);
+
+    await supabaseAdmin.from("admin_logs").insert({
+      admin_id: context.userId,
+      action: "sponsor_updated",
+      table_name: "profiles",
+      record_id: data.userId,
+      new_value: { sponsor_id: sponsor.id, sponsor_email: sponsor.email },
+    });
+
+    return { ok: true, sponsor: { id: sponsor.id, full_name: sponsor.full_name, email: sponsor.email } };
+  });
+
+/** Remove um indicado direto da rede do usuário (desvincula o patrocinador do indicado). */
+export const adminRemoveReferral = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { sponsorId: string; referredId: string }) =>
+    z.object({ sponsorId: z.string().uuid(), referredId: z.string().uuid() }).parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: referred, error: rErr } = await supabaseAdmin
+      .from("profiles")
+      .select("id, sponsor_id, email")
+      .eq("id", data.referredId)
+      .maybeSingle();
+    if (rErr) throw new Error(rErr.message);
+    if (!referred) throw new Error("Indicado não encontrado.");
+    if (referred.sponsor_id !== data.sponsorId) {
+      throw new Error("Só é possível remover indicados diretos (nível 1).");
+    }
+
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({ sponsor_id: null })
+      .eq("id", data.referredId);
+    if (error) throw new Error(error.message);
+
+    await supabaseAdmin.from("admin_logs").insert({
+      admin_id: context.userId,
+      action: "referral_removed",
+      table_name: "profiles",
+      record_id: data.referredId,
+      old_value: { sponsor_id: data.sponsorId },
+      new_value: { sponsor_id: null },
+    });
+
+    return { ok: true };
+  });
