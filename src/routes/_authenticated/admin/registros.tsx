@@ -424,9 +424,22 @@ function RegistryPage() {
                             <p className="text-sm font-medium">{m.full_name}</p>
                             <p className="text-xs text-muted-foreground">{m.email}</p>
                           </div>
-                          <span className="text-xs text-muted-foreground">
-                            {dateTimeBR(m.created_at)}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">
+                              {dateTimeBR(m.created_at)}
+                            </span>
+                            {lvl.level === 1 ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:text-destructive"
+                                disabled={removeReferral.isPending}
+                                onClick={() => removeReferral.mutate(m.id)}
+                              >
+                                <Trash2 className="size-3.5" />
+                              </Button>
+                            ) : null}
+                          </div>
                         </li>
                       ))}
                       {lvl.members.length > 50 ? (
