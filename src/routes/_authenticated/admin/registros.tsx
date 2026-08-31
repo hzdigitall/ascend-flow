@@ -10,6 +10,7 @@ import {
   adminUpdateAccount,
   adminSetSponsor,
   adminRemoveReferral,
+  adminAddReferral,
 } from "@/lib/admin-registry.functions";
 import { adminDeleteUser } from "@/lib/admin.functions";
 import { AppShell } from "@/components/layout/AppShell";
@@ -67,8 +68,10 @@ function RegistryPage() {
   const deleteFn = useServerFn(adminDeleteUser);
   const sponsorFn = useServerFn(adminSetSponsor);
   const removeRefFn = useServerFn(adminRemoveReferral);
+  const addRefFn = useServerFn(adminAddReferral);
 
   const [sponsorInput, setSponsorInput] = useState("");
+  const [referralInput, setReferralInput] = useState("");
 
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
