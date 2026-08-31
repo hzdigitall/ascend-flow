@@ -31,11 +31,12 @@ export const adminSaveUsdtRate = createServerFn({ method: "POST" })
 /** Atualiza links oficiais de suporte — somente administradores. */
 export const adminSaveSupportLinks = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { supportLink: string; supportGroup: string }) =>
+.inputValidator((data: { supportLink: string; supportGroup: string; supportGroup2: string }) =>
     z
       .object({
         supportLink: z.string().url().max(500),
         supportGroup: z.string().url().max(500),
+        supportGroup2: z.string().url().max(500),
       })
       .parse(data),
   )
@@ -43,9 +44,10 @@ export const adminSaveSupportLinks = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const values = [
+const values = [
       { key: "support_link", value: data.supportLink as never, is_public: true },
       { key: "support_group", value: data.supportGroup as never, is_public: true },
+      { key: "support_group_2", value: data.supportGroup2 as never, is_public: true },
     ];
 
     const { error } = await supabaseAdmin.from("settings").upsert(values, { onConflict: "key" });
@@ -55,7 +57,11 @@ export const adminSaveSupportLinks = createServerFn({ method: "POST" })
       admin_id: context.userId,
       action: "support_links_updated",
       table_name: "settings",
-      new_value: { support_link: data.supportLink, support_group: data.supportGroup } as never,
+new_value: {
+        support_link: data.supportLink,
+        support_group: data.supportGroup,
+        support_group_2: data.supportGroup2,
+      } as never,
     });
     return { ok: true };
   });

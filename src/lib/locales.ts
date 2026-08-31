@@ -152,8 +152,9 @@ export const pt = {
   "nav.admin": "Painel administrativo",
   "nav.backToAccount": "Voltar para minha conta",
   "nav.sponsor": "Seu patrocinador",
-  "nav.support": "Falar com suporte",
-  "nav.supportGroup": "Grupo oficial",
+"nav.support": "Falar com suporte",
+  "nav.supportGroup1": "Grupo G1",
+  "nav.supportGroup2": "Grupo G2",
   "nav.signOut": "Sair",
   "nav.main": "Navegação principal",
 
@@ -331,8 +332,9 @@ export const en: Record<TranslationKey, string> = {
   "nav.admin": "Admin panel",
   "nav.backToAccount": "Back to my account",
   "nav.sponsor": "Your sponsor",
-  "nav.support": "Contact support",
-  "nav.supportGroup": "Official group",
+"nav.support": "Contact support",
+  "nav.supportGroup1": "Group G1",
+  "nav.supportGroup2": "Group G2",
   "nav.signOut": "Sign out",
   "nav.main": "Main navigation",
 
