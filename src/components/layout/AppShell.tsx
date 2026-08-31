@@ -247,8 +247,21 @@ export function AppShell({
   const supportWhats = useMemo(() => get<string>("support_whatsapp", ""), [get]);
   const supportEmail = useMemo(() => get<string>("support_email", ""), [get]);
 const supportLink = useMemo(() => get<string>("support_link", ""), [get]);
-  const supportGroup = useMemo(() => get<string>("support_group", ""), [get]);
-  const supportGroup2 = useMemo(() => get<string>("support_group_2", ""), [get]);
+  const supportGroups = useMemo(() => {
+    const raw = get<unknown>("support_groups", null);
+    if (Array.isArray(raw)) {
+      return (raw as { name?: string; url?: string }[])
+        .map((g) => ({ name: String(g?.name ?? "").trim(), url: String(g?.url ?? "").trim() }))
+        .filter((g) => g.url);
+    }
+    const g1 = get<string>("support_group", "");
+    const g2 = get<string>("support_group_2", "");
+    return [
+      ...(g1 ? [{ name: "Grupo G1", url: g1 }] : []),
+      ...(g2 ? [{ name: "Grupo G2", url: g2 }] : []),
+    ];
+  }, [get]);
+
   const supportHref = useMemo(
     () =>
       supportLink
