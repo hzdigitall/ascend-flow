@@ -237,6 +237,67 @@ export const adminSetSponsor = createServerFn({ method: "POST" })
     return { ok: true, sponsor: { id: sponsor.id, full_name: sponsor.full_name, email: sponsor.email } };
   });
 
+/** Insere um indicado direto na rede do usuário (define o usuário como patrocinador do indicado). */
+export const adminAddReferral = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { sponsorId: string; referred: string }) =>
+    z
+      .object({
+        sponsorId: z.string().uuid(),
+        referred: z.string().trim().min(3).max(255),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const clean = data.referred.trim().replace(/[%,]/g, "");
+    const { data: candidates, error: findErr } = await supabaseAdmin
+      .from("profiles")
+      .select("id, full_name, email, referral_code, sponsor_id")
+      .or(`email.ilike.${clean},referral_code.ilike.${clean}`)
+      .limit(2);
+    if (findErr) throw new Error(findErr.message);
+    if (!candidates || candidates.length === 0) {
+      throw new Error("Indicado não encontrado (informe e-mail ou código de indicação).");
+    }
+    if (candidates.length > 1) throw new Error("Mais de um usuário corresponde à busca.");
+
+    const referred = candidates[0]!;
+    if (referred.id === data.sponsorId) throw new Error("O usuário não pode indicar a si mesmo.");
+
+    // Impede ciclo: o patrocinador não pode estar na descendência do indicado.
+    const { data: cycle } = await supabaseAdmin
+      .from("referrals")
+      .select("id")
+      .eq("sponsor_id", referred.id)
+      .eq("referred_id", data.sponsorId)
+      .maybeSingle();
+    if (cycle) throw new Error("Vínculo inválido: geraria um ciclo na rede.");
+
+    const previousSponsor = referred.sponsor_id;
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({ sponsor_id: data.sponsorId })
+      .eq("id", referred.id);
+    if (error) throw new Error(error.message);
+
+    await supabaseAdmin.from("admin_logs").insert({
+      admin_id: context.userId,
+      action: "referral_added",
+      table_name: "profiles",
+      record_id: referred.id,
+      old_value: { sponsor_id: previousSponsor },
+      new_value: { sponsor_id: data.sponsorId },
+    });
+
+    return {
+      ok: true,
+      referred: { id: referred.id, full_name: referred.full_name, email: referred.email },
+    };
+  });
+
 /** Remove um indicado direto da rede do usuário (desvincula o patrocinador do indicado). */
 export const adminRemoveReferral = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
