@@ -3,6 +3,53 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "@/lib/admin-guard.server";
 
+type LookupRow = {
+  id: string;
+  full_name: string;
+  email: string;
+  referral_code: string;
+  sponsor_id?: string | null;
+};
+
+/** Busca um usuário por e-mail exato ou código de indicação, sem depender de filtros `or` (evita quebra com caracteres especiais). */
+async function findUserByEmailOrCode(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  admin: any,
+  raw: string,
+): Promise<LookupRow> {
+  const term = raw.trim();
+  if (!term) throw new Error("Informe o e-mail ou o código de indicação.");
+  const cols = "id, full_name, email, referral_code, sponsor_id";
+
+  const [byEmail, byCode] = await Promise.all([
+    admin.from("profiles").select(cols).ilike("email", term).limit(2),
+    admin.from("profiles").select(cols).ilike("referral_code", term).limit(2),
+  ]);
+  if (byEmail.error) throw new Error(byEmail.error.message);
+  if (byCode.error) throw new Error(byCode.error.message);
+
+  const found = new Map<string, LookupRow>();
+  [...(byEmail.data ?? []), ...(byCode.data ?? [])].forEach((r: LookupRow) => found.set(r.id, r));
+  const list = [...found.values()];
+
+  if (list.length === 0) {
+    throw new Error("Usuário não encontrado (informe o e-mail completo ou o código de indicação).");
+  }
+  if (list.length > 1) throw new Error("Mais de um usuário corresponde à busca.");
+  return list[0]!;
+}
+
+/** Converte erros dos gatilhos do banco em mensagens legíveis para o admin. */
+function friendlySponsorError(message: string): Error {
+  if (message.includes("SPONSOR_CYCLE_DETECTED")) {
+    return new Error("Vínculo inválido: geraria um ciclo na rede (o indicado já está acima na árvore).");
+  }
+  if (message.includes("SPONSOR_SELF_REFERENCE")) {
+    return new Error("Um usuário não pode patrocinar a si mesmo.");
+  }
+  return new Error(message);
+}
+
 /** Busca paginada de registros (usuários) para o painel administrativo. */
 export const adminListRegistry = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
