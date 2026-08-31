@@ -147,6 +147,21 @@ function RegistryPage() {
     onError: (e: any) => toast.error(e?.message || "Erro ao alterar patrocinador."),
   });
 
+  const addReferral = useMutation({
+    mutationFn: async (referred: string) =>
+      addRefFn({ data: { sponsorId: networkTarget!.id, referred } }),
+    onSuccess: (res: any) => {
+      toast.success(
+        res?.referred
+          ? `${res.referred.full_name} vinculado(a) como indicado direto.`
+          : "Indicado adicionado.",
+      );
+      setReferralInput("");
+      qc.invalidateQueries({ queryKey: ["admin", "registry-detail"] });
+    },
+    onError: (e: any) => toast.error(e?.message || "Erro ao adicionar indicado."),
+  });
+
   const removeReferral = useMutation({
     mutationFn: async (referredId: string) =>
       removeRefFn({ data: { sponsorId: networkTarget!.id, referredId } }),
