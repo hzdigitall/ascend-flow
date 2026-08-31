@@ -364,6 +364,43 @@ function RegistryPage() {
             </div>
           ) : (
             <div className="space-y-4">
+              <div className="rounded-xl border p-4">
+                <Label className="text-xs uppercase tracking-wider">Patrocinador</Label>
+                <p className="mt-1 text-sm">
+                  {detail.data?.sponsor
+                    ? `${detail.data.sponsor.full_name} (${detail.data.sponsor.email})`
+                    : "Sem patrocinador"}
+                </p>
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                  <Input
+                    value={sponsorInput}
+                    onChange={(e) => setSponsorInput(e.target.value)}
+                    placeholder="E-mail ou código do novo patrocinador"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      disabled={saveSponsor.isPending || !sponsorInput.trim()}
+                      onClick={() => saveSponsor.mutate(sponsorInput.trim())}
+                    >
+                      {saveSponsor.isPending ? (
+                        <Loader2 className="mr-2 size-4 animate-spin" />
+                      ) : null}
+                      Vincular
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-destructive"
+                      disabled={saveSponsor.isPending || !detail.data?.sponsor}
+                      onClick={() => saveSponsor.mutate(null)}
+                    >
+                      Remover
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
               <p className="text-xs text-muted-foreground">
                 Total na rede: <strong>{detail.data?.total ?? 0}</strong>
               </p>
