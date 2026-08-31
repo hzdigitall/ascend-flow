@@ -44,22 +44,31 @@ const items: NavItem[] = [
 function SupportLinksCard({
   supportLink,
   supportGroup,
+  supportGroup2,
   onSaved,
 }: {
   supportLink: string;
   supportGroup: string;
+  supportGroup2: string;
   onSaved: () => void;
 }) {
   const save = useServerFn(adminSaveSupportLinks);
   const [link, setLink] = useState(supportLink);
   const [group, setGroup] = useState(supportGroup);
+  const [group2, setGroup2] = useState(supportGroup2);
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     try {
-      await save({ data: { supportLink: link.trim(), supportGroup: group.trim() } });
+await save({
+        data: {
+          supportLink: link.trim(),
+          supportGroup: group.trim(),
+          supportGroup2: group2.trim(),
+        },
+      });
       toast.success("Links de suporte atualizados.");
       onSaved();
     } catch (err) {
@@ -73,8 +82,8 @@ function SupportLinksCard({
     <Card className="shadow-card">
       <CardHeader>
         <CardTitle className="text-base">Links de suporte</CardTitle>
-        <CardDescription>
-          WhatsApp de atendimento e grupo oficial exibidos no menu lateral dos usuários.
+<CardDescription>
+          WhatsApp de atendimento e grupos oficiais (G1 e G2) exibidos no menu lateral dos usuários.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -93,14 +102,27 @@ function SupportLinksCard({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="support-group" className="flex items-center gap-2">
-              <Users className="h-4 w-4" /> Grupo oficial
+<Label htmlFor="support-group" className="flex items-center gap-2">
+              <Users className="h-4 w-4" /> Grupo G1
             </Label>
             <Input
               id="support-group"
               type="url"
               value={group}
               onChange={(e) => setGroup(e.target.value)}
+              placeholder="https://chat.whatsapp.com/..."
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="support-group-2" className="flex items-center gap-2">
+              <Users className="h-4 w-4" /> Grupo G2
+            </Label>
+            <Input
+              id="support-group-2"
+              type="url"
+              value={group2}
+              onChange={(e) => setGroup2(e.target.value)}
               placeholder="https://chat.whatsapp.com/..."
               required
             />
@@ -140,17 +162,19 @@ function SettingsPage() {
   });
 
   const rateValue = data?.find((s) => s.key === "usdt_brl_rate")?.value;
-  const supportLink = String(data?.find((s) => s.key === "support_link")?.value ?? "");
+const supportLink = String(data?.find((s) => s.key === "support_link")?.value ?? "");
   const supportGroup = String(data?.find((s) => s.key === "support_group")?.value ?? "");
+  const supportGroup2 = String(data?.find((s) => s.key === "support_group_2")?.value ?? "");
 
   return (
     <AppShell items={items} variant="admin">
       <PageHeader title="Configurações" description="Ajuste as variáveis globais do sistema." />
       <UsdtRateCard currentRate={normalizeRate(rateValue)} onSaved={() => void refetch()} />
       <WhatsappAutomationCard />
-      <SupportLinksCard
+<SupportLinksCard
         supportLink={supportLink}
         supportGroup={supportGroup}
+        supportGroup2={supportGroup2}
         onSaved={() => void refetch()}
       />
       <Card className="shadow-card">
