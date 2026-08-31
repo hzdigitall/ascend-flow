@@ -309,30 +309,22 @@ const supportLink = useMemo(() => get<string>("support_link", ""), [get]);
           </Button>
         ) : null}
 
-{supportGroup ? (
-          <Button asChild variant="outline" size="sm" className="w-full">
-            <a href={supportGroup} target="_blank" rel="noreferrer">
-              <Users className="mr-2 h-4 w-4" /> {t("nav.supportGroup1")}
+        {supportGroups.map((g, i) => (
+          <Button key={`${g.url}-${i}`} asChild variant="outline" size="sm" className="w-full">
+            <a href={g.url} target="_blank" rel="noreferrer">
+              <Users className="mr-2 h-4 w-4" /> {g.name || `Grupo ${i + 1}`}
             </a>
           </Button>
-        ) : null}
-
-        {supportGroup2 ? (
-          <Button asChild variant="outline" size="sm" className="w-full">
-            <a href={supportGroup2} target="_blank" rel="noreferrer">
-              <Users className="mr-2 h-4 w-4" /> {t("nav.supportGroup2")}
-            </a>
-          </Button>
-        ) : null}
+        ))}
       </div>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       pathname,
       sponsor,
-supportHref,
-      supportGroup,
-      supportGroup2,
+      supportHref,
+      supportGroups,
+
       variant,
       items,
       lang,
