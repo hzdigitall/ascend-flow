@@ -247,8 +247,21 @@ export function AppShell({
   const supportWhats = useMemo(() => get<string>("support_whatsapp", ""), [get]);
   const supportEmail = useMemo(() => get<string>("support_email", ""), [get]);
 const supportLink = useMemo(() => get<string>("support_link", ""), [get]);
-  const supportGroup = useMemo(() => get<string>("support_group", ""), [get]);
-  const supportGroup2 = useMemo(() => get<string>("support_group_2", ""), [get]);
+  const supportGroups = useMemo(() => {
+    const raw = get<unknown>("support_groups", null);
+    if (Array.isArray(raw)) {
+      return (raw as { name?: string; url?: string }[])
+        .map((g) => ({ name: String(g?.name ?? "").trim(), url: String(g?.url ?? "").trim() }))
+        .filter((g) => g.url);
+    }
+    const g1 = get<string>("support_group", "");
+    const g2 = get<string>("support_group_2", "");
+    return [
+      ...(g1 ? [{ name: "Grupo G1", url: g1 }] : []),
+      ...(g2 ? [{ name: "Grupo G2", url: g2 }] : []),
+    ];
+  }, [get]);
+
   const supportHref = useMemo(
     () =>
       supportLink
@@ -296,30 +309,22 @@ const supportLink = useMemo(() => get<string>("support_link", ""), [get]);
           </Button>
         ) : null}
 
-{supportGroup ? (
-          <Button asChild variant="outline" size="sm" className="w-full">
-            <a href={supportGroup} target="_blank" rel="noreferrer">
-              <Users className="mr-2 h-4 w-4" /> {t("nav.supportGroup1")}
+        {supportGroups.map((g, i) => (
+          <Button key={`${g.url}-${i}`} asChild variant="outline" size="sm" className="w-full">
+            <a href={g.url} target="_blank" rel="noreferrer">
+              <Users className="mr-2 h-4 w-4" /> {g.name || `Grupo ${i + 1}`}
             </a>
           </Button>
-        ) : null}
-
-        {supportGroup2 ? (
-          <Button asChild variant="outline" size="sm" className="w-full">
-            <a href={supportGroup2} target="_blank" rel="noreferrer">
-              <Users className="mr-2 h-4 w-4" /> {t("nav.supportGroup2")}
-            </a>
-          </Button>
-        ) : null}
+        ))}
       </div>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       pathname,
       sponsor,
-supportHref,
-      supportGroup,
-      supportGroup2,
+      supportHref,
+      supportGroups,
+
       variant,
       items,
       lang,
