@@ -243,19 +243,7 @@ export const adminSetSponsor = createServerFn({ method: "POST" })
       return { ok: true, sponsor: null as null | { id: string; full_name: string; email: string } };
     }
 
-    const clean = term.replace(/[%,]/g, "");
-    const { data: candidates, error: findErr } = await supabaseAdmin
-      .from("profiles")
-      .select("id, full_name, email, referral_code")
-      .or(`email.ilike.${clean},referral_code.ilike.${clean}`)
-      .limit(2);
-    if (findErr) throw new Error(findErr.message);
-    if (!candidates || candidates.length === 0) {
-      throw new Error("Patrocinador não encontrado (informe e-mail ou código de indicação).");
-    }
-    if (candidates.length > 1) throw new Error("Mais de um patrocinador corresponde à busca.");
-
-    const sponsor = candidates[0]!;
+    const sponsor = await findUserByEmailOrCode(supabaseAdmin, term);
     if (sponsor.id === data.userId) throw new Error("O usuário não pode patrocinar a si mesmo.");
 
     // Impede ciclo: o novo patrocinador não pode estar na descendência do usuário.
@@ -265,13 +253,15 @@ export const adminSetSponsor = createServerFn({ method: "POST" })
       .eq("sponsor_id", data.userId)
       .eq("referred_id", sponsor.id)
       .maybeSingle();
-    if (cycle) throw new Error("Vínculo inválido: geraria um ciclo na rede.");
+    if (cycle) {
+      throw new Error("Vínculo inválido: o patrocinador informado já está abaixo deste usuário na rede.");
+    }
 
     const { error } = await supabaseAdmin
       .from("profiles")
       .update({ sponsor_id: sponsor.id })
       .eq("id", data.userId);
-    if (error) throw new Error(error.message);
+    if (error) throw friendlySponsorError(error.message);
 
     await supabaseAdmin.from("admin_logs").insert({
       admin_id: context.userId,
