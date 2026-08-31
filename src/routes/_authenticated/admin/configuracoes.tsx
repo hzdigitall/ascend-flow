@@ -185,21 +185,29 @@ function SettingsPage() {
   });
 
   const rateValue = data?.find((s) => s.key === "usdt_brl_rate")?.value;
-const supportLink = String(data?.find((s) => s.key === "support_link")?.value ?? "");
-  const supportGroup = String(data?.find((s) => s.key === "support_group")?.value ?? "");
-  const supportGroup2 = String(data?.find((s) => s.key === "support_group_2")?.value ?? "");
+  const supportLink = String(data?.find((s) => s.key === "support_link")?.value ?? "");
+  const rawGroups = data?.find((s) => s.key === "support_groups")?.value;
+  const legacyG1 = String(data?.find((s) => s.key === "support_group")?.value ?? "");
+  const legacyG2 = String(data?.find((s) => s.key === "support_group_2")?.value ?? "");
+  const groups: SupportGroup[] = Array.isArray(rawGroups)
+    ? (rawGroups as SupportGroup[]).map((g) => ({ name: String(g?.name ?? ""), url: String(g?.url ?? "") }))
+    : [
+        ...(legacyG1 ? [{ name: "Grupo G1", url: legacyG1 }] : []),
+        ...(legacyG2 ? [{ name: "Grupo G2", url: legacyG2 }] : []),
+      ];
 
   return (
     <AppShell items={items} variant="admin">
       <PageHeader title="Configurações" description="Ajuste as variáveis globais do sistema." />
       <UsdtRateCard currentRate={normalizeRate(rateValue)} onSaved={() => void refetch()} />
       <WhatsappAutomationCard />
-<SupportLinksCard
+      <SupportLinksCard
+        key={`${supportLink}|${JSON.stringify(groups)}`}
         supportLink={supportLink}
-        supportGroup={supportGroup}
-        supportGroup2={supportGroup2}
+        groups={groups}
         onSaved={() => void refetch()}
       />
+
       <Card className="shadow-card">
 
         <CardContent className="p-0">
