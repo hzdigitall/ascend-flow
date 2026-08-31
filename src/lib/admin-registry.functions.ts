@@ -335,6 +335,7 @@ export const adminAddReferral = createServerFn({ method: "POST" })
     return {
       ok: true,
       referred: { id: referred.id, full_name: referred.full_name, email: referred.email },
+      movedFrom: previousSponsorEmail,
     };
   });
 
