@@ -28,15 +28,21 @@ export const adminSaveUsdtRate = createServerFn({ method: "POST" })
     return { rate };
   });
 
-/** Atualiza links oficiais de suporte — somente administradores. */
+/** Atualiza links oficiais de suporte e grupos — somente administradores. */
 export const adminSaveSupportLinks = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-.inputValidator((data: { supportLink: string; supportGroup: string; supportGroup2: string }) =>
+  .inputValidator((data: { supportLink: string; groups: { name: string; url: string }[] }) =>
     z
       .object({
         supportLink: z.string().url().max(500),
-        supportGroup: z.string().url().max(500),
-        supportGroup2: z.string().url().max(500),
+        groups: z
+          .array(
+            z.object({
+              name: z.string().trim().min(1).max(60),
+              url: z.string().url().max(500),
+            }),
+          )
+          .max(20),
       })
       .parse(data),
   )
@@ -44,10 +50,12 @@ export const adminSaveSupportLinks = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-const values = [
+    const values = [
       { key: "support_link", value: data.supportLink as never, is_public: true },
-      { key: "support_group", value: data.supportGroup as never, is_public: true },
-      { key: "support_group_2", value: data.supportGroup2 as never, is_public: true },
+      { key: "support_groups", value: data.groups as never, is_public: true },
+      // Compatibilidade com as chaves antigas usadas por versões anteriores.
+      { key: "support_group", value: (data.groups[0]?.url ?? "") as never, is_public: true },
+      { key: "support_group_2", value: (data.groups[1]?.url ?? "") as never, is_public: true },
     ];
 
     const { error } = await supabaseAdmin.from("settings").upsert(values, { onConflict: "key" });
@@ -57,11 +65,8 @@ const values = [
       admin_id: context.userId,
       action: "support_links_updated",
       table_name: "settings",
-new_value: {
-        support_link: data.supportLink,
-        support_group: data.supportGroup,
-        support_group_2: data.supportGroup2,
-      } as never,
+      new_value: { support_link: data.supportLink, support_groups: data.groups } as never,
     });
     return { ok: true };
   });
+
