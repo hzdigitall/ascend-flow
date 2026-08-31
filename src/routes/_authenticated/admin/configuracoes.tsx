@@ -41,32 +41,33 @@ const items: NavItem[] = [
   { label: "Configurações", to: "/admin/configuracoes", icon: Settings, section: "Sistema" },
 ];
 
+type SupportGroup = { name: string; url: string };
+
 function SupportLinksCard({
   supportLink,
-  supportGroup,
-  supportGroup2,
+  groups: initialGroups,
   onSaved,
 }: {
   supportLink: string;
-  supportGroup: string;
-  supportGroup2: string;
+  groups: SupportGroup[];
   onSaved: () => void;
 }) {
   const save = useServerFn(adminSaveSupportLinks);
   const [link, setLink] = useState(supportLink);
-  const [group, setGroup] = useState(supportGroup);
-  const [group2, setGroup2] = useState(supportGroup2);
+  const [groups, setGroups] = useState<SupportGroup[]>(initialGroups);
   const [saving, setSaving] = useState(false);
+
+  const updateGroup = (index: number, patch: Partial<SupportGroup>) =>
+    setGroups((prev) => prev.map((g, i) => (i === index ? { ...g, ...patch } : g)));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     try {
-await save({
+      await save({
         data: {
           supportLink: link.trim(),
-          supportGroup: group.trim(),
-          supportGroup2: group2.trim(),
+          groups: groups.map((g) => ({ name: g.name.trim(), url: g.url.trim() })),
         },
       });
       toast.success("Links de suporte atualizados.");
@@ -82,12 +83,13 @@ await save({
     <Card className="shadow-card">
       <CardHeader>
         <CardTitle className="text-base">Links de suporte</CardTitle>
-<CardDescription>
-          WhatsApp de atendimento e grupos oficiais (G1 e G2) exibidos no menu lateral dos usuários.
+        <CardDescription>
+          WhatsApp de atendimento e grupos oficiais exibidos no menu lateral dos usuários. Adicione
+          quantos grupos quiser, com o nome que aparecerá no botão.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="support-link" className="flex items-center gap-2">
               <MessageCircle className="h-4 w-4" /> WhatsApp de suporte
@@ -101,32 +103,52 @@ await save({
               required
             />
           </div>
-          <div className="space-y-2">
-<Label htmlFor="support-group" className="flex items-center gap-2">
-              <Users className="h-4 w-4" /> Grupo G1
+
+          <div className="space-y-3">
+            <Label className="flex items-center gap-2">
+              <Users className="h-4 w-4" /> Grupos
             </Label>
-            <Input
-              id="support-group"
-              type="url"
-              value={group}
-              onChange={(e) => setGroup(e.target.value)}
-              placeholder="https://chat.whatsapp.com/..."
-              required
-            />
+            {groups.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Nenhum grupo cadastrado.</p>
+            ) : null}
+            {groups.map((g, i) => (
+              <div key={i} className="flex flex-col gap-2 sm:flex-row">
+                <Input
+                  value={g.name}
+                  onChange={(e) => updateGroup(i, { name: e.target.value })}
+                  placeholder="Nome do botão (ex.: Grupo G1)"
+                  className="sm:w-56"
+                  required
+                />
+                <Input
+                  type="url"
+                  value={g.url}
+                  onChange={(e) => updateGroup(i, { url: e.target.value })}
+                  placeholder="https://chat.whatsapp.com/..."
+                  className="flex-1"
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Remover grupo"
+                  onClick={() => setGroups((prev) => prev.filter((_, idx) => idx !== i))}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setGroups((prev) => [...prev, { name: "", url: "" }])}
+            >
+              <Plus className="mr-2 h-4 w-4" /> Adicionar grupo
+            </Button>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="support-group-2" className="flex items-center gap-2">
-              <Users className="h-4 w-4" /> Grupo G2
-            </Label>
-            <Input
-              id="support-group-2"
-              type="url"
-              value={group2}
-              onChange={(e) => setGroup2(e.target.value)}
-              placeholder="https://chat.whatsapp.com/..."
-              required
-            />
-          </div>
+
           <div className="flex justify-end">
             <Button type="submit" disabled={saving}>
               {saving ? "Salvando..." : "Salvar links"}
@@ -137,6 +159,7 @@ await save({
     </Card>
   );
 }
+
 
 export const Route = createFileRoute("/_authenticated/admin/configuracoes")({
   head: () => ({
