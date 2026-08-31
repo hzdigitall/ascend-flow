@@ -8,6 +8,8 @@ import {
   adminListRegistry,
   adminRegistryDetail,
   adminUpdateAccount,
+  adminSetSponsor,
+  adminRemoveReferral,
 } from "@/lib/admin-registry.functions";
 import { adminDeleteUser } from "@/lib/admin.functions";
 import { AppShell } from "@/components/layout/AppShell";
@@ -63,6 +65,10 @@ function RegistryPage() {
   const detailFn = useServerFn(adminRegistryDetail);
   const updateFn = useServerFn(adminUpdateAccount);
   const deleteFn = useServerFn(adminDeleteUser);
+  const sponsorFn = useServerFn(adminSetSponsor);
+  const removeRefFn = useServerFn(adminRemoveReferral);
+
+  const [sponsorInput, setSponsorInput] = useState("");
 
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
@@ -124,6 +130,28 @@ function RegistryPage() {
       qc.invalidateQueries({ queryKey: ["admin", "registry"] });
     },
     onError: (e: any) => toast.error(e?.message || "Erro ao excluir usuário."),
+  });
+
+  const saveSponsor = useMutation({
+    mutationFn: async (sponsor: string | null) =>
+      sponsorFn({ data: { userId: networkTarget!.id, sponsor } }),
+    onSuccess: (res: any) => {
+      toast.success(res?.sponsor ? "Patrocinador atualizado." : "Patrocinador removido.");
+      setSponsorInput("");
+      qc.invalidateQueries({ queryKey: ["admin", "registry-detail"] });
+      qc.invalidateQueries({ queryKey: ["admin", "registry"] });
+    },
+    onError: (e: any) => toast.error(e?.message || "Erro ao alterar patrocinador."),
+  });
+
+  const removeReferral = useMutation({
+    mutationFn: async (referredId: string) =>
+      removeRefFn({ data: { sponsorId: networkTarget!.id, referredId } }),
+    onSuccess: () => {
+      toast.success("Indicado removido da rede.");
+      qc.invalidateQueries({ queryKey: ["admin", "registry-detail"] });
+    },
+    onError: (e: any) => toast.error(e?.message || "Erro ao remover indicado."),
   });
 
   const rows = (data?.rows ?? []) as Row[];
@@ -336,6 +364,43 @@ function RegistryPage() {
             </div>
           ) : (
             <div className="space-y-4">
+              <div className="rounded-xl border p-4">
+                <Label className="text-xs uppercase tracking-wider">Patrocinador</Label>
+                <p className="mt-1 text-sm">
+                  {detail.data?.sponsor
+                    ? `${detail.data.sponsor.full_name} (${detail.data.sponsor.email})`
+                    : "Sem patrocinador"}
+                </p>
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                  <Input
+                    value={sponsorInput}
+                    onChange={(e) => setSponsorInput(e.target.value)}
+                    placeholder="E-mail ou código do novo patrocinador"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      disabled={saveSponsor.isPending || !sponsorInput.trim()}
+                      onClick={() => saveSponsor.mutate(sponsorInput.trim())}
+                    >
+                      {saveSponsor.isPending ? (
+                        <Loader2 className="mr-2 size-4 animate-spin" />
+                      ) : null}
+                      Vincular
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-destructive"
+                      disabled={saveSponsor.isPending || !detail.data?.sponsor}
+                      onClick={() => saveSponsor.mutate(null)}
+                    >
+                      Remover
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
               <p className="text-xs text-muted-foreground">
                 Total na rede: <strong>{detail.data?.total ?? 0}</strong>
               </p>
@@ -359,9 +424,22 @@ function RegistryPage() {
                             <p className="text-sm font-medium">{m.full_name}</p>
                             <p className="text-xs text-muted-foreground">{m.email}</p>
                           </div>
-                          <span className="text-xs text-muted-foreground">
-                            {dateTimeBR(m.created_at)}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">
+                              {dateTimeBR(m.created_at)}
+                            </span>
+                            {lvl.level === 1 ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:text-destructive"
+                                disabled={removeReferral.isPending}
+                                onClick={() => removeReferral.mutate(m.id)}
+                              >
+                                <Trash2 className="size-3.5" />
+                              </Button>
+                            ) : null}
+                          </div>
                         </li>
                       ))}
                       {lvl.members.length > 50 ? (
