@@ -1,13 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { UserShell } from "@/components/layout/UserShell";
 import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Bell } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Bell, Trash2 } from "lucide-react";
 import { dateTimeBR } from "@/lib/format";
+
 
 export const Route = createFileRoute("/_authenticated/notificacoes")({
   head: () => ({
