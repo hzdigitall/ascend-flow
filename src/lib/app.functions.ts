@@ -123,34 +123,16 @@ export const requestWithdrawal = createServerFn({ method: "POST" })
         .parse(data),
   )
   .handler(async ({ data, context }) => {
-    const now = new Date();
-    const day = now.getDay(); // 0=domingo, 1=segunda, 2=terça...
-    const hour = now.getHours();
-
-    // Regra: Rendimentos (earnings) -> Segundas, 10h às 17h
-    if (data.wallet === "earnings") {
-      const nowBR = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
-      const day = nowBR.getDay(); // 0=domingo, 1=segunda, 2=terça...
-      const hour = nowBR.getHours();
-
-      if (day !== 1) {
-        throw new Error("Saques de rendimentos são permitidos apenas às segundas-feiras.");
-      }
-      if (hour < 10 || hour >= 17) {
-        throw new Error("Saques de rendimentos são permitidos apenas entre 10h e 17h.");
-      }
-    }
-
-    // Regra: Bônus/Indicação (referral) -> Todos os dias, 09h às 17h
-    if (data.wallet === "referral") {
-      if (hour < 9 || hour >= 17) {
-        throw new Error("Saques de bônus são permitidos apenas entre 09h e 17h.");
-      }
+    const { checkWithdrawalWindow } = await import("@/lib/withdrawal-window");
+    const win = checkWithdrawalWindow(data.wallet);
+    if (!win.isOpen) {
+      throw new Error(win.message ?? "Janela de saque fechada no momento.");
     }
 
     if (data.amount < 10) {
       throw new Error("O valor mínimo para saque é R$ 10,00.");
     }
+
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: id, error } = await supabaseAdmin.rpc("request_withdrawal", {

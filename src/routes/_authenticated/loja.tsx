@@ -2,10 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { UserShell } from "@/components/layout/UserShell";
-import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
-import { StatusBadge } from "@/components/StatusBadge";
+import { PageHeader, EmptyState, ErrorState } from "@/components/states";
 import { Card, CardContent } from "@/components/ui/card";
-import { ShoppingBag, Truck, Search, MapPin, Loader2 } from "lucide-react";
+import { ShoppingBag, Truck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pts } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,10 +12,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { redeemProduct } from "@/lib/app.functions";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
+import type { Tables } from "@/integrations/supabase/types";
+
+type Product = Tables<"products">;
+
+
 
 export const Route = createFileRoute("/_authenticated/loja")({
   head: () => ({
@@ -30,22 +34,25 @@ export const Route = createFileRoute("/_authenticated/loja")({
   component: Page,
 });
 
+const EMPTY_ADDRESS = {
+  zip: "",
+  street: "",
+  number: "",
+  complement: "",
+  district: "",
+  city: "",
+  state: "",
+  name: "",
+};
+
 function Page() {
   const { wallet, refresh } = useAuth();
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isRedeeming, setIsRedeeming] = useState(false);
   const redeemFn = useServerFn(redeemProduct);
 
-  const [address, setAddress] = useState({
-    zip: "",
-    street: "",
-    number: "",
-    complement: "",
-    district: "",
-    city: "",
-    state: "",
-    name: "",
-  });
+  const [address, setAddress] = useState(EMPTY_ADDRESS);
+
 
   const [isFetchingCep, setIsFetchingCep] = useState(false);
 
@@ -100,10 +107,20 @@ function Page() {
 
   const handleRedeem = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProduct) return;
+    if (!selectedProduct || isRedeeming) return;
+
+    if (selectedProduct.stock <= 0) {
+      toast.error("Produto sem estoque no momento.");
+      return;
+    }
 
     if ((wallet?.points_balance || 0) < selectedProduct.points_cost) {
       toast.error("Você não tem pontos suficientes.");
+      return;
+    }
+
+    if (address.zip.replace(/\D/g, "").length !== 8) {
+      toast.error("CEP inválido. Digite 8 números.");
       return;
     }
 
@@ -112,19 +129,21 @@ function Page() {
       await redeemFn({
         data: {
           productId: selectedProduct.id,
-          address: { ...address },
+          address: { ...address, state: address.state.toUpperCase() },
         },
       });
       toast.success("Resgate realizado com sucesso! Prazo de envio de 15 dias.");
       setSelectedProduct(null);
+      setAddress(EMPTY_ADDRESS);
       refresh();
       refetch();
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao realizar resgate.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao realizar resgate.");
     } finally {
       setIsRedeeming(false);
     }
   };
+
 
   return (
     <UserShell>

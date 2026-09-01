@@ -43,17 +43,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    let active = true;
+    const { data: sub } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (!active) return;
       setSession(newSession);
       setLoading(false);
-      queryClient.invalidateQueries({ queryKey: ["account"] });
+      // Só reconsulta em transições reais de identidade — evita refetch a cada
+      // TOKEN_REFRESHED (~1x/hora e a cada foco de aba) ou INITIAL_SESSION.
+      if (event === "SIGNED_IN" || event === "USER_UPDATED") {
+        queryClient.invalidateQueries({ queryKey: ["account"] });
+      } else if (event === "SIGNED_OUT") {
+        queryClient.removeQueries({ queryKey: ["account"] });
+      }
     });
     supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
+      if (!active) return;
+      setSession((current) => current ?? data.session);
       setLoading(false);
     });
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
   }, [queryClient]);
+
 
   const userId = session?.user.id ?? null;
 
