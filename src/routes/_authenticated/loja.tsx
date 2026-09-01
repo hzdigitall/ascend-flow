@@ -16,6 +16,10 @@ import { useState } from "react";
 import { redeemProduct } from "@/lib/app.functions";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
+import type { Tables } from "@/integrations/supabase/types";
+
+type Product = Tables<"products">;
+
 
 
 export const Route = createFileRoute("/_authenticated/loja")({
