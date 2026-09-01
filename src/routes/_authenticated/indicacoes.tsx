@@ -286,20 +286,46 @@ function Page() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Trophy className="h-6 w-6 text-primary" />
-                    <h3 className="text-2xl font-bold">Seu Progresso</h3>
+                    <h3 className="text-2xl font-bold">BLA — Bônus de Liderança Ativa</h3>
                   </div>
                   <p className="text-muted-foreground">
-                    Você tem <span className="font-bold text-primary">{formatPoints(currentPoints)}</span> Pontos Arena.
+                    Pontos válidos em {period ? monthLabel(period) : "este mês"}:{" "}
+                    <span className="font-bold text-primary">{formatPoints(currentPoints)}</span>
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    A pontuação zera na virada do mês. A graduação conquistada permanece.
                   </p>
                 </div>
                 {currentRank && (
                   <div className="flex items-center gap-3 rounded-2xl bg-primary px-6 py-3 text-white shadow-lg">
                     <Star className="h-6 w-6 fill-current" />
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">Patente Atual</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">Sua graduação</p>
                       <p className="text-xl font-black">{currentRank.name}</p>
                     </div>
                   </div>
+                )}
+              </div>
+
+              <div className="mt-6 rounded-xl border border-primary/20 bg-background/60 p-4">
+                {qualifiedRank ? (
+                  <p className="text-sm">
+                    Você está qualificado este mês como{" "}
+                    <span className="font-bold text-primary">{qualifiedRank.name}</span> — BLA
+                    previsto de{" "}
+                    <span className="font-bold text-primary">
+                      R$ {qualifiedRank.bonus.toLocaleString("pt-BR")}
+                    </span>
+                    .
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Você ainda não cumpriu os requisitos deste mês. Faltam{" "}
+                    <span className="font-semibold text-foreground">
+                      {formatPoints(Math.max((nextRank?.points ?? 0) - currentPoints, 0))}
+                    </span>{" "}
+                    pontos para se qualificar como {nextRank?.name}.
+                  </p>
                 )}
               </div>
 
@@ -316,6 +342,43 @@ function Page() {
               </div>
             </CardContent>
           </Card>
+
+          {(payoutsQuery.data?.length ?? 0) > 0 && (
+            <Card className="shadow-card">
+              <CardContent className="p-0">
+                <div className="border-b p-6">
+                  <h3 className="font-bold">Histórico do BLA</h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-muted/50 text-[11px] font-bold uppercase text-muted-foreground">
+                      <tr>
+                        <th className="px-6 py-3">Mês</th>
+                        <th className="px-6 py-3">Graduação</th>
+                        <th className="px-6 py-3">Pontos</th>
+                        <th className="px-6 py-3 text-right">Valor</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {payoutsQuery.data!.map((p: any) => (
+                        <tr key={p.period}>
+                          <td className="px-6 py-4">{monthLabel(String(p.period).slice(0, 7))}</td>
+                          <td className="px-6 py-4">{p.rank_name ?? "Não qualificado"}</td>
+                          <td className="px-6 py-4 text-muted-foreground">
+                            {formatPoints(Number(p.points))}
+                          </td>
+                          <td className="px-6 py-4 text-right font-bold text-primary">
+                            R$ {Number(p.amount).toLocaleString("pt-BR")}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
 
           <div className="grid gap-6 lg:grid-cols-3">
             <Card className="lg:col-span-2 shadow-card">
