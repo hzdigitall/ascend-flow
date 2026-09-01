@@ -29,9 +29,15 @@ export const maskCPF = (v: string) =>
     .replace(/(\d{3})(\d)/, "$1.$2")
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 
+/** Remove o código do país (55) quando presente, mantendo DDD + número (10-11 dígitos). */
+export const normalizeBRPhone = (v: string) => {
+  let digits = onlyDigits(v);
+  if (digits.length >= 12 && digits.startsWith("55")) digits = digits.slice(2);
+  return digits.slice(0, 11);
+};
+
 export const maskPhone = (v: string) =>
-  onlyDigits(v)
-    .slice(0, 11)
+  normalizeBRPhone(v)
     .replace(/(\d{2})(\d)/, "($1) $2")
     .replace(/(\d{5})(\d)/, "$1-$2");
 
