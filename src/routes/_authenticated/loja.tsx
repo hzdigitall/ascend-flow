@@ -107,10 +107,20 @@ function Page() {
 
   const handleRedeem = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProduct) return;
+    if (!selectedProduct || isRedeeming) return;
+
+    if (selectedProduct.stock <= 0) {
+      toast.error("Produto sem estoque no momento.");
+      return;
+    }
 
     if ((wallet?.points_balance || 0) < selectedProduct.points_cost) {
       toast.error("Você não tem pontos suficientes.");
+      return;
+    }
+
+    if (address.zip.replace(/\D/g, "").length !== 8) {
+      toast.error("CEP inválido. Digite 8 números.");
       return;
     }
 
@@ -119,19 +129,21 @@ function Page() {
       await redeemFn({
         data: {
           productId: selectedProduct.id,
-          address: { ...address },
+          address: { ...address, state: address.state.toUpperCase() },
         },
       });
       toast.success("Resgate realizado com sucesso! Prazo de envio de 15 dias.");
       setSelectedProduct(null);
+      setAddress(EMPTY_ADDRESS);
       refresh();
       refetch();
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao realizar resgate.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao realizar resgate.");
     } finally {
       setIsRedeeming(false);
     }
   };
+
 
   return (
     <UserShell>
