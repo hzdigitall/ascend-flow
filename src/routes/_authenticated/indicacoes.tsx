@@ -453,6 +453,24 @@ function Page() {
                   </div>
                 </div>
 
+                <div className="mt-6 space-y-2 rounded-xl border border-primary/15 bg-primary/5 p-4">
+                  <p className="text-[11px] font-bold uppercase text-primary">Como funciona o BLA</p>
+                  <ul className="list-disc space-y-1 pl-4 text-xs text-muted-foreground">
+                    <li>A graduação conquistada permanece para sempre.</li>
+                    <li>A pontuação zera na virada de cada mês.</li>
+                    <li>
+                      O BLA é variável: para receber de novo, basta cumprir novamente os requisitos
+                      da sua graduação no mês.
+                    </li>
+                    <li>Não é preciso subir de graduação para continuar recebendo.</li>
+                    <li>
+                      Sem qualificação no mês, o título é mantido, mas o bônus não é pago naquele
+                      período.
+                    </li>
+                    <li>O pagamento é creditado automaticamente na virada do mês.</li>
+                  </ul>
+                </div>
+
                 <div className="mt-8 rounded-xl bg-muted p-4">
                   <p className="text-[11px] font-bold uppercase text-muted-foreground">Visão Geral do Plano</p>
                   <img 
