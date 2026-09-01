@@ -30,22 +30,25 @@ export const Route = createFileRoute("/_authenticated/loja")({
   component: Page,
 });
 
+const EMPTY_ADDRESS = {
+  zip: "",
+  street: "",
+  number: "",
+  complement: "",
+  district: "",
+  city: "",
+  state: "",
+  name: "",
+};
+
 function Page() {
   const { wallet, refresh } = useAuth();
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isRedeeming, setIsRedeeming] = useState(false);
   const redeemFn = useServerFn(redeemProduct);
 
-  const [address, setAddress] = useState({
-    zip: "",
-    street: "",
-    number: "",
-    complement: "",
-    district: "",
-    city: "",
-    state: "",
-    name: "",
-  });
+  const [address, setAddress] = useState(EMPTY_ADDRESS);
+
 
   const [isFetchingCep, setIsFetchingCep] = useState(false);
 
