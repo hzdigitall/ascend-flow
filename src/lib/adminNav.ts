@@ -11,6 +11,7 @@ import {
   History,
   Wallet,
   PlugZap,
+  Crown,
 } from "lucide-react";
 import type { NavItem } from "@/components/layout/AppShell";
 
