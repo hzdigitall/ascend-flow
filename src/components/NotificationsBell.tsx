@@ -103,15 +103,16 @@ export function NotificationsBell({ userId }: { userId?: string | undefined }) {
                 <Trash2 className="h-3.5 w-3.5" /> Limpar
               </button>
             ) : null}
-          <Link
-
-            to="/notificacoes"
-            onClick={() => setOpen(false)}
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            Ver todas
-          </Link>
+            <Link
+              to="/notificacoes"
+              onClick={() => setOpen(false)}
+              className="text-xs font-medium text-primary hover:underline"
+            >
+              Ver todas
+            </Link>
+          </div>
         </div>
+
         <ScrollArea className="max-h-80">
           {isLoading ? (
             <p className="px-4 py-6 text-sm text-muted-foreground">Carregando…</p>
