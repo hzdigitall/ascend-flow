@@ -91,9 +91,20 @@ export function NotificationsBell({ userId }: { userId?: string | undefined }) {
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-[22rem] p-0">
-        <div className="flex items-center justify-between border-b px-4 py-3">
+        <div className="flex items-center justify-between gap-2 border-b px-4 py-3">
           <p className="text-sm font-semibold">Notificações</p>
+          <div className="flex items-center gap-3">
+            {data.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => void clearAll()}
+                className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+              >
+                <Trash2 className="h-3.5 w-3.5" /> Limpar
+              </button>
+            ) : null}
           <Link
+
             to="/notificacoes"
             onClick={() => setOpen(false)}
             className="text-xs font-medium text-primary hover:underline"
