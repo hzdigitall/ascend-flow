@@ -52,7 +52,7 @@ export const Route = createFileRoute("/_authenticated/indicacoes")({
   }),
   component: Page,
 });
-type CareerRank = { name: string; points: number; bonus: number; req?: string };
+type CareerRank = { name: string; points: number; bonus: number; req?: string | undefined };
 type Referral = {
   id: string;
   level: number;
@@ -135,7 +135,7 @@ const LevelList = memo(function LevelList({
 });
 
 
-const CAREER_RANKS: CareerRank[] = [
+const FALLBACK_RANKS: CareerRank[] = [
   { name: "Master", points: 500, bonus: 300 },
   { name: "Bronze", points: 1000, bonus: 500 },
   { name: "Prata", points: 2000, bonus: 800, req: "2 Master" },
@@ -148,10 +148,18 @@ const CAREER_RANKS: CareerRank[] = [
   { name: "Embaixador", points: 320000, bonus: 12000, req: "5 Imperial" },
   { name: "Presidente", points: 500000, bonus: 16000, req: "2 Embaixador" },
   { name: "Titan", points: 1000000, bonus: 25000, req: "1 Presidente" },
-].sort((a, b) => a.points - b.points);
+];
+
+function monthLabel(period: string) {
+  const [y, m] = period.split("-");
+  return new Date(Number(y), Number(m) - 1, 1).toLocaleDateString("pt-BR", {
+    month: "long",
+    year: "numeric",
+  });
+}
 
 function Page() {
-  const { profile, wallet } = useAuth();
+  const { profile } = useAuth();
   const [selectedReferral, setSelectedReferral] = useState<any>(null);
   
   const link = profile?.referral_code ? referralLink(profile.referral_code) : "";
@@ -193,10 +201,69 @@ function Page() {
     return groups;
   }, [data]);
 
-  const currentPoints = wallet?.points_balance || 0;
-  const careerRanksSorted = CAREER_RANKS;
-  const nextRank = careerRanksSorted.find(r => r.points > currentPoints) || careerRanksSorted[careerRanksSorted.length - 1];
-  const currentRank = [...careerRanksSorted].reverse().find(r => r.points <= currentPoints) || null;
+  const ranksQuery = useQuery({
+    queryKey: ["career-ranks"],
+    staleTime: 10 * 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("career_ranks")
+        .select("name, level, points_required, bonus, required_rank_level, required_rank_count")
+        .eq("active", true)
+        .order("level", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const blaQuery = useQuery({
+    queryKey: ["my-bla", profile?.id],
+    enabled: Boolean(profile?.id),
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_my_bla");
+      if (error) throw error;
+      return (data ?? [])[0] ?? null;
+    },
+  });
+
+  const payoutsQuery = useQuery({
+    queryKey: ["my-bla-payouts", profile?.id],
+    enabled: Boolean(profile?.id),
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("bla_payouts")
+        .select("period, rank_name, amount, points, status")
+        .order("period", { ascending: false })
+        .limit(12);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const CAREER_RANKS: CareerRank[] = useMemo(() => {
+    const rows = ranksQuery.data;
+    if (!rows || rows.length === 0) return FALLBACK_RANKS;
+    const byLevel = new Map(rows.map((r) => [r.level, r.name]));
+    return rows.map((r) => ({
+      name: r.name,
+      points: Number(r.points_required),
+      bonus: Number(r.bonus),
+      req:
+        r.required_rank_count && r.required_rank_level
+          ? `${r.required_rank_count} ${byLevel.get(r.required_rank_level) ?? ""}`.trim()
+          : undefined,
+    }));
+  }, [ranksQuery.data]);
+
+  const currentPoints = Number(blaQuery.data?.points ?? 0);
+  const qualifiedLevel = Number(blaQuery.data?.qualified_level ?? 0);
+  const rankName = blaQuery.data?.rank_name ?? null;
+  const period = String(blaQuery.data?.period ?? "").slice(0, 7);
+  const nextRank =
+    CAREER_RANKS.find((r) => r.points > currentPoints) ?? CAREER_RANKS[CAREER_RANKS.length - 1];
+  const currentRank = rankName ? (CAREER_RANKS.find((r) => r.name === rankName) ?? null) : null;
+  const qualifiedRank = qualifiedLevel > 0 ? (CAREER_RANKS[qualifiedLevel - 1] ?? null) : null;
   const progress = nextRank ? Math.min((currentPoints / nextRank.points) * 100, 100) : 100;
 
   return (
@@ -219,20 +286,46 @@ function Page() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Trophy className="h-6 w-6 text-primary" />
-                    <h3 className="text-2xl font-bold">Seu Progresso</h3>
+                    <h3 className="text-2xl font-bold">BLA — Bônus de Liderança Ativa</h3>
                   </div>
                   <p className="text-muted-foreground">
-                    Você tem <span className="font-bold text-primary">{formatPoints(currentPoints)}</span> Pontos Arena.
+                    Pontos válidos em {period ? monthLabel(period) : "este mês"}:{" "}
+                    <span className="font-bold text-primary">{formatPoints(currentPoints)}</span>
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    A pontuação zera na virada do mês. A graduação conquistada permanece.
                   </p>
                 </div>
                 {currentRank && (
                   <div className="flex items-center gap-3 rounded-2xl bg-primary px-6 py-3 text-white shadow-lg">
                     <Star className="h-6 w-6 fill-current" />
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">Patente Atual</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">Sua graduação</p>
                       <p className="text-xl font-black">{currentRank.name}</p>
                     </div>
                   </div>
+                )}
+              </div>
+
+              <div className="mt-6 rounded-xl border border-primary/20 bg-background/60 p-4">
+                {qualifiedRank ? (
+                  <p className="text-sm">
+                    Você está qualificado este mês como{" "}
+                    <span className="font-bold text-primary">{qualifiedRank.name}</span> — BLA
+                    previsto de{" "}
+                    <span className="font-bold text-primary">
+                      R$ {qualifiedRank.bonus.toLocaleString("pt-BR")}
+                    </span>
+                    .
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Você ainda não cumpriu os requisitos deste mês. Faltam{" "}
+                    <span className="font-semibold text-foreground">
+                      {formatPoints(Math.max((nextRank?.points ?? 0) - currentPoints, 0))}
+                    </span>{" "}
+                    pontos para se qualificar como {nextRank?.name}.
+                  </p>
                 )}
               </div>
 
@@ -249,6 +342,43 @@ function Page() {
               </div>
             </CardContent>
           </Card>
+
+          {(payoutsQuery.data?.length ?? 0) > 0 && (
+            <Card className="shadow-card">
+              <CardContent className="p-0">
+                <div className="border-b p-6">
+                  <h3 className="font-bold">Histórico do BLA</h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-muted/50 text-[11px] font-bold uppercase text-muted-foreground">
+                      <tr>
+                        <th className="px-6 py-3">Mês</th>
+                        <th className="px-6 py-3">Graduação</th>
+                        <th className="px-6 py-3">Pontos</th>
+                        <th className="px-6 py-3 text-right">Valor</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {payoutsQuery.data!.map((p: any) => (
+                        <tr key={p.period}>
+                          <td className="px-6 py-4">{monthLabel(String(p.period).slice(0, 7))}</td>
+                          <td className="px-6 py-4">{p.rank_name ?? "Não qualificado"}</td>
+                          <td className="px-6 py-4 text-muted-foreground">
+                            {formatPoints(Number(p.points))}
+                          </td>
+                          <td className="px-6 py-4 text-right font-bold text-primary">
+                            R$ {Number(p.amount).toLocaleString("pt-BR")}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
 
           <div className="grid gap-6 lg:grid-cols-3">
             <Card className="lg:col-span-2 shadow-card">
@@ -321,6 +451,24 @@ function Page() {
                       <p className="text-xs text-muted-foreground">Quando um indicado do seu 1º nível ativa um plano, você ganha pontos na mesma proporção (R$ 50 = 5 pts).</p>
                     </div>
                   </div>
+                </div>
+
+                <div className="mt-6 space-y-2 rounded-xl border border-primary/15 bg-primary/5 p-4">
+                  <p className="text-[11px] font-bold uppercase text-primary">Como funciona o BLA</p>
+                  <ul className="list-disc space-y-1 pl-4 text-xs text-muted-foreground">
+                    <li>A graduação conquistada permanece para sempre.</li>
+                    <li>A pontuação zera na virada de cada mês.</li>
+                    <li>
+                      O BLA é variável: para receber de novo, basta cumprir novamente os requisitos
+                      da sua graduação no mês.
+                    </li>
+                    <li>Não é preciso subir de graduação para continuar recebendo.</li>
+                    <li>
+                      Sem qualificação no mês, o título é mantido, mas o bônus não é pago naquele
+                      período.
+                    </li>
+                    <li>O pagamento é creditado automaticamente na virada do mês.</li>
+                  </ul>
                 </div>
 
                 <div className="mt-8 rounded-xl bg-muted p-4">

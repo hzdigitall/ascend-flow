@@ -103,6 +103,124 @@ export type Database = {
         }
         Relationships: []
       }
+      bla_payouts: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          note: string | null
+          period: string
+          points: number
+          rank_level: number
+          rank_name: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          note?: string | null
+          period: string
+          points?: number
+          rank_level?: number
+          rank_name?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          note?: string | null
+          period?: string
+          points?: number
+          rank_level?: number
+          rank_name?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bla_payouts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      career_monthly_points: {
+        Row: {
+          created_at: string
+          period: string
+          points: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          period: string
+          points?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          period?: string
+          points?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_monthly_points_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      career_ranks: {
+        Row: {
+          active: boolean
+          bonus: number
+          created_at: string
+          id: string
+          level: number
+          name: string
+          points_required: number
+          required_rank_count: number
+          required_rank_level: number | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          bonus?: number
+          created_at?: string
+          id?: string
+          level: number
+          name: string
+          points_required: number
+          required_rank_count?: number
+          required_rank_level?: number | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          bonus?: number
+          created_at?: string
+          id?: string
+          level?: number
+          name?: string
+          points_required?: number
+          required_rank_count?: number
+          required_rank_level?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       commissions: {
         Row: {
           amount: number
@@ -1196,6 +1314,41 @@ export type Database = {
         }
         Relationships: []
       }
+      user_career: {
+        Row: {
+          achieved_at: string | null
+          created_at: string
+          rank_level: number
+          rank_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          achieved_at?: string | null
+          created_at?: string
+          rank_level?: number
+          rank_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          achieved_at?: string | null
+          created_at?: string
+          rank_level?: number
+          rank_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_career_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_plans: {
         Row: {
           activated_at: string | null
@@ -1552,6 +1705,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_career_points: {
+        Args: { _period?: string; _points: number; _user: string }
+        Returns: undefined
+      }
       admin_adjust_balance: {
         Args: {
           _admin: string
@@ -1562,6 +1719,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      admin_adjust_career_points: {
+        Args: {
+          _admin: string
+          _period: string
+          _points: number
+          _reason: string
+          _user: string
+        }
+        Returns: boolean
+      }
       admin_delete_user_data: {
         Args: { _admin: string; _user: string }
         Returns: boolean
@@ -1569,6 +1736,14 @@ export type Database = {
       admin_grant_plan: {
         Args: { _admin: string; _plan: string; _reason: string; _user: string }
         Returns: string
+      }
+      admin_run_bla: {
+        Args: { _admin: string; _period: string }
+        Returns: number
+      }
+      admin_set_career_rank: {
+        Args: { _admin: string; _level: number; _reason: string; _user: string }
+        Returns: boolean
       }
       confirm_payment: {
         Args: { _payload: Json; _payment: string }
@@ -1613,8 +1788,19 @@ export type Database = {
         }
         Returns: undefined
       }
+      current_bla_period: { Args: never; Returns: string }
       expire_due_plans: { Args: { _user?: string }; Returns: number }
       generate_referral_code: { Args: never; Returns: string }
+      get_my_bla: {
+        Args: never
+        Returns: {
+          period: string
+          points: number
+          qualified_level: number
+          rank_level: number
+          rank_name: string
+        }[]
+      }
       get_my_network: {
         Args: never
         Returns: {
@@ -1648,6 +1834,7 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       notify_expiring_plans: { Args: { _days?: number }; Returns: number }
       process_daily_roi: { Args: never; Returns: undefined }
+      process_monthly_bla: { Args: { _period?: string }; Returns: number }
       process_withdrawal: {
         Args: { _action: string; _admin: string; _reason: string; _wid: string }
         Returns: boolean
@@ -1655,6 +1842,10 @@ export type Database = {
       purchase_plan_with_balance: {
         Args: { _plan: string; _user: string; _wallet: string }
         Returns: string
+      }
+      qualified_rank_level: {
+        Args: { _period: string; _user: string }
+        Returns: number
       }
       redeem_product: {
         Args: { _addr: Json; _product: string; _user: string }

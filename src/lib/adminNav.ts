@@ -11,6 +11,7 @@ import {
   History,
   Wallet,
   PlugZap,
+  Crown,
 } from "lucide-react";
 import type { NavItem } from "@/components/layout/AppShell";
 
@@ -20,6 +21,7 @@ export const adminNav: NavItem[] = [
   { label: "Registros", to: "/admin/registros", icon: FileSearch, section: "Gestão" },
   { label: "Planos", to: "/admin/planos", icon: ShieldCheck, section: "Gestão" },
   { label: "Auditoria de planos", to: "/admin/auditoria-planos", icon: History, section: "Gestão" },
+  { label: "BLA — Liderança", to: "/admin/bla", icon: Crown, section: "Gestão" },
   { label: "Pagamentos", to: "/admin/pagamentos", icon: Wallet, section: "Financeiro" },
   { label: "Saques", to: "/admin/saques", icon: Gift, section: "Financeiro" },
   { label: "Produtos", to: "/admin/produtos", icon: Package, section: "Loja" },
