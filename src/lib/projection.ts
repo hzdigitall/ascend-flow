@@ -62,8 +62,8 @@ export const PLAN_TIERS: PlanTier[] = [
     dailyPct: 7.5,
     daysToDouble: 14,
     min: 3000,
-    max: 5000,
-    amounts: [3000, 3500, 4000, 4500, 5000],
+    max: 10000,
+    amounts: [3000, 3500, 4000, 4500, 5000, 10000],
   },
 ];
 
