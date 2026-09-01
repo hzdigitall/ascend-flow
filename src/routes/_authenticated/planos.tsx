@@ -35,6 +35,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { brl, dateTimeBR, pts } from "@/lib/format";
+import { PLAN_TIERS, projectionRows } from "@/lib/projection";
+
 
 export const Route = createFileRoute("/_authenticated/planos")({
   head: () => ({
@@ -196,11 +198,70 @@ function PlansPage() {
       <Tabs defaultValue="disponiveis" className="space-y-4">
         <TabsList>
           <TabsTrigger value="disponiveis">Adquirir</TabsTrigger>
+          <TabsTrigger value="projecao">Tabela de projeção</TabsTrigger>
           <TabsTrigger value="ativos">
             Planos ativos
             {activeQuery.data ? ` (${activeQuery.data.filter((p: any) => p.status === "active").length})` : ""}
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="projecao" className="space-y-4">
+          <Card className="shadow-card">
+            <CardContent className="p-6">
+              <h2 className="text-lg font-bold">Tabela de projeção</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Todos os planos rendem em dias úteis até dobrar o seu investimento (200%).
+              </p>
+            </CardContent>
+          </Card>
+
+          {PLAN_TIERS.map((tier) => (
+            <Card key={tier.name} className="overflow-hidden shadow-card">
+              <CardContent className="p-0">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b bg-muted/40 px-5 py-3">
+                  <div>
+                    <h3 className="text-base font-bold">{tier.name}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {brl(tier.min)} a {brl(tier.max)}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant="secondary">{fmtPct(tier.dailyPct)} ao dia</Badge>
+                    <Badge variant="outline">{tier.daysToDouble} dias úteis</Badge>
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[520px] text-sm">
+                    <thead>
+                      <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+                        <th className="px-5 py-2 font-semibold">Investimento</th>
+                        <th className="px-5 py-2 font-semibold">% diária (valor)</th>
+                        <th className="px-5 py-2 font-semibold">Dias em que dobra</th>
+                        <th className="px-5 py-2 text-right font-semibold">Montante final</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {projectionRows(tier).map((row) => (
+                        <tr key={row.amount} className="border-b last:border-0">
+                          <td className="px-5 py-2 font-semibold">{brl(row.amount)}</td>
+                          <td className="px-5 py-2 text-primary">
+                            {fmtPct(row.dailyPct)}{" "}
+                            <span className="text-muted-foreground">({brl(row.dailyValue)})</span>
+                          </td>
+                          <td className="px-5 py-2">{row.days} dias</td>
+                          <td className="px-5 py-2 text-right font-semibold text-success">
+                            {brl(row.total)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </TabsContent>
+
 
         <TabsContent value="disponiveis" className="space-y-4">
           {isLoading ? (
