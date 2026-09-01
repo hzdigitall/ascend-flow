@@ -135,7 +135,7 @@ const LevelList = memo(function LevelList({
 });
 
 
-const CAREER_RANKS: CareerRank[] = [
+const FALLBACK_RANKS: CareerRank[] = [
   { name: "Master", points: 500, bonus: 300 },
   { name: "Bronze", points: 1000, bonus: 500 },
   { name: "Prata", points: 2000, bonus: 800, req: "2 Master" },
@@ -148,10 +148,18 @@ const CAREER_RANKS: CareerRank[] = [
   { name: "Embaixador", points: 320000, bonus: 12000, req: "5 Imperial" },
   { name: "Presidente", points: 500000, bonus: 16000, req: "2 Embaixador" },
   { name: "Titan", points: 1000000, bonus: 25000, req: "1 Presidente" },
-].sort((a, b) => a.points - b.points);
+];
+
+function monthLabel(period: string) {
+  const [y, m] = period.split("-");
+  return new Date(Number(y), Number(m) - 1, 1).toLocaleDateString("pt-BR", {
+    month: "long",
+    year: "numeric",
+  });
+}
 
 function Page() {
-  const { profile, wallet } = useAuth();
+  const { profile } = useAuth();
   const [selectedReferral, setSelectedReferral] = useState<any>(null);
   
   const link = profile?.referral_code ? referralLink(profile.referral_code) : "";
