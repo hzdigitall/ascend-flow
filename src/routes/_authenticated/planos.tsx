@@ -35,6 +35,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { brl, dateTimeBR, pts } from "@/lib/format";
+import { PLAN_TIERS, projectionRows } from "@/lib/projection";
+
 
 export const Route = createFileRoute("/_authenticated/planos")({
   head: () => ({
