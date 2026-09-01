@@ -52,7 +52,7 @@ export const Route = createFileRoute("/_authenticated/indicacoes")({
   }),
   component: Page,
 });
-type CareerRank = { name: string; points: number; bonus: number; req?: string };
+type CareerRank = { name: string; points: number; bonus: number; req?: string | undefined };
 type Referral = {
   id: string;
   level: number;
