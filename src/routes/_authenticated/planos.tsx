@@ -35,7 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { brl, dateTimeBR, pts } from "@/lib/format";
-import { PLAN_TIERS, projectionRows } from "@/lib/projection";
+import { PLAN_TIERS, tierForPlan } from "@/lib/projection";
 
 
 export const Route = createFileRoute("/_authenticated/planos")({
@@ -186,6 +186,81 @@ function PlansPage() {
     } finally {
       setBuying(false);
     }
+};
+
+  const renderPlanCard = (plan: any, index: number) => {
+    const blocked = Boolean(plan.purchase_blocked);
+    return (
+      <Card
+        key={plan.id}
+        className={
+          index === 1
+            ? "relative overflow-hidden border-primary/40 shadow-card"
+            : "relative overflow-hidden shadow-card"
+        }
+      >
+        {blocked ? (
+          <div className="absolute inset-x-0 top-0 z-10 bg-destructive px-3 py-2 text-center text-xs font-semibold text-destructive-foreground">
+            Indisponível para aquisição no momento
+          </div>
+        ) : null}
+        {index === 1 && !blocked ? (
+          <span className="absolute right-4 top-4 rounded-full bg-primary px-3 py-1 text-[11px] font-semibold text-primary-foreground">
+            Mais popular
+          </span>
+        ) : null}
+        <CardContent
+          className={blocked ? "flex h-full flex-col p-6 pt-12" : "flex h-full flex-col p-6"}
+        >
+          <h2 className="text-lg font-bold">{plan.name}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
+
+          <p className="mt-5 text-3xl font-extrabold tracking-tight">{brl(plan.price)}</p>
+          <div className="mt-2 flex flex-col gap-1.5">
+            <Badge variant="secondary" className="w-fit gap-1">
+              <Coins className="h-3.5 w-3.5" /> {pts(plan.points)} de bônus
+            </Badge>
+            <p className="text-xs font-semibold text-success">
+              Rendimento: {fmtPct(roiPct(plan.name))} ao dia
+            </p>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Rendimentos em dias úteis até dobrar o valor investido · 1º rendimento 24h após a
+            ativação
+          </p>
+
+          <ul className="mt-5 flex-1 space-y-2">
+            {(plan.benefits ?? []).map((benefit: string) => (
+              <li key={benefit} className="flex items-start gap-2 text-sm">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-success" />
+                <span className="text-muted-foreground">{benefit}</span>
+              </li>
+            ))}
+          </ul>
+
+          <Button
+            className="mt-6 w-full"
+            size="lg"
+            disabled={pendingId !== null || blocked}
+            onClick={() => {
+              const price = Number(plan.price);
+              setSourceWallet(
+                balances.referral >= price
+                  ? "referral"
+                  : balances.earnings >= price
+                    ? "earnings"
+                    : "main",
+              );
+              setMethod(null);
+              setBalancePlan({ id: plan.id, name: plan.name, price });
+            }}
+          >
+            {pendingId === plan.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            {blocked ? "Indisponível para aquisição no momento" : "Adquirir plano"}
+          </Button>
+        </CardContent>
+      </Card>
+    );
   };
 
   return (
@@ -198,72 +273,16 @@ function PlansPage() {
       <Tabs defaultValue="disponiveis" className="space-y-4">
         <TabsList>
           <TabsTrigger value="disponiveis">Adquirir</TabsTrigger>
-          <TabsTrigger value="projecao">Tabela de projeção</TabsTrigger>
+          
           <TabsTrigger value="ativos">
             Planos ativos
             {activeQuery.data ? ` (${activeQuery.data.filter((p: any) => p.status === "active").length})` : ""}
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="projecao" className="space-y-4">
-          <Card className="shadow-card">
-            <CardContent className="p-6">
-              <h2 className="text-lg font-bold">Tabela de projeção</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Todos os planos rendem em dias úteis até dobrar o seu investimento (200%).
-              </p>
-            </CardContent>
-          </Card>
-
-          {PLAN_TIERS.map((tier) => (
-            <Card key={tier.name} className="overflow-hidden shadow-card">
-              <CardContent className="p-0">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b bg-muted/40 px-5 py-3">
-                  <div>
-                    <h3 className="text-base font-bold">{tier.name}</h3>
-                    <p className="text-xs text-muted-foreground">
-                      {brl(tier.min)} a {brl(tier.max)}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="secondary">{fmtPct(tier.dailyPct)} ao dia</Badge>
-                    <Badge variant="outline">{tier.daysToDouble} dias úteis</Badge>
-                  </div>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[520px] text-sm">
-                    <thead>
-                      <tr className="border-b text-left text-xs uppercase text-muted-foreground">
-                        <th className="px-5 py-2 font-semibold">Investimento</th>
-                        <th className="px-5 py-2 font-semibold">% diária (valor)</th>
-                        <th className="px-5 py-2 font-semibold">Dias em que dobra</th>
-                        <th className="px-5 py-2 text-right font-semibold">Montante final</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {projectionRows(tier).map((row) => (
-                        <tr key={row.amount} className="border-b last:border-0">
-                          <td className="px-5 py-2 font-semibold">{brl(row.amount)}</td>
-                          <td className="px-5 py-2 text-primary">
-                            {fmtPct(row.dailyPct)}{" "}
-                            <span className="text-muted-foreground">({brl(row.dailyValue)})</span>
-                          </td>
-                          <td className="px-5 py-2">{row.days} dias</td>
-                          <td className="px-5 py-2 text-right font-semibold text-success">
-                            {brl(row.total)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </TabsContent>
 
 
-        <TabsContent value="disponiveis" className="space-y-4">
+<TabsContent value="disponiveis" className="space-y-4">
           {isLoading ? (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {[0, 1, 2].map((i) => (
@@ -279,85 +298,36 @@ function PlansPage() {
               description="Assim que novos planos forem publicados eles aparecerão aqui."
             />
           ) : (
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {data!.map((plan, index) => {
-                const blocked = Boolean(plan.purchase_blocked);
+            <Tabs defaultValue={PLAN_TIERS[0].name} className="space-y-4">
+              <TabsList className="flex w-full flex-wrap">
+                {PLAN_TIERS.map((tier) => (
+                  <TabsTrigger key={tier.name} value={tier.name}>
+                    {tier.name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+
+              {PLAN_TIERS.map((tier) => {
+                const tierPlans = (data ?? []).filter(
+                  (p) => tierForPlan(p.name)?.name === tier.name,
+                );
+                if (tierPlans.length === 0) return null;
                 return (
-                  <Card
-                    key={plan.id}
-                    className={
-                      index === 1
-                        ? "relative overflow-hidden border-primary/40 shadow-card"
-                        : "relative overflow-hidden shadow-card"
-                    }
-                  >
-                    {blocked ? (
-                      <div className="absolute inset-x-0 top-0 z-10 bg-destructive px-3 py-2 text-center text-xs font-semibold text-destructive-foreground">
-                        Indisponível para aquisição no momento
-                      </div>
-                    ) : null}
-                    {index === 1 && !blocked ? (
-                      <span className="absolute right-4 top-4 rounded-full bg-primary px-3 py-1 text-[11px] font-semibold text-primary-foreground">
-                        Mais popular
+                  <TabsContent key={tier.name} value={tier.name} className="space-y-4">
+                    <div className="flex flex-wrap items-center gap-2 text-sm">
+                      <Badge variant="secondary">{fmtPct(tier.dailyPct)} ao dia</Badge>
+                      <Badge variant="outline">{tier.daysToDouble} dias úteis para dobrar</Badge>
+                      <span className="text-muted-foreground">
+                        Aportes de {brl(tier.min)} a {brl(tier.max)}
                       </span>
-                    ) : null}
-                    <CardContent
-                      className={blocked ? "flex h-full flex-col p-6 pt-12" : "flex h-full flex-col p-6"}
-                    >
-                      <h2 className="text-lg font-bold">{plan.name}</h2>
-                      <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
-
-                      <p className="mt-5 text-3xl font-extrabold tracking-tight">{brl(plan.price)}</p>
-                      <div className="mt-2 flex flex-col gap-1.5">
-                        <Badge variant="secondary" className="w-fit gap-1">
-                          <Coins className="h-3.5 w-3.5" /> {pts(plan.points)} de bônus
-                        </Badge>
-                        <p className="text-xs font-semibold text-success">
-                          Rendimento: {fmtPct(roiPct(plan.name))} ao dia
-                        </p>
-                      </div>
-                      <p className="mt-2 text-xs text-muted-foreground">
-                        Rendimentos em dias úteis até dobrar o valor investido · 1º rendimento 24h
-                        após a ativação
-                      </p>
-
-                      <ul className="mt-5 flex-1 space-y-2">
-                        {(plan.benefits ?? []).map((benefit) => (
-                          <li key={benefit} className="flex items-start gap-2 text-sm">
-                            <Check className="mt-0.5 h-4 w-4 shrink-0 text-success" />
-                            <span className="text-muted-foreground">{benefit}</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <Button
-                        className="mt-6 w-full"
-                        size="lg"
-                        disabled={pendingId !== null || blocked}
-                        onClick={() => {
-                          const price = Number(plan.price);
-                          setSourceWallet(
-                            balances.referral >= price
-                              ? "referral"
-                              : balances.earnings >= price
-                                ? "earnings"
-                                : "main",
-                          );
-                          setMethod(null);
-                          setBalancePlan({ id: plan.id, name: plan.name, price });
-                        }}
-                      >
-                        {pendingId === plan.id ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : null}
-                        {blocked ? "Indisponível para aquisição no momento" : "Adquirir plano"}
-                      </Button>
-
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                      {tierPlans.map((plan, index) => renderPlanCard(plan, index))}
+                    </div>
+                  </TabsContent>
                 );
               })}
-            </div>
+            </Tabs>
           )}
         </TabsContent>
 
