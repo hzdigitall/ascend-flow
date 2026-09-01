@@ -399,10 +399,10 @@ if (data.session) {
                   <Label htmlFor="phone">{t("signup.phone")}</Label>
                   <Input
                     id="phone"
-                    inputMode="numeric"
+                    inputMode="tel"
                     value={form.phone}
                     onChange={(e) => set("phone", maskPhone(e.target.value))}
-                    placeholder="(11) 90000-0000"
+                    placeholder="(11) 90000-0000 ou +351..."
                   />
                   {errors["phone"] ? (
                     <p className="text-xs text-destructive">{errors["phone"]}</p>
