@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { checkWithdrawalWindow } from "@/lib/withdrawal-window";
+
 import { useServerFn } from "@tanstack/react-start";
 import { Banknote, Clock, AlertCircle } from "lucide-react";
 import { requestPixWithdrawal } from "@/lib/payouts.functions";
