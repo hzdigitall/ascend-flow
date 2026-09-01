@@ -2,10 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { UserShell } from "@/components/layout/UserShell";
-import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
-import { StatusBadge } from "@/components/StatusBadge";
+import { PageHeader, EmptyState, ErrorState } from "@/components/states";
 import { Card, CardContent } from "@/components/ui/card";
-import { ShoppingBag, Truck, Search, MapPin, Loader2 } from "lucide-react";
+import { ShoppingBag, Truck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { pts } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,10 +12,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { redeemProduct } from "@/lib/app.functions";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
+
 
 export const Route = createFileRoute("/_authenticated/loja")({
   head: () => ({
