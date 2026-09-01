@@ -57,13 +57,13 @@ export const PLAN_TIERS: PlanTier[] = [
     max: 2500,
     amounts: [1000, 1500, 2000, 2500],
   },
-  {
+{
     name: "Elite",
     dailyPct: 7.5,
     daysToDouble: 14,
     min: 3000,
-    max: 10000,
-    amounts: [3000, 3500, 4000, 4500, 5000, 10000],
+    max: 20000,
+    amounts: [3000, 3500, 4000, 4500, 5000, 10000, 20000],
   },
 ];
 
