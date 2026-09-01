@@ -1,13 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { UserShell } from "@/components/layout/UserShell";
 import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Bell } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Bell, Trash2 } from "lucide-react";
 import { dateTimeBR } from "@/lib/format";
+
 
 export const Route = createFileRoute("/_authenticated/notificacoes")({
   head: () => ({
@@ -23,6 +25,7 @@ export const Route = createFileRoute("/_authenticated/notificacoes")({
 
 function Page() {
   const { profile } = useAuth();
+  const queryClient = useQueryClient();
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["notifications", profile?.id],
     enabled: Boolean(profile?.id),
@@ -38,12 +41,26 @@ function Page() {
     },
   });
 
+  const clearAll = async () => {
+    if (!profile?.id) return;
+    await supabase.from("notifications").delete().eq("user_id", profile.id);
+    queryClient.invalidateQueries({ queryKey: ["notifications"] });
+  };
+
   return (
     <UserShell>
-      <PageHeader title="Notificações" description="Tudo o que aconteceu na sua conta." />
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <PageHeader title="Notificações" description="Tudo o que aconteceu na sua conta." />
+        {(data?.length ?? 0) > 0 ? (
+          <Button variant="outline" size="sm" onClick={() => void clearAll()}>
+            <Trash2 className="mr-2 h-4 w-4" /> Limpar notificações
+          </Button>
+        ) : null}
+      </div>
       <Card className="shadow-card">
         <CardContent className="p-4 sm:p-6">
           {isLoading ? (
+
             <TableSkeleton />
           ) : isError ? (
             <ErrorState onRetry={() => refetch()} />
