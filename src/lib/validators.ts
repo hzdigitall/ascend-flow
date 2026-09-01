@@ -24,8 +24,13 @@ export const phoneSchema = z
   .string()
   .refine((v) => {
     const digits = onlyDigits(v);
-    const local = digits.length >= 12 && digits.startsWith("55") ? digits.slice(2) : digits;
-    return local.length >= 10 && local.length <= 11;
+    // BR: 10-11 dígitos (DDD + número), com ou sem prefixo 55
+    const local = digits.length >= 12 && digits.length <= 13 && digits.startsWith("55")
+      ? digits.slice(2)
+      : digits;
+    if (local.length >= 10 && local.length <= 11) return true;
+    // Internacional: 8 a 15 dígitos (E.164)
+    return digits.length >= 8 && digits.length <= 15;
   }, { message: "Telefone inválido" });
 
 export const passwordSchema = z

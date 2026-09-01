@@ -36,10 +36,31 @@ export const normalizeBRPhone = (v: string) => {
   return digits.slice(0, 11);
 };
 
-export const maskPhone = (v: string) =>
-  normalizeBRPhone(v)
+/**
+ * Normaliza telefone para armazenamento, aceitando qualquer país (E.164).
+ * Números BR (55 ou 10-11 dígitos) ficam no padrão local DDD+número;
+ * internacionais são salvos com o prefixo "+" (ex.: +351912345678).
+ */
+export const normalizePhone = (v: string) => {
+  const hasPlus = v.trim().startsWith("+");
+  const digits = onlyDigits(v);
+  if (!digits) return "";
+  // BR sem prefixo (10-11 dígitos) ou com 55 → padrão local
+  if (!hasPlus) {
+    if (digits.length <= 11 || digits.startsWith("55")) return normalizeBRPhone(v);
+  }
+  if (hasPlus && digits.startsWith("55") && digits.length >= 12 && digits.length <= 13)
+    return normalizeBRPhone(digits);
+  return `+${digits.slice(0, 15)}`;
+};
+
+export const maskPhone = (v: string) => {
+  const normalized = normalizePhone(v);
+  if (normalized.startsWith("+")) return normalized;
+  return normalized
     .replace(/(\d{2})(\d)/, "($1) $2")
     .replace(/(\d{5})(\d)/, "$1-$2");
+};
 
 export const maskCEP = (v: string) =>
   onlyDigits(v)
