@@ -8,7 +8,7 @@ import { notifyMySignup } from "@/lib/whatsapp.functions";
 import { makeSignUpSchema } from "@/lib/validators";
 import { useI18n } from "@/lib/i18n";
 import { SITE_URL } from "@/lib/site";
-import { maskCPF, maskPhone, normalizeBRPhone, onlyDigits } from "@/lib/format";
+import { maskCPF, maskPhone, normalizePhone, onlyDigits } from "@/lib/format";
 import { Logo } from "@/components/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
@@ -228,7 +228,7 @@ setErrors({});
         emailRedirectTo: SITE_URL,
         data: {
           full_name: parsed.data.fullName,
-          phone: normalizeBRPhone(parsed.data.phone),
+          phone: normalizePhone(parsed.data.phone),
           cpf: cpfDigits,
           referral_code: parsed.data.referralCode?.trim().toUpperCase() || null,
         },
