@@ -1,16 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
-import { Bell } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Bell, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { dateTimeBR } from "@/lib/format";
+import { useNotificationSound } from "@/lib/useNotificationSound";
 
 export function NotificationsBell({ userId }: { userId?: string | undefined }) {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
+  const playSound = useNotificationSound();
 
   const { data = [], isLoading } = useQuery({
     queryKey: ["notifications", "recent", userId],
@@ -26,14 +28,31 @@ export function NotificationsBell({ userId }: { userId?: string | undefined }) {
       if (error) throw error;
       return data;
     },
-    staleTime: 60_000,
-    refetchInterval: 120_000,
+    staleTime: 30_000,
+    refetchInterval: 30_000,
     refetchIntervalInBackground: false,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
   });
 
   const unread = useMemo(() => data.filter((n) => !n.read_at).length, [data]);
 
+  // Toca o "kaching" sempre que chega uma notificação nova.
+  const lastIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    const latest = data[0]?.id ?? null;
+    if (!latest) {
+      lastIdRef.current = null;
+      return;
+    }
+    if (lastIdRef.current === null) {
+      lastIdRef.current = latest;
+      return;
+    }
+    if (lastIdRef.current !== latest) {
+      lastIdRef.current = latest;
+      if (!data[0]?.read_at) playSound();
+    }
+  }, [data, playSound]);
 
   const markAllRead = async () => {
     const ids = data.filter((n) => !n.read_at).map((n) => n.id);
@@ -44,6 +63,14 @@ export function NotificationsBell({ userId }: { userId?: string | undefined }) {
       .in("id", ids);
     queryClient.invalidateQueries({ queryKey: ["notifications"] });
   };
+
+  const clearAll = async () => {
+    if (!userId) return;
+    await supabase.from("notifications").delete().eq("user_id", userId);
+    lastIdRef.current = null;
+    queryClient.invalidateQueries({ queryKey: ["notifications"] });
+  };
+
 
   return (
     <Popover
