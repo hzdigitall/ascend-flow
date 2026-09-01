@@ -298,7 +298,7 @@ function PlansPage() {
               description="Assim que novos planos forem publicados eles aparecerão aqui."
             />
           ) : (
-            <Tabs defaultValue={PLAN_TIERS[0].name} className="space-y-4">
+            <Tabs defaultValue={PLAN_TIERS[0]!.name} className="space-y-4">
               <TabsList className="flex w-full flex-wrap">
                 {PLAN_TIERS.map((tier) => (
                   <TabsTrigger key={tier.name} value={tier.name}>
