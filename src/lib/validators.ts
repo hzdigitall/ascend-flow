@@ -22,9 +22,11 @@ export const cpfSchema = z
 
 export const phoneSchema = z
   .string()
-  .refine((v) => onlyDigits(v).length >= 10 && onlyDigits(v).length <= 11, {
-    message: "Telefone inválido",
-  });
+  .refine((v) => {
+    const digits = onlyDigits(v);
+    const local = digits.length >= 12 && digits.startsWith("55") ? digits.slice(2) : digits;
+    return local.length >= 10 && local.length <= 11;
+  }, { message: "Telefone inválido" });
 
 export const passwordSchema = z
   .string()
