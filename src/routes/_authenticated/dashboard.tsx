@@ -41,7 +41,7 @@ function DashboardPage() {
     queryKey: ["dashboard", profile?.id],
     enabled: Boolean(profile?.id),
     queryFn: async () => {
-      const [planRes, txRes, refRes, bannerRes, roiRes] = await Promise.all([
+      const [planRes, txRes, refRes, bannerRes] = await Promise.all([
         supabase
           .from("user_plans")
           .select("*, plans(name, points)")
@@ -64,13 +64,8 @@ function DashboardPage() {
           .order("sort_order", { ascending: true })
           .limit(1)
           .maybeSingle(),
-        supabase
-          .from("wallet_transactions")
-          .select("amount.sum()")
-          .eq("user_id", profile!.id)
-          .eq("category", "earning")
-          .filter("reference_id", "not.is", null),
       ]);
+
 
       // Calculate total earned for the specific active plan
       let planTotalRoi = 0;
