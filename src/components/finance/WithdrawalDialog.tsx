@@ -70,22 +70,8 @@ export function WithdrawalDialog({
   const selectedWallet = form.watch("wallet");
   const currentBalance = (selectedWallet === "earnings" ? earningsBalance : referralBalance) ?? 0;
 
-  // Client-side window check (Brasília Time)
-  const checkWindow = (wallet: "earnings" | "referral") => {
-    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
-    const day = now.getDay(); // 0=domingo, 1=segunda...
-    const hour = now.getHours();
-
-    if (wallet === "earnings") {
-      if (day !== 1) return { isOpen: false, message: "Saques de rendimentos são permitidos apenas às segundas-feiras." };
-      if (hour < 10 || hour >= 17) return { isOpen: false, message: "Saques de rendimentos são permitidos apenas entre 10h e 17h." };
-    } else {
-      if (hour < 9 || hour >= 17) return { isOpen: false, message: "Saques de bônus são permitidos apenas entre 09h e 17h." };
-    }
-    return { isOpen: true };
-  };
-
-  const windowStatus = checkWindow(selectedWallet);
+  // Regras de janela centralizadas em @/lib/withdrawal-window (horário de Brasília).
+  const windowStatus = checkWithdrawalWindow(selectedWallet);
 
   async function onSubmit(values: FormValues) {
     if (values.amount > currentBalance) {
@@ -93,7 +79,7 @@ export function WithdrawalDialog({
       return;
     }
 
-    const win = checkWindow(values.wallet);
+    const win = checkWithdrawalWindow(values.wallet);
     if (!win.isOpen) {
       toast.error(win.message);
       return;
@@ -105,10 +91,11 @@ export function WithdrawalDialog({
       setOpen(false);
       form.reset();
       onSuccess?.();
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao solicitar saque.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao solicitar saque.");
     }
   }
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
