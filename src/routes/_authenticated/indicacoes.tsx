@@ -201,10 +201,69 @@ function Page() {
     return groups;
   }, [data]);
 
-  const currentPoints = wallet?.points_balance || 0;
-  const careerRanksSorted = CAREER_RANKS;
-  const nextRank = careerRanksSorted.find(r => r.points > currentPoints) || careerRanksSorted[careerRanksSorted.length - 1];
-  const currentRank = [...careerRanksSorted].reverse().find(r => r.points <= currentPoints) || null;
+  const ranksQuery = useQuery({
+    queryKey: ["career-ranks"],
+    staleTime: 10 * 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("career_ranks")
+        .select("name, level, points_required, bonus, required_rank_level, required_rank_count")
+        .eq("active", true)
+        .order("level", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const blaQuery = useQuery({
+    queryKey: ["my-bla", profile?.id],
+    enabled: Boolean(profile?.id),
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_my_bla");
+      if (error) throw error;
+      return (data ?? [])[0] ?? null;
+    },
+  });
+
+  const payoutsQuery = useQuery({
+    queryKey: ["my-bla-payouts", profile?.id],
+    enabled: Boolean(profile?.id),
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("bla_payouts")
+        .select("period, rank_name, amount, points, status")
+        .order("period", { ascending: false })
+        .limit(12);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const CAREER_RANKS: CareerRank[] = useMemo(() => {
+    const rows = ranksQuery.data;
+    if (!rows || rows.length === 0) return FALLBACK_RANKS;
+    const byLevel = new Map(rows.map((r) => [r.level, r.name]));
+    return rows.map((r) => ({
+      name: r.name,
+      points: Number(r.points_required),
+      bonus: Number(r.bonus),
+      req:
+        r.required_rank_count && r.required_rank_level
+          ? `${r.required_rank_count} ${byLevel.get(r.required_rank_level) ?? ""}`.trim()
+          : undefined,
+    }));
+  }, [ranksQuery.data]);
+
+  const currentPoints = Number(blaQuery.data?.points ?? 0);
+  const qualifiedLevel = Number(blaQuery.data?.qualified_level ?? 0);
+  const rankName = blaQuery.data?.rank_name ?? null;
+  const period = String(blaQuery.data?.period ?? "").slice(0, 7);
+  const nextRank =
+    CAREER_RANKS.find((r) => r.points > currentPoints) ?? CAREER_RANKS[CAREER_RANKS.length - 1];
+  const currentRank = rankName ? (CAREER_RANKS.find((r) => r.name === rankName) ?? null) : null;
+  const qualifiedRank = qualifiedLevel > 0 ? (CAREER_RANKS[qualifiedLevel - 1] ?? null) : null;
   const progress = nextRank ? Math.min((currentPoints / nextRank.points) * 100, 100) : 100;
 
   return (
