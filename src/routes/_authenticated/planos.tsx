@@ -58,7 +58,12 @@ const ROI_BY_PLAN: Record<string, number> = {
   Elite: 7.5,
 };
 
-const roiPct = (name: string) => ROI_BY_PLAN[name] ?? 0;
+const roiPct = (name: string) => {
+  const key = Object.keys(ROI_BY_PLAN).find(
+    (tier) => name === tier || name.startsWith(`${tier} `),
+  );
+  return key ? ROI_BY_PLAN[key]! : 0;
+};
 
 const fmtPct = (value: number) => `${value.toString().replace(".", ",")}%`;
 

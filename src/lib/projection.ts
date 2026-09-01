@@ -74,7 +74,7 @@ export function tierForAmount(amount: number): PlanTier | undefined {
 
 /** Faixa correspondente ao nome do plano */
 export function tierForPlan(name: string): PlanTier | undefined {
-  return PLAN_TIERS.find((t) => t.name === name);
+  return PLAN_TIERS.find((t) => name === t.name || name.startsWith(`${t.name} `));
 }
 
 /** Rendimento diário em reais */
