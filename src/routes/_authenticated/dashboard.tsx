@@ -107,11 +107,11 @@ function DashboardPage() {
 
   const directs = (data?.referrals ?? []).filter((r) => r.level === 1).length;
 
-const SIGNUP_BONUS = 30;
+
   // O bônus de cadastro (R$ 30) já é creditado no saldo principal no cadastro,
   // então aqui entram apenas os preços dos planos (bloqueados até o vencimento).
   const investedLocked = (data?.plans ?? []).reduce((sum, p) => sum + Number(p.price ?? 0), 0);
-  const investedTotal = investedLocked + ((data?.plans.length ?? 0) > 0 ? SIGNUP_BONUS : 0);
+  const investedTotal = investedLocked;
   const withdrawable =
     Number(wallet?.earnings_balance ?? 0) + Number(wallet?.referral_balance ?? 0);
 
@@ -152,7 +152,7 @@ const SIGNUP_BONUS = 30;
           label={t("dash.balance.main")}
           value={brl(Number(wallet?.main_balance ?? 0) + investedLocked)}
           icon={Wallet}
-          hint={`Inclui ${brl(investedLocked)} de montante investido (bloqueado até o vencimento do plano). O bônus de cadastro de R$ 30 já está incluso no saldo.`}
+          hint={`Saldo anterior + ${brl(investedLocked)} de montante investido (bloqueado até o vencimento do plano).`}
           loading={!wallet}
         />
         <StatCard
@@ -180,7 +180,7 @@ const SIGNUP_BONUS = 30;
           label="Montante investido"
           value={brl(investedTotal)}
           icon={Lock}
-          hint="Inclui o bônus de cadastro de R$ 30. Liberado no saldo principal quando o plano vencer."
+          hint="Valor dos planos ativos. Liberado no saldo principal quando o plano vencer."
           loading={isLoading}
         />
         <StatCard
@@ -248,8 +248,7 @@ const SIGNUP_BONUS = 30;
             <CardContent>
               {(data?.plans.length ?? 0) > 0 ? (
                 <div className="space-y-4">
-                  {data!.plans.map((plan, i) => {
-                    const bonus = i === 0 ? SIGNUP_BONUS : 0;
+                  {data!.plans.map((plan) => {
                     const earned = data!.roiByPlan[plan.id] ?? 0;
                     const cap = Number(plan.price) * 2;
                     const pct = cap > 0 ? (earned / cap) * 100 : 0;
@@ -263,14 +262,10 @@ const SIGNUP_BONUS = 30;
                         </div>
 
                         <div className="rounded-lg bg-muted/60 p-2">
-                          <p className="text-sm font-semibold">
-                            {brl(Number(plan.price) + bonus)}
+                          <p className="text-sm font-semibold">{brl(plan.price)}</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            Montante do plano (somado ao saldo principal)
                           </p>
-                          {bonus > 0 ? (
-                            <p className="text-[10px] text-muted-foreground">
-                              {brl(plan.price)} do plano + {brl(bonus)} de bônus de cadastro
-                            </p>
-                          ) : null}
                         </div>
 
 
