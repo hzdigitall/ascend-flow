@@ -268,12 +268,53 @@ function AdminBlaPage() {
     }
   }
 
+  const qualifiedPct = totals.users > 0 ? (totals.qualified / totals.users) * 100 : 0;
+
   return (
     <AppShell items={adminNav} variant="admin">
-      <PageHeader
-        title="BLA — Bônus de Liderança Ativa"
-        description="Pontuação mensal, graduações e pagamentos do bônus de liderança. A apuração roda automaticamente no dia 1º de cada mês."
-      />
+      <Card className="mb-6 overflow-hidden border-primary/25 shadow-card">
+        <div className="relative bg-gradient-secondary p-6 sm:p-8">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(251,9,110,0.5),transparent_60%)]" />
+          <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4">
+              <img
+                src={arenaLogo.url}
+                alt="Arena Suplementos"
+                width={160}
+                height={40}
+                className="h-10 w-auto animate-bob object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.35)]"
+              />
+              <div className="h-10 w-px bg-primary-foreground/20" />
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.2em] text-primary-foreground/70">
+                  Bônus de Liderança Ativa
+                </p>
+                <h1 className="text-2xl font-black text-primary-foreground sm:text-3xl">
+                  Painel do BLA
+                </h1>
+                <p className="text-sm text-primary-foreground/80">
+                  Apuração automática todo dia 15 · período {period}
+                </p>
+              </div>
+            </div>
+            <div className="animate-bob rounded-2xl border border-primary-foreground/20 bg-background/10 px-5 py-4 text-center backdrop-blur">
+              <Crown className="mx-auto h-7 w-7 text-primary-foreground" />
+              <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground/70">
+                Total pago
+              </p>
+              <p className="text-xl font-black text-primary-foreground">{brl(totals.amount)}</p>
+            </div>
+          </div>
+          <div className="relative mt-6 space-y-2">
+            <WaterBar value={qualifiedPct} />
+            <div className="flex justify-between text-[11px] font-semibold text-primary-foreground/80">
+              <span>{totals.qualified} qualificados</span>
+              <span>{totals.users} pontuando no mês</span>
+            </div>
+          </div>
+        </div>
+      </Card>
+
 
       <Card className="mb-6 shadow-card">
         <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-end">
