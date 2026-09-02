@@ -43,9 +43,9 @@ function Page() {
 
   return (
     <UserShell>
-      <PageHeader 
+<PageHeader 
         title="Saques" 
-        description="Acompanhe suas solicitações de saque via PIX. Rendimentos: Segundas (10h-17h). Bônus: Diariamente (09h-17h). Taxa de 2%." 
+        description="Acompanhe suas solicitações de saque via PIX. Até R$ 500 o envio é automático; acima disso, aguarda aprovação. Rendimentos: Segundas (10h-17h). Bônus: Diariamente (09h-17h). Taxa de 2%."
         action={
           <div className="flex flex-col gap-2 sm:flex-row">
             <WithdrawalDialog

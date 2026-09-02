@@ -126,9 +126,9 @@ function WithdrawalsPage() {
 
   return (
     <AppShell items={adminNav} variant="admin">
-      <PageHeader
+<PageHeader
         title="Saques"
-        description="Aprovação manual obrigatória. O envio à gateway acontece somente após sua aprovação."
+        description="Saques até R$ 500 são enviados automaticamente à gateway. Acima disso, aprovação manual obrigatória."
       />
       <Card className="shadow-card">
         <CardContent className="p-0">

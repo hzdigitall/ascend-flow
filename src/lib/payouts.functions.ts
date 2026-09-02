@@ -3,39 +3,17 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "@/lib/admin-guard.server";
 import { checkWithdrawalWindow } from "@/lib/withdrawal-window";
+import { pixKeyIsValid } from "@/lib/pix-keys";
+import type { WithdrawalRow } from "@/lib/withdrawal-submit.server";
 
 /**
  * Saques (cash-out PIX e withdraw USDT BEP20).
  *
- * O usuário NUNCA dispara a ConnectPay: a solicitação apenas reserva saldo e
- * fica aguardando aprovação do administrador.
+ * Até R$ 500 (AUTO_WITHDRAW_LIMIT) o saque é enviado automaticamente à
+ * ConnectPay no momento da solicitação; acima disso, reserva saldo e fica
+ * aguardando aprovação do administrador.
  */
-
-const PIX_TYPE_MAP = {
-  cpf: "CPF",
-  cnpj: "CNPJ",
-  email: "EMAIL",
-  phone: "PHONE",
-  random: "RANDOM",
-} as const;
-
-function pixKeyIsValid(type: keyof typeof PIX_TYPE_MAP, key: string): boolean {
-  const digits = key.replace(/\D/g, "");
-  switch (type) {
-    case "cpf":
-      return digits.length === 11;
-    case "cnpj":
-      return digits.length === 14;
-    case "email":
-      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(key);
-    case "phone":
-      return digits.length >= 10 && digits.length <= 13;
-    case "random":
-      return /^[0-9a-fA-F-]{32,36}$/.test(key.trim());
-    default:
-      return false;
-  }
-}
+const AUTO_WITHDRAW_LIMIT = 500;
 
 export const requestPixWithdrawal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -49,7 +27,7 @@ export const requestPixWithdrawal = createServerFn({ method: "POST" })
       })
       .parse(data),
   )
-  .handler(async ({ data, context }) => {
+.handler(async ({ data, context }) => {
     // Mesmas janelas do USDT (horário de Brasília).
     const win = checkWithdrawalWindow(data.wallet);
     if (!win.isOpen) throw new Error(win.message);
@@ -57,6 +35,8 @@ export const requestPixWithdrawal = createServerFn({ method: "POST" })
     if (!pixKeyIsValid(data.keyType, data.key)) {
       throw new Error("Chave PIX inválida para o tipo selecionado.");
     }
+
+    const auto = data.amount <= AUTO_WITHDRAW_LIMIT;
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: id, error } = await supabaseAdmin.rpc("request_withdrawal_v2", {
@@ -69,11 +49,22 @@ export const requestPixWithdrawal = createServerFn({ method: "POST" })
       _key_type: data.keyType,
       _key: data.key,
       _address: null as unknown as string,
+      _auto: auto,
     });
     if (error) throw new Error(error.message);
+
+    if (auto) {
+      const { autoSubmitWithdrawal } = await import("./withdrawal-submit.server");
+      return autoSubmitWithdrawal(supabaseAdmin, id as string);
+    }
+
     const { notifyWithdrawalStatus } = await import("./whatsapp.server");
     await notifyWithdrawalStatus(supabaseAdmin, id as string);
-    return { withdrawalId: id as string };
+    return {
+      withdrawalId: id as string,
+      auto: false,
+      message: "Solicitação registrada — aguarda aprovação.",
+    };
   });
 
 /**
@@ -96,11 +87,13 @@ export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
       })
       .parse(data),
   )
-  .handler(async ({ data, context }) => {
+.handler(async ({ data, context }) => {
     // Mesmas janelas do PIX (horário de Brasília).
     const win = checkWithdrawalWindow(data.wallet);
     if (!win.isOpen) throw new Error(win.message);
     if (data.amount < 10) throw new Error("O valor mínimo para saque é R$ 10,00.");
+
+    const auto = data.amount <= AUTO_WITHDRAW_LIMIT;
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const cp = await import("./connectpay.server");
@@ -118,11 +111,22 @@ export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
       _key_type: null as unknown as string,
       _key: null as unknown as string,
       _address: data.address,
+      _auto: auto,
     });
     if (error) throw new Error(error.message);
+
+    if (auto) {
+      const { autoSubmitWithdrawal } = await import("./withdrawal-submit.server");
+      return autoSubmitWithdrawal(supabaseAdmin, id as string);
+    }
+
     const { notifyWithdrawalStatus } = await import("./whatsapp.server");
     await notifyWithdrawalStatus(supabaseAdmin, id as string);
-    return { withdrawalId: id as string };
+    return {
+      withdrawalId: id as string,
+      auto: false,
+      message: "Solicitação registrada — aguarda aprovação.",
+    };
   });
 
 
@@ -135,7 +139,7 @@ export const adminApproveWithdrawal = createServerFn({ method: "POST" })
   .inputValidator((data: { withdrawalId: string }) =>
     z.object({ withdrawalId: z.string().uuid() }).parse(data),
   )
-  .handler(async ({ data, context }) => {
+.handler(async ({ data, context }) => {
     await assertAdmin(context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -145,218 +149,12 @@ export const adminApproveWithdrawal = createServerFn({ method: "POST" })
       _wid: data.withdrawalId,
     });
     if (lockError) throw new Error(lockError.message);
-    const withdrawal = w as unknown as {
-      id: string;
-      amount: number;
-      net_amount: number;
-      currency: string;
-      method: string;
-      provider: string | null;
-      network: string | null;
-      pix_key_type: string | null;
-      pix_key_value: string | null;
-      wallet_address: string | null;
-      external_id: string | null;
-      unique_external_id: string | null;
-      idempotency_key: string | null;
-      conversion_rate: number | null;
-      crypto_amount: number | null;
-    };
 
-    /* ---------------- USDT BEP20 -> ConnectPay ---------------- */
-    if (withdrawal.currency === "USDT") {
-      const cpc = await import("./connectpay.server");
-
-      let cryptoGateway: Awaited<ReturnType<typeof cpc.loadGateway>>;
-      let cryptoSecret: string;
-      try {
-        const active = await cpc.requireActiveGateway(supabaseAdmin, "usdt_withdraw");
-        cryptoGateway = active.gateway;
-        cryptoSecret = active.secret;
-      } catch {
-        await supabaseAdmin
-          .from("withdrawals")
-          .update({ status: "pending" })
-          .eq("id", withdrawal.id);
-        throw new Error(
-          "ConnectPay indisponível para saque USDT: verifique credencial, conexão e a ativação de saques USDT.",
-        );
-      }
-
-      if ((withdrawal.network ?? "") !== "BEP20" || !withdrawal.wallet_address) {
-        await supabaseAdmin
-          .from("withdrawals")
-          .update({ status: "failed", failure_reason: "Saque USDT inválido (rede/carteira)." })
-          .eq("id", withdrawal.id);
-        throw new Error("Saque USDT inválido (rede/carteira).");
-      }
-      if (!/^0x[a-fA-F0-9]{40}$/.test(withdrawal.wallet_address)) {
-        await supabaseAdmin
-          .from("withdrawals")
-          .update({ status: "failed", failure_reason: "Carteira BEP20 inválida." })
-          .eq("id", withdrawal.id);
-        throw new Error("Carteira BEP20 inválida.");
-      }
-
-      // Valor em USDT congelado no momento da solicitação (nunca recalculado).
-      const frozen = withdrawal.crypto_amount;
-      if (frozen === null || Number(frozen) <= 0) {
-        await supabaseAdmin
-          .from("withdrawals")
-          .update({
-            status: "failed",
-            failure_reason: "Saque USDT sem valor convertido registrado.",
-          })
-          .eq("id", withdrawal.id);
-        throw new Error(
-          "Saque USDT sem valor convertido registrado. Rejeite e solicite novamente.",
-        );
-      }
-      const payoutAmount = Number(Number(frozen).toFixed(6));
-      const idempotencyKey =
-        withdrawal.idempotency_key ?? `connectpay-usdt-withdraw-${withdrawal.id}`;
-
-      try {
-        const response = await cpc.createCryptoWithdraw(
-          cryptoSecret,
-          cryptoGateway.base_url,
-          {
-            asset: cpc.USDT_ASSET,
-            chain: cpc.USDT_CHAIN,
-            amount: payoutAmount.toFixed(6),
-            wallet: withdrawal.wallet_address,
-            webhook_url: cpc.webhookUrls(cryptoGateway).crypto,
-          },
-          idempotencyKey,
-        );
-
-        const providerTx = String(response.transaction_id ?? response.id ?? "") || "";
-
-        await supabaseAdmin
-          .from("withdrawals")
-          .update({
-            provider: cpc.PROVIDER,
-            idempotency_key: idempotencyKey,
-            provider_transaction_id: providerTx || null,
-            tx_hash: response.tx_hash ?? null,
-            submitted_at: new Date().toISOString(),
-          })
-          .eq("id", withdrawal.id);
-
-        await supabaseAdmin.rpc("withdrawal_mark_processing", {
-          _wid: withdrawal.id,
-          _provider_tx: providerTx,
-          _payload: {
-            provider: cpc.PROVIDER,
-            provider_status: response.status ?? null,
-          } as never,
-        });
-
-        await supabaseAdmin.from("admin_logs").insert({
-          admin_id: context.userId,
-          action: "withdrawal_sent_to_gateway",
-          table_name: "withdrawals",
-          record_id: withdrawal.id,
-          new_value: { provider: cpc.PROVIDER, currency: "USDT", network: "BEP20" },
-        });
-
-        return {
-          ok: true as const,
-          message: "Saque USDT enviado à ConnectPay e em processamento.",
-        };
-      } catch (err) {
-        const detail =
-          err instanceof cpc.GatewayError
-            ? err.message
-            : "Falha ao enviar o saque USDT à ConnectPay.";
-        // Saldo permanece reservado: só é liberado por webhook/reconciliação definitiva.
-        await supabaseAdmin
-          .from("withdrawals")
-          .update({ status: "failed", failure_reason: detail })
-          .eq("id", withdrawal.id);
-        await supabaseAdmin.from("admin_logs").insert({
-          admin_id: context.userId,
-          action: "withdrawal_submission_failed",
-          table_name: "withdrawals",
-          record_id: withdrawal.id,
-          new_value: { detail, provider: cpc.PROVIDER },
-        });
-        throw new Error(detail);
-      }
-    }
-
-    /* ---------------- PIX -> ConnectPay (fluxo original) ---------------- */
-    const cp = await import("./connectpay.server");
-    let gateway: Awaited<ReturnType<typeof cp.loadGateway>>;
-    let secret: string;
-    try {
-      const active = await cp.requireActiveGateway(supabaseAdmin, "pix_cashout");
-      gateway = active.gateway;
-      secret = active.secret;
-    } catch {
-      await supabaseAdmin
-        .from("withdrawals")
-        .update({ status: "pending", released_at: null })
-        .eq("id", withdrawal.id);
-      throw new Error(
-        "ConnectPay indisponível: verifique a credencial e a ativação da gateway antes de aprovar.",
-      );
-    }
-
-    const urls = cp.webhookUrls(gateway);
-    const idempotencyKey = withdrawal.idempotency_key ?? `connectpay-withdraw-${withdrawal.id}`;
-
-    try {
-      const pixType = PIX_TYPE_MAP[(withdrawal.pix_key_type ?? "cpf") as keyof typeof PIX_TYPE_MAP];
-      if (!withdrawal.pix_key_value) {
-        throw new cp.GatewayError("Saque PIX sem chave cadastrada.", 400);
-      }
-      const response = await cp.createPixCashout(
-        secret,
-        gateway!.base_url,
-        {
-          external_id: withdrawal.external_id ?? withdrawal.id,
-          pix_key: withdrawal.pix_key_value,
-          pix_type: pixType,
-          amount: Number(Number(withdrawal.net_amount).toFixed(2)),
-          webhook_url: urls.pixCashOut,
-        },
-        idempotencyKey,
-      );
-      await supabaseAdmin.rpc("withdrawal_mark_processing", {
-        _wid: withdrawal.id,
-        _provider_tx: String(response.id ?? response.cashout_id ?? ""),
-        _payload: { provider_status: response.status ?? null } as never,
-      });
-
-      await supabaseAdmin.from("admin_logs").insert({
-        admin_id: context.userId,
-        action: "withdrawal_sent_to_gateway",
-        table_name: "withdrawals",
-        record_id: withdrawal.id,
-        new_value: { currency: withdrawal.currency, method: withdrawal.method },
-      });
-      const wa = await import("./whatsapp.server");
-      await wa.notifyWithdrawalStatus(supabaseAdmin, withdrawal.id);
-      return { ok: true as const, message: "Saque enviado à ConnectPay e em processamento." };
-    } catch (err) {
-      const detail =
-        err instanceof cp.GatewayError ? err.message : "Falha ao enviar o saque à ConnectPay.";
-      await supabaseAdmin.rpc("withdrawal_release", {
-        _wid: withdrawal.id,
-        _status: "failed",
-        _reason: detail,
-        _payload: { failed_at_submission: true } as never,
-      });
-      await supabaseAdmin.from("admin_logs").insert({
-        admin_id: context.userId,
-        action: "withdrawal_submission_failed",
-        table_name: "withdrawals",
-        record_id: withdrawal.id,
-        new_value: { detail },
-      });
-      throw new Error(detail);
-    }
+    const { submitWithdrawalToGateway } = await import("./withdrawal-submit.server");
+    return submitWithdrawalToGateway(supabaseAdmin, w as unknown as WithdrawalRow, {
+      adminId: context.userId,
+      mode: "admin",
+    });
   });
 
 

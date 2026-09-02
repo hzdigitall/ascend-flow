@@ -71,9 +71,13 @@ export function UsdtWithdrawalDialog({
       return;
     }
     setLoading(true);
-    try {
-      await submitFn({ data: { wallet, amount: value, address: address.trim() } });
-      toast.success("Saque em USDT solicitado. Aguarde a aprovação do administrador.");
+try {
+      const res = await submitFn({ data: { wallet, amount: value, address: address.trim() } });
+      if (res.auto) {
+        toast.success("Saque em USDT enviado automaticamente!");
+      } else {
+        toast.success("Saque em USDT solicitado. Aguarde a aprovação do administrador.");
+      }
       setOpen(false);
       setAmount("");
       setAddress("");
@@ -94,10 +98,11 @@ export function UsdtWithdrawalDialog({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Saque em USDT ({USDT_NETWORK_LABEL})</DialogTitle>
+<DialogTitle>Saque em USDT ({USDT_NETWORK_LABEL})</DialogTitle>
           <DialogDescription>
             Informe o valor em reais a debitar do seu saldo. A conversão usa a cotação interna (
-            {fmtRate(rate)}) e o envio ocorre após aprovação administrativa. {WITHDRAW_WINDOW_TEXT}
+            {fmtRate(rate)}). Até R$ 500 o envio é automático; acima disso, após aprovação
+            administrativa. {WITHDRAW_WINDOW_TEXT}
           </DialogDescription>
         </DialogHeader>
 

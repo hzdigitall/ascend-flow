@@ -1862,20 +1862,36 @@ export type Database = {
         }
         Returns: string
       }
-      request_withdrawal_v2: {
-        Args: {
-          _address: string
-          _amount: number
-          _currency: string
-          _key: string
-          _key_type: string
-          _method: string
-          _network: string
-          _user: string
-          _wallet: string
-        }
-        Returns: string
-      }
+      request_withdrawal_v2:
+        | {
+            Args: {
+              _address: string
+              _amount: number
+              _currency: string
+              _key: string
+              _key_type: string
+              _method: string
+              _network: string
+              _user: string
+              _wallet: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              _address: string
+              _amount: number
+              _auto?: boolean
+              _currency: string
+              _key: string
+              _key_type: string
+              _method: string
+              _network: string
+              _user: string
+              _wallet: string
+            }
+            Returns: string
+          }
       resolve_referral_code: {
         Args: { _code: string }
         Returns: {
@@ -1884,6 +1900,51 @@ export type Database = {
         }[]
       }
       usdt_brl_rate: { Args: never; Returns: number }
+      withdrawal_auto_begin_submission: {
+        Args: { _wid: string }
+        Returns: {
+          amount: number
+          batch_withdrawal_id: string | null
+          completed_at: string | null
+          conversion_rate: number | null
+          created_at: string
+          crypto_amount: number | null
+          currency: string
+          external_id: string | null
+          failure_reason: string | null
+          fee: number
+          id: string
+          idempotency_key: string | null
+          metadata: Json
+          method: string
+          net_amount: number
+          network: string | null
+          pix_key_type: Database["public"]["Enums"]["pix_key_type"] | null
+          pix_key_value: string | null
+          processed_at: string | null
+          provider: string | null
+          provider_payout_id: string | null
+          provider_transaction_id: string | null
+          reject_reason: string | null
+          released_at: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["withdrawal_status"]
+          submitted_at: string | null
+          tx_hash: string | null
+          unique_external_id: string | null
+          updated_at: string
+          user_id: string
+          wallet_address: string | null
+          wallet_type: Database["public"]["Enums"]["wallet_type"]
+        }
+        SetofOptions: {
+          from: "*"
+          to: "withdrawals"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       withdrawal_begin_submission: {
         Args: { _admin: string; _wid: string }
         Returns: {
