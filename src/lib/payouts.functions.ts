@@ -38,7 +38,7 @@ export const requestPixWithdrawal = createServerFn({ method: "POST" })
       throw new Error("Chave PIX inválida para o tipo selecionado.");
     }
 
-    const auto = data.amount <= AUTO_WITHDRAW_LIMIT;
+    const auto = data.amount <= AUTO_PIX_WITHDRAW_LIMIT;
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: id, error } = await supabaseAdmin.rpc("request_withdrawal_v2", {
@@ -95,7 +95,7 @@ export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
     if (!win.isOpen) throw new Error(win.message);
     if (data.amount < 10) throw new Error("O valor mínimo para saque é R$ 10,00.");
 
-    const auto = data.amount <= AUTO_WITHDRAW_LIMIT;
+    const auto = true;
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const cp = await import("./connectpay.server");
