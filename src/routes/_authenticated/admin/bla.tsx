@@ -115,30 +115,41 @@ function AdminBlaPage() {
   const rowsQ = useQuery({
     queryKey: ["admin", "bla", period],
     queryFn: async () => {
-      const [points, careers, payouts] = await Promise.all([
+      const [profiles, points, careers, payouts] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("id, full_name, email")
+          .order("full_name", { ascending: true })
+          .limit(2000),
         supabase
           .from("career_monthly_points")
-          .select("user_id, points, profiles(full_name, email)")
+          .select("user_id, points")
           .eq("period", period)
-          .order("points", { ascending: false })
-          .limit(500),
+          .limit(2000),
         supabase.from("user_career").select("user_id, rank_level, rank_name"),
         supabase.from("bla_payouts").select("*").eq("period", period),
       ]);
+      if (profiles.error) throw profiles.error;
       if (points.error) throw points.error;
       if (careers.error) throw careers.error;
       if (payouts.error) throw payouts.error;
 
+      const pointsMap = new Map((points.data ?? []).map((p: any) => [p.user_id, Number(p.points)]));
       const careerMap = new Map((careers.data ?? []).map((c: any) => [c.user_id, c]));
       const payoutMap = new Map((payouts.data ?? []).map((p: any) => [p.user_id, p]));
 
-      return (points.data ?? []).map((r: any) => ({
-        ...r,
-        career: careerMap.get(r.user_id) ?? null,
-        payout: payoutMap.get(r.user_id) ?? null,
-      }));
+      return (profiles.data ?? [])
+        .map((p: any) => ({
+          user_id: p.id,
+          points: pointsMap.get(p.id) ?? 0,
+          profiles: { full_name: p.full_name, email: p.email },
+          career: careerMap.get(p.id) ?? null,
+          payout: payoutMap.get(p.id) ?? null,
+        }))
+        .sort((a: any, b: any) => b.points - a.points);
     },
   });
+
 
   const totals = useMemo(() => {
     const rows = rowsQ.data ?? [];
