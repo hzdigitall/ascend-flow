@@ -137,8 +137,9 @@ function UsersPage() {
         (roles.data ?? []).filter((r) => r.role === "admin").map((r) => r.user_id),
       );
       const walletMap = new Map((wallets.data ?? []).map((w) => [w.user_id, w]));
-      const nameMap = new Map((profiles.data ?? []).map((p) => [p.id, p.full_name]));
-      return (profiles.data ?? []).map((p) => ({
+      const nameMap = new Map(profiles.map((p) => [p.id, p.full_name]));
+      return profiles.map((p) => ({
+
         ...p,
         isAdmin: adminIds.has(p.id),
         wallet: walletMap.get(p.id) ?? null,
