@@ -214,36 +214,50 @@ function DashboardPage() {
         <div className="space-y-4">
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle className="text-base">{t("dash.currentPlan")}</CardTitle>
+              <CardTitle className="text-base">
+                {t("dash.currentPlan")}
+                {(data?.plans.length ?? 0) > 1 ? ` (${data!.plans.length})` : ""}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              {data?.plan ? (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-lg font-bold">{data.plan.plans?.name}</p>
-                    <StatusBadge status={data.plan.status} />
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">{t("dash.roiProgress")}</span>
-                      <span className="font-medium">{((data.planTotalRoi / (data.plan.price * 2)) * 100).toFixed(1)}%</span>
-                    </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-                      <div 
-                        className="h-full bg-primary transition-all" 
-                        style={{ width: `${Math.min(100, (data.planTotalRoi / (data.plan.price * 2)) * 100)}%` }}
-                      />
-                    </div>
-                    <p className="text-[10px] text-muted-foreground">
-                      {t("dash.roiCap", { earned: brl(data.planTotalRoi), cap: brl(data.plan.price * 2) })}
-                    </p>
-                  </div>
+              {(data?.plans.length ?? 0) > 0 ? (
+                <div className="space-y-4">
+                  {data!.plans.map((plan) => {
+                    const earned = data!.roiByPlan[plan.id] ?? 0;
+                    const cap = Number(plan.price) * 2;
+                    const pct = cap > 0 ? (earned / cap) * 100 : 0;
+                    return (
+                      <div key={plan.id} className="space-y-3 rounded-xl border p-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="truncate text-base font-bold">
+                            {plan.plans?.name ?? plan.plan_name}
+                          </p>
+                          <StatusBadge status={plan.status} />
+                        </div>
 
-                  <p className="text-[10px] text-muted-foreground">
-                    {t("dash.activatedAt", { date: dateBR(data.plan.activated_at) })}
-                    {data.plan.expires_at ? t("dash.expiresAt", { date: dateBR(data.plan.expires_at) }) : ""}
-                  </p>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-muted-foreground">{t("dash.roiProgress")}</span>
+                            <span className="font-medium">{pct.toFixed(1)}%</span>
+                          </div>
+                          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                            <div
+                              className="h-full bg-primary transition-all"
+                              style={{ width: `${Math.min(100, pct)}%` }}
+                            />
+                          </div>
+                          <p className="text-[10px] text-muted-foreground">
+                            {t("dash.roiCap", { earned: brl(earned), cap: brl(cap) })}
+                          </p>
+                        </div>
+
+                        <p className="text-[10px] text-muted-foreground">
+                          {t("dash.activatedAt", { date: dateBR(plan.activated_at) })}
+                          {plan.expires_at ? t("dash.expiresAt", { date: dateBR(plan.expires_at) }) : ""}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -256,6 +270,7 @@ function DashboardPage() {
                 </div>
               )}
             </CardContent>
+
           </Card>
 
           <Card className="shadow-card">
