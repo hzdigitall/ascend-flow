@@ -155,7 +155,7 @@ function AdminBlaPage() {
     const rows = rowsQ.data ?? [];
     const paid = rows.filter((r: any) => r.payout?.status === "paid");
     return {
-      users: rows.length,
+      users: rows.filter((r: any) => Number(r.points) > 0).length,
       qualified: paid.length,
       amount: paid.reduce((s: number, r: any) => s + Number(r.payout?.amount ?? 0), 0),
     };
