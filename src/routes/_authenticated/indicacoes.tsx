@@ -487,8 +487,9 @@ function Page() {
                       <ChevronRight className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold">Indicações Diretas</p>
-                      <p className="text-xs text-muted-foreground">Quando um indicado do seu 1º nível ativa um plano, você ganha pontos na mesma proporção (R$ 50 = 5 pts).</p>
+                      <p className="text-sm font-semibold">Indicações até o 3º nível</p>
+                      <p className="text-xs text-muted-foreground">Quando um indicado do seu 1º, 2º ou 3º nível ativa um plano, você ganha pontos na mesma proporção (R$ 50 = 5 pts).</p>
+
                     </div>
                   </div>
                 </div>
