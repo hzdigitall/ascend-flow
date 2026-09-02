@@ -323,6 +323,189 @@ function AdminBlaPage() {
         </Card>
       </div>
 
+      <Card className="mb-6 shadow-card">
+        <CardContent className="p-0">
+          <div className="flex items-center justify-between border-b p-6">
+            <div>
+              <h3 className="font-bold">Graduações</h3>
+              <p className="text-xs text-muted-foreground">
+                Pontos exigidos, valor do BLA e requisitos de equipe de cada nível.
+              </p>
+            </div>
+            <Button size="sm" onClick={() => setRankForm({ ...emptyRank })}>
+              <Plus className="mr-2 h-4 w-4" /> Nova graduação
+            </Button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-muted/50 text-[11px] font-bold uppercase text-muted-foreground">
+                <tr>
+                  <th className="px-6 py-3">Nível</th>
+                  <th className="px-6 py-3">Graduação</th>
+                  <th className="px-6 py-3">Pontos no mês</th>
+                  <th className="px-6 py-3">Requisito de equipe</th>
+                  <th className="px-6 py-3">BLA</th>
+                  <th className="px-6 py-3">Ativa</th>
+                  <th className="px-6 py-3 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {(ranksQ.data ?? []).map((rank: any) => {
+                  const reqName = (ranksQ.data ?? []).find(
+                    (r: any) => r.level === rank.required_rank_level,
+                  )?.name;
+                  return (
+                    <tr key={rank.id} className="hover:bg-muted/30">
+                      <td className="px-6 py-4 text-muted-foreground">{rank.level}</td>
+                      <td className="px-6 py-4 font-semibold">{rank.name}</td>
+                      <td className="px-6 py-4">{formatPoints(Number(rank.points_required))}</td>
+                      <td className="px-6 py-4 text-xs text-muted-foreground">
+                        {rank.required_rank_count > 0 && rank.required_rank_level
+                          ? `${rank.required_rank_count} diretos ${reqName ?? `nível ${rank.required_rank_level}`}`
+                          : "Apenas pontos"}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-primary">{brl(Number(rank.bonus))}</td>
+                      <td className="px-6 py-4">
+                        <Switch checked={rank.active} onCheckedChange={() => toggleRank(rank)} />
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            setRankForm({
+                              id: rank.id,
+                              name: rank.name,
+                              level: String(rank.level),
+                              points_required: String(rank.points_required),
+                              bonus: String(rank.bonus),
+                              required_rank_level: String(rank.required_rank_level ?? 0),
+                              required_rank_count: String(rank.required_rank_count ?? 0),
+                              active: rank.active,
+                            })
+                          }
+                        >
+                          <Pencil className="mr-2 h-4 w-4" /> Editar
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={!!rankForm} onOpenChange={(open) => !open && setRankForm(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{rankForm?.id ? "Editar graduação" : "Nova graduação"}</DialogTitle>
+            <DialogDescription>
+              Estes valores definem a qualificação mensal do BLA de cada líder.
+            </DialogDescription>
+          </DialogHeader>
+          {rankForm && (
+            <div className="space-y-4 py-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="rank-name">Nome</Label>
+                  <Input
+                    id="rank-name"
+                    value={rankForm.name}
+                    onChange={(e) => setRankForm({ ...rankForm, name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="rank-level">Nível</Label>
+                  <Input
+                    id="rank-level"
+                    type="number"
+                    min={1}
+                    value={rankForm.level}
+                    onChange={(e) => setRankForm({ ...rankForm, level: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="rank-points">Pontos no mês</Label>
+                  <Input
+                    id="rank-points"
+                    type="number"
+                    min={0}
+                    value={rankForm.points_required}
+                    onChange={(e) =>
+                      setRankForm({ ...rankForm, points_required: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="rank-bonus">Valor do BLA (R$)</Label>
+                  <Input
+                    id="rank-bonus"
+                    type="number"
+                    min={0}
+                    value={rankForm.bonus}
+                    onChange={(e) => setRankForm({ ...rankForm, bonus: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="rank-req-count">Diretos exigidos</Label>
+                  <Input
+                    id="rank-req-count"
+                    type="number"
+                    min={0}
+                    value={rankForm.required_rank_count}
+                    onChange={(e) =>
+                      setRankForm({ ...rankForm, required_rank_count: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>Graduação mínima dos diretos</Label>
+                  <Select
+                    value={rankForm.required_rank_level}
+                    onValueChange={(v) => setRankForm({ ...rankForm, required_rank_level: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">Sem exigência</SelectItem>
+                      {(ranksQ.data ?? []).map((r: any) => (
+                        <SelectItem key={r.id} value={String(r.level)}>
+                          {r.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={rankForm.active}
+                  onCheckedChange={(v) => setRankForm({ ...rankForm, active: v })}
+                />
+                <Label>Graduação ativa</Label>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRankForm(null)}>
+              Cancelar
+            </Button>
+            <Button onClick={saveRank} disabled={savingRank}>
+              {savingRank ? "Salvando..." : "Salvar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
+
       <Card className="shadow-card">
         <CardContent className="p-0">
           {rowsQ.isLoading ? (
