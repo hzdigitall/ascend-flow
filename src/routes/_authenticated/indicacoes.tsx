@@ -276,6 +276,32 @@ function Page() {
     const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     return Math.max(Math.ceil((end.getTime() - now.getTime()) / 86_400_000), 0);
   })();
+  /** Dias até o próximo dia 15 (data de pagamento do BLA). */
+  const daysToPayout = (() => {
+    const now = new Date();
+    const day = now.getDate();
+    const target =
+      day <= 15
+        ? new Date(now.getFullYear(), now.getMonth(), 15)
+        : new Date(now.getFullYear(), now.getMonth() + 1, 15);
+    return Math.max(
+      Math.round(
+        (target.getTime() - new Date(now.getFullYear(), now.getMonth(), day).getTime()) /
+          86_400_000,
+      ),
+      0,
+    );
+  })();
+  const networkStats = useMemo(() => {
+    const rows = data ?? [];
+    return {
+      total: rows.length,
+      directs: rows.filter((r) => r.level === 1).length,
+      active: rows.filter((r) => r.is_active).length,
+    };
+  }, [data]);
+
+
 
 
   return (
