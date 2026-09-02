@@ -8,7 +8,7 @@
  *   sem devolver/liberar o saldo.
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { PIX_TYPE_MAP } from "./pix-keys";
+import { PIX_TYPE_MAP, normalizePixKey, pixKeyIsValid } from "./pix-keys";
 
 export type WithdrawalRow = {
   id: string;
