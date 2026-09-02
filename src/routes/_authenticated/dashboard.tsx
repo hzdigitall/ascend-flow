@@ -248,8 +248,7 @@ const SIGNUP_BONUS = 30;
             <CardContent>
               {(data?.plans.length ?? 0) > 0 ? (
                 <div className="space-y-4">
-                  {data!.plans.map((plan, i) => {
-                    const bonus = i === 0 ? SIGNUP_BONUS : 0;
+                  {data!.plans.map((plan) => {
                     const earned = data!.roiByPlan[plan.id] ?? 0;
                     const cap = Number(plan.price) * 2;
                     const pct = cap > 0 ? (earned / cap) * 100 : 0;
