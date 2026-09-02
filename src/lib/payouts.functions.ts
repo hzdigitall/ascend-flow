@@ -3,7 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "@/lib/admin-guard.server";
 import { checkWithdrawalWindow } from "@/lib/withdrawal-window";
-import { pixKeyIsValid } from "@/lib/pix-keys";
+import { pixKeyIsValid, normalizePixKey } from "@/lib/pix-keys";
 import type { WithdrawalRow } from "@/lib/withdrawal-submit.server";
 
 /**
