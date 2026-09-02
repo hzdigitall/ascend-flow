@@ -3,7 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "@/lib/admin-guard.server";
 import { checkWithdrawalWindow } from "@/lib/withdrawal-window";
-import { pixKeyIsValid } from "@/lib/pix-keys";
+import { pixKeyIsValid, normalizePixKey } from "@/lib/pix-keys";
 import type { WithdrawalRow } from "@/lib/withdrawal-submit.server";
 
 /**
@@ -34,7 +34,8 @@ export const requestPixWithdrawal = createServerFn({ method: "POST" })
     const win = checkWithdrawalWindow(data.wallet);
     if (!win.isOpen) throw new Error(win.message);
     if (data.amount < 10) throw new Error("O valor mínimo para saque é R$ 10,00.");
-    if (!pixKeyIsValid(data.keyType, data.key)) {
+    const pixKey = normalizePixKey(data.keyType, data.key);
+    if (!pixKeyIsValid(data.keyType, pixKey)) {
       throw new Error("Chave PIX inválida para o tipo selecionado.");
     }
 
@@ -51,7 +52,7 @@ export const requestPixWithdrawal = createServerFn({ method: "POST" })
       _currency: "BRL",
       _network: null as unknown as string,
       _key_type: data.keyType,
-      _key: data.key,
+      _key: pixKey,
       _address: null as unknown as string,
       _auto: auto,
     });

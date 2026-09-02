@@ -8,7 +8,7 @@
  *   sem devolver/liberar o saldo.
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { PIX_TYPE_MAP } from "./pix-keys";
+import { PIX_TYPE_MAP, normalizePixKey, pixKeyIsValid } from "./pix-keys";
 
 export type WithdrawalRow = {
   id: string;
@@ -197,12 +197,17 @@ export async function submitWithdrawalToGateway(
     if (!withdrawal.pix_key_value) {
       throw new cp.GatewayError("Saque PIX sem chave cadastrada.", 400);
     }
+    // A gateway recusa chaves com máscara (ex.: 143.098.529-12): envia normalizada.
+    const pixKey = normalizePixKey(withdrawal.pix_key_type, withdrawal.pix_key_value);
+    if (!pixKeyIsValid((withdrawal.pix_key_type ?? "cpf") as keyof typeof PIX_TYPE_MAP, pixKey)) {
+      throw new cp.GatewayError("Chave PIX inválida para o tipo selecionado.", 400);
+    }
     const response = await cp.createPixCashout(
       secret,
       gateway!.base_url,
       {
         external_id: withdrawal.external_id ?? withdrawal.id,
-        pix_key: withdrawal.pix_key_value,
+        pix_key: pixKey,
         pix_type: pixType,
         amount: Number(Number(withdrawal.net_amount).toFixed(2)),
         webhook_url: urls.pixCashOut,
