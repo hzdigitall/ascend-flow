@@ -530,7 +530,7 @@ function Page() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold">Indicações até o 3º nível</p>
-                      <p className="text-xs text-muted-foreground">Quando um indicado do seu 1º, 2º ou 3º nível ativa um plano, você ganha pontos na mesma proporção (R$ 50 = 1 ponto).</p>
+                      <p className="text-xs text-muted-foreground">Quando um indicado do seu 1º, 2º ou 3º nível ativa um plano, você ganha pontos na mesma proporção (R$ 50 = 5 pontos).</p>
 
                     </div>
                   </div>
