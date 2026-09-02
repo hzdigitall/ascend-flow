@@ -107,10 +107,11 @@ function DashboardPage() {
 
   const directs = (data?.referrals ?? []).filter((r) => r.level === 1).length;
 
-  const SIGNUP_BONUS = 30;
-  const investedTotal =
-    (data?.plans ?? []).reduce((sum, p) => sum + Number(p.price ?? 0), 0) +
-    ((data?.plans.length ?? 0) > 0 ? SIGNUP_BONUS : 0);
+const SIGNUP_BONUS = 30;
+  // O bônus de cadastro (R$ 30) já é creditado no saldo principal no cadastro,
+  // então aqui entram apenas os preços dos planos (bloqueados até o vencimento).
+  const investedLocked = (data?.plans ?? []).reduce((sum, p) => sum + Number(p.price ?? 0), 0);
+  const investedTotal = investedLocked + ((data?.plans.length ?? 0) > 0 ? SIGNUP_BONUS : 0);
   const withdrawable =
     Number(wallet?.earnings_balance ?? 0) + Number(wallet?.referral_balance ?? 0);
 
@@ -147,11 +148,11 @@ function DashboardPage() {
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
+<StatCard
           label={t("dash.balance.main")}
-          value={brl(Number(wallet?.main_balance ?? 0) + investedTotal)}
+          value={brl(Number(wallet?.main_balance ?? 0) + investedLocked)}
           icon={Wallet}
-          hint={`Inclui ${brl(investedTotal)} de montante investido (bloqueado até o vencimento do plano).`}
+          hint={`Inclui ${brl(investedLocked)} de montante investido (bloqueado até o vencimento do plano). O bônus de cadastro de R$ 30 já está incluso no saldo.`}
           loading={!wallet}
         />
         <StatCard
