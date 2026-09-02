@@ -5,12 +5,23 @@ import { Bell, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { dateTimeBR } from "@/lib/format";
 import { useNotificationSound } from "@/lib/useNotificationSound";
 
 export function NotificationsBell({ userId }: { userId?: string | undefined }) {
   const [open, setOpen] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false);
+
   const queryClient = useQueryClient();
   const playSound = useNotificationSound();
 
