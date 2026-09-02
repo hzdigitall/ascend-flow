@@ -110,7 +110,7 @@ export function NotificationsBell({ userId }: { userId?: string | undefined }) {
             {data.length > 0 ? (
               <button
                 type="button"
-                onClick={() => void clearAll()}
+                onClick={() => setConfirmClear(true)}
                 className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
               >
                 <Trash2 className="h-3.5 w-3.5" /> Limpar
@@ -149,5 +149,26 @@ export function NotificationsBell({ userId }: { userId?: string | undefined }) {
         </ScrollArea>
       </PopoverContent>
     </Popover>
+
+    <Dialog open={confirmClear} onOpenChange={setConfirmClear}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Limpar notificações?</DialogTitle>
+          <DialogDescription>
+            Todas as suas notificações serão apagadas permanentemente. Essa ação não pode
+            ser desfeita.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setConfirmClear(false)}>
+            Cancelar
+          </Button>
+          <Button variant="destructive" onClick={() => void clearAll()}>
+            Limpar tudo
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
