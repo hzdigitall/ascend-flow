@@ -67,7 +67,50 @@ export const Route = createFileRoute("/api/public/webhooks/connectpay/pix")({
             await finishWebhookEvent(supabaseAdmin, eventId, "ignored", "missing_transaction_id");
             return Response.json({ received: true });
           }
-          const tx = await cp.getPixTransaction(secret, gateway?.base_url, txId);
+          // A ConnectPay às vezes ainda não expõe a transação no instante do webhook:
+          // tenta algumas vezes antes de desistir.
+          let tx: Awaited<ReturnType<typeof cp.getPixTransaction>> | null = null;
+          let lookupError: unknown = null;
+          for (let attempt = 0; attempt < 3; attempt += 1) {
+            try {
+              tx = await cp.getPixTransaction(secret, gateway?.base_url, txId);
+              lookupError = null;
+              break;
+            } catch (err) {
+              lookupError = err;
+              await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
+            }
+          }
+
+          // Fallback controlado: se a reconsulta continuar indisponível, usa o payload
+          // assinado do provedor apenas quando ele bate com o depósito registrado.
+          if (!tx) {
+            const payloadStatus = String(status ?? "").toUpperCase();
+            const payloadTotal = Number(data["total_value"] ?? data["total_amount"] ?? NaN);
+            const { data: row } = await supabaseAdmin
+              .from("deposits")
+              .select("amount, external_id")
+              .eq("id", deposit.id)
+              .maybeSingle();
+            const amountOk =
+              row != null &&
+              Number.isFinite(payloadTotal) &&
+              Math.abs(payloadTotal - Number(row.amount)) <= 0.01;
+            const externalOk = row != null && (!externalId || externalId === row.external_id);
+            if (payloadStatus === "AUTHORIZED" && amountOk && externalOk) {
+              tx = {
+                id: txId,
+                external_id: externalId ?? undefined,
+                status: "AUTHORIZED",
+                payment_method: "PIX",
+                total_value: payloadTotal,
+              } as Awaited<ReturnType<typeof cp.getPixTransaction>>;
+            } else {
+              throw lookupError instanceof Error
+                ? lookupError
+                : new Error("pix_lookup_failed");
+            }
+          }
           const result = await settlePixDeposit(supabaseAdmin, deposit.id, tx, "webhook");
           await finishWebhookEvent(supabaseAdmin, eventId, result.credited ? "credited" : "skipped", result.reason);
         } catch (err) {
