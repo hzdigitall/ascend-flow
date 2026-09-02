@@ -169,9 +169,11 @@ export async function settleCryptoDeposit(
   if ((deposit.network ?? "BEP20").toUpperCase() !== event.chain.toUpperCase()) {
     return { credited: false, reason: "chain_mismatch" };
   }
-  if (event.amount !== null && Math.abs(event.amount - Number(deposit.amount)) > 0.00000001) {
+  // Pagamentos a maior são aceitos; só recusa se veio menos que o esperado.
+  if (event.amount !== null && event.amount < Number(deposit.amount) - 0.01) {
     return { credited: false, reason: "amount_mismatch" };
   }
+
   if (
     deposit.provider_transaction_id &&
     event.transaction_id &&
