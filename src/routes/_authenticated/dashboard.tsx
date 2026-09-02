@@ -47,9 +47,7 @@ function DashboardPage() {
           .select("*, plans(name, points)")
           .eq("user_id", profile!.id)
           .eq("status", "active")
-          .order("activated_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
+          .order("activated_at", { ascending: false }),
         supabase
           .from("wallet_transactions")
           .select("*")
@@ -66,29 +64,37 @@ function DashboardPage() {
           .maybeSingle(),
       ]);
 
+      const activePlans = planRes.data ?? [];
 
-      // Calculate total earned for the specific active plan
-      let planTotalRoi = 0;
-      if (planRes.data) {
+      // Total já rendido por plano ativo
+      const roiByPlan: Record<string, number> = {};
+      if (activePlans.length > 0) {
         const { data: roiData } = await supabase
           .from("wallet_transactions")
-          .select("amount")
+          .select("amount, reference_id")
           .eq("user_id", profile!.id)
           .eq("category", "earning")
-          .eq("reference_id", planRes.data.id);
-        
-        planTotalRoi = roiData?.reduce((acc, t) => acc + Number(t.amount), 0) || 0;
+          .in(
+            "reference_id",
+            activePlans.map((p) => p.id),
+          );
+
+        for (const row of roiData ?? []) {
+          if (!row.reference_id) continue;
+          roiByPlan[row.reference_id] = (roiByPlan[row.reference_id] ?? 0) + Number(row.amount);
+        }
       }
 
       return {
-        plan: planRes.data,
+        plans: activePlans,
         transactions: txRes.data ?? [],
         referrals: refRes.data ?? [],
         banner: bannerRes.data,
-        planTotalRoi,
+        roiByPlan,
       };
     },
   });
+
 
   const refLink = profile?.referral_code ? buildReferralLink(profile.referral_code) : "";
 
@@ -208,36 +214,50 @@ function DashboardPage() {
         <div className="space-y-4">
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle className="text-base">{t("dash.currentPlan")}</CardTitle>
+              <CardTitle className="text-base">
+                {t("dash.currentPlan")}
+                {(data?.plans.length ?? 0) > 1 ? ` (${data!.plans.length})` : ""}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              {data?.plan ? (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-lg font-bold">{data.plan.plans?.name}</p>
-                    <StatusBadge status={data.plan.status} />
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">{t("dash.roiProgress")}</span>
-                      <span className="font-medium">{((data.planTotalRoi / (data.plan.price * 2)) * 100).toFixed(1)}%</span>
-                    </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-                      <div 
-                        className="h-full bg-primary transition-all" 
-                        style={{ width: `${Math.min(100, (data.planTotalRoi / (data.plan.price * 2)) * 100)}%` }}
-                      />
-                    </div>
-                    <p className="text-[10px] text-muted-foreground">
-                      {t("dash.roiCap", { earned: brl(data.planTotalRoi), cap: brl(data.plan.price * 2) })}
-                    </p>
-                  </div>
+              {(data?.plans.length ?? 0) > 0 ? (
+                <div className="space-y-4">
+                  {data!.plans.map((plan) => {
+                    const earned = data!.roiByPlan[plan.id] ?? 0;
+                    const cap = Number(plan.price) * 2;
+                    const pct = cap > 0 ? (earned / cap) * 100 : 0;
+                    return (
+                      <div key={plan.id} className="space-y-3 rounded-xl border p-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="truncate text-base font-bold">
+                            {plan.plans?.name ?? plan.plan_name}
+                          </p>
+                          <StatusBadge status={plan.status} />
+                        </div>
 
-                  <p className="text-[10px] text-muted-foreground">
-                    {t("dash.activatedAt", { date: dateBR(data.plan.activated_at) })}
-                    {data.plan.expires_at ? t("dash.expiresAt", { date: dateBR(data.plan.expires_at) }) : ""}
-                  </p>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-muted-foreground">{t("dash.roiProgress")}</span>
+                            <span className="font-medium">{pct.toFixed(1)}%</span>
+                          </div>
+                          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                            <div
+                              className="h-full bg-primary transition-all"
+                              style={{ width: `${Math.min(100, pct)}%` }}
+                            />
+                          </div>
+                          <p className="text-[10px] text-muted-foreground">
+                            {t("dash.roiCap", { earned: brl(earned), cap: brl(cap) })}
+                          </p>
+                        </div>
+
+                        <p className="text-[10px] text-muted-foreground">
+                          {t("dash.activatedAt", { date: dateBR(plan.activated_at) })}
+                          {plan.expires_at ? t("dash.expiresAt", { date: dateBR(plan.expires_at) }) : ""}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -250,6 +270,7 @@ function DashboardPage() {
                 </div>
               )}
             </CardContent>
+
           </Card>
 
           <Card className="shadow-card">
