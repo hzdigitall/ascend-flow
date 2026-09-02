@@ -226,7 +226,7 @@ export const adminStats = createServerFn({ method: "POST" })
           .select("id", { count: "exact", head: true })
           .eq("status", "active")
           .gte("created_at", since),
-        supabaseAdmin.from("payments").select("amount, created_at").eq("status", "paid").gte("created_at", since),
+        supabaseAdmin.from("payments").select("amount, created_at, gateway").eq("status", "paid").gte("created_at", since),
         supabaseAdmin.from("withdrawals").select("id", { count: "exact", head: true }).in("status", ["pending", "reviewing", "processing"]),
         supabaseAdmin.from("orders").select("id", { count: "exact", head: true }).in("status", ["placed", "preparing"]),
         supabaseAdmin.from("commissions").select("amount").gte("created_at", since),
@@ -237,6 +237,11 @@ export const adminStats = createServerFn({ method: "POST" })
     const sum = (rows: { amount?: number | string; points?: number | string }[] | null, key: "amount" | "points") =>
       (rows ?? []).reduce((acc, row) => acc + Number(row[key] ?? 0), 0);
 
+    // Planos liberados manualmente pelo admin não são receita: ficam separados.
+    const allPaid = paidPayments.data ?? [];
+    const realPayments = allPaid.filter((r) => r.gateway !== "admin");
+    const manualPayments = allPaid.filter((r) => r.gateway === "admin");
+
     const byDay = new Map<string, { day: string; users: number; volume: number }>();
     const bucket = (iso: string) => {
       const day = iso.slice(0, 10);
@@ -244,13 +249,16 @@ export const adminStats = createServerFn({ method: "POST" })
       return byDay.get(day)!;
     };
     (recentUsers.data ?? []).forEach((r) => (bucket(r.created_at).users += 1));
-    (paidPayments.data ?? []).forEach((r) => (bucket(r.created_at).volume += Number(r.amount)));
+    realPayments.forEach((r) => (bucket(r.created_at).volume += Number(r.amount)));
+
 
     return {
       totalUsers: users.count ?? 0,
       activeUsers: activeUsers.count ?? 0,
       plansSold: plansSold.count ?? 0,
-      paymentVolume: sum(paidPayments.data, "amount"),
+      paymentVolume: sum(realPayments, "amount"),
+      manualVolume: sum(manualPayments, "amount"),
+      manualCount: manualPayments.length,
       pendingWithdrawals: pendingWd.count ?? 0,
       pendingOrders: pendingOrders.count ?? 0,
       commissionsTotal: sum(commissions.data, "amount"),

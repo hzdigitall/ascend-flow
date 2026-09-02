@@ -73,12 +73,20 @@ function AdminDashboard() {
             loading={isLoading}
           />
           <StatCard
-            label="Receita"
+            label="Receita (sem ativações manuais)"
             value={brl(s?.paymentVolume ?? 0)}
             icon={Wallet}
             tone="secondary"
             loading={isLoading}
           />
+          <StatCard
+            label={`Ativação manual (${s?.manualCount ?? 0})`}
+            value={brl(s?.manualVolume ?? 0)}
+            icon={ShieldCheck}
+            tone="muted"
+            loading={isLoading}
+          />
+
           <StatCard
             label="Saques pendentes"
             value={s?.pendingWithdrawals ?? 0}
