@@ -5,12 +5,23 @@ import { Bell, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { dateTimeBR } from "@/lib/format";
 import { useNotificationSound } from "@/lib/useNotificationSound";
 
 export function NotificationsBell({ userId }: { userId?: string | undefined }) {
   const [open, setOpen] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false);
+
   const queryClient = useQueryClient();
   const playSound = useNotificationSound();
 
@@ -68,11 +79,14 @@ export function NotificationsBell({ userId }: { userId?: string | undefined }) {
     if (!userId) return;
     await supabase.from("notifications").delete().eq("user_id", userId);
     lastIdRef.current = null;
+    setConfirmClear(false);
     queryClient.invalidateQueries({ queryKey: ["notifications"] });
   };
 
 
+
   return (
+    <>
     <Popover
       open={open}
       onOpenChange={(next) => {
@@ -97,7 +111,7 @@ export function NotificationsBell({ userId }: { userId?: string | undefined }) {
             {data.length > 0 ? (
               <button
                 type="button"
-                onClick={() => void clearAll()}
+                onClick={() => setConfirmClear(true)}
                 className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
               >
                 <Trash2 className="h-3.5 w-3.5" /> Limpar
@@ -136,5 +150,26 @@ export function NotificationsBell({ userId }: { userId?: string | undefined }) {
         </ScrollArea>
       </PopoverContent>
     </Popover>
+
+    <Dialog open={confirmClear} onOpenChange={setConfirmClear}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Limpar notificações?</DialogTitle>
+          <DialogDescription>
+            Todas as suas notificações serão apagadas permanentemente. Essa ação não pode
+            ser desfeita.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setConfirmClear(false)}>
+            Cancelar
+          </Button>
+          <Button variant="destructive" onClick={() => void clearAll()}>
+            Limpar tudo
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
