@@ -105,6 +105,13 @@ function DashboardPage() {
 
   const directs = (data?.referrals ?? []).filter((r) => r.level === 1).length;
 
+  const SIGNUP_BONUS = 30;
+  const investedTotal =
+    (data?.plans ?? []).reduce((sum, p) => sum + Number(p.price ?? 0), 0) +
+    ((data?.plans.length ?? 0) > 0 ? SIGNUP_BONUS : 0);
+  const withdrawable =
+    Number(wallet?.earnings_balance ?? 0) + Number(wallet?.referral_balance ?? 0);
+
   return (
     <UserShell>
       <PageHeader
