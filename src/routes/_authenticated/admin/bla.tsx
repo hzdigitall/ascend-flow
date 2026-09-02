@@ -1,7 +1,16 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Crown, Play, Pencil, Plus } from "lucide-react";
+import { Crown, Play, Pencil, Plus, ChevronRight } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -115,36 +124,47 @@ function AdminBlaPage() {
   const rowsQ = useQuery({
     queryKey: ["admin", "bla", period],
     queryFn: async () => {
-      const [points, careers, payouts] = await Promise.all([
+      const [profiles, points, careers, payouts] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("id, full_name, email")
+          .order("full_name", { ascending: true })
+          .limit(2000),
         supabase
           .from("career_monthly_points")
-          .select("user_id, points, profiles(full_name, email)")
+          .select("user_id, points")
           .eq("period", period)
-          .order("points", { ascending: false })
-          .limit(500),
+          .limit(2000),
         supabase.from("user_career").select("user_id, rank_level, rank_name"),
         supabase.from("bla_payouts").select("*").eq("period", period),
       ]);
+      if (profiles.error) throw profiles.error;
       if (points.error) throw points.error;
       if (careers.error) throw careers.error;
       if (payouts.error) throw payouts.error;
 
+      const pointsMap = new Map((points.data ?? []).map((p: any) => [p.user_id, Number(p.points)]));
       const careerMap = new Map((careers.data ?? []).map((c: any) => [c.user_id, c]));
       const payoutMap = new Map((payouts.data ?? []).map((p: any) => [p.user_id, p]));
 
-      return (points.data ?? []).map((r: any) => ({
-        ...r,
-        career: careerMap.get(r.user_id) ?? null,
-        payout: payoutMap.get(r.user_id) ?? null,
-      }));
+      return (profiles.data ?? [])
+        .map((p: any) => ({
+          user_id: p.id,
+          points: pointsMap.get(p.id) ?? 0,
+          profiles: { full_name: p.full_name, email: p.email },
+          career: careerMap.get(p.id) ?? null,
+          payout: payoutMap.get(p.id) ?? null,
+        }))
+        .sort((a: any, b: any) => b.points - a.points);
     },
   });
+
 
   const totals = useMemo(() => {
     const rows = rowsQ.data ?? [];
     const paid = rows.filter((r: any) => r.payout?.status === "paid");
     return {
-      users: rows.length,
+      users: rows.filter((r: any) => Number(r.points) > 0).length,
       qualified: paid.length,
       amount: paid.reduce((s: number, r: any) => s + Number(r.payout?.amount ?? 0), 0),
     };
@@ -614,10 +634,18 @@ function AdminBlaPage() {
                         )}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <Button variant="ghost" size="sm" onClick={() => openEdit(r)}>
-                          <Pencil className="mr-2 h-4 w-4" /> Editar
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          aria-label="Editar líder"
+                          className="group gap-1 text-muted-foreground hover:text-primary"
+                          onClick={() => openEdit(r)}
+                        >
+                          Editar
+                          <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </Button>
                       </td>
+
                     </tr>
                   ))}
                 </tbody>
@@ -627,15 +655,18 @@ function AdminBlaPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={!!editing} onOpenChange={(open) => !open && setEditing(null)}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Editar líder</DialogTitle>
-            <DialogDescription>
+      <Sheet open={!!editing} onOpenChange={(open) => !open && setEditing(null)}>
+        <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>Editar líder</SheetTitle>
+            <SheetDescription>
               Ajuste a pontuação do período e a graduação de {editing?.profiles?.full_name || "—"}.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
+            </SheetDescription>
+          </SheetHeader>
+          <div className="space-y-4 py-6">
+            <div className="rounded-lg border bg-muted/30 p-3 text-xs text-muted-foreground">
+              {editing?.profiles?.email} · período {period}
+            </div>
             <div className="space-y-1">
               <Label htmlFor="bla-points">Pontos do período</Label>
               <Input
@@ -673,14 +704,15 @@ function AdminBlaPage() {
               />
             </div>
           </div>
-          <DialogFooter>
+          <SheetFooter className="gap-2">
             <Button variant="outline" onClick={() => setEditing(null)}>
               Cancelar
             </Button>
             <Button onClick={saveEdit}>Salvar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+
     </AppShell>
   );
 }
