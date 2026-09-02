@@ -107,7 +107,7 @@ function DashboardPage() {
 
   const directs = (data?.referrals ?? []).filter((r) => r.level === 1).length;
 
-const SIGNUP_BONUS = 30;
+
   // O bônus de cadastro (R$ 30) já é creditado no saldo principal no cadastro,
   // então aqui entram apenas os preços dos planos (bloqueados até o vencimento).
   const investedLocked = (data?.plans ?? []).reduce((sum, p) => sum + Number(p.price ?? 0), 0);
