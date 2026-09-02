@@ -306,6 +306,12 @@ function Page() {
                   <p className="text-xs text-muted-foreground">
                     A pontuação zera na virada do mês. A graduação conquistada permanece.
                   </p>
+                  <p className="text-xs font-semibold text-primary">
+                    {daysLeft === 1
+                      ? "Falta 1 dia para o fechamento do mês."
+                      : `Faltam ${daysLeft} dias para o fechamento do mês.`}
+                  </p>
+
                 </div>
                 {currentRank && (
                   <div className="flex items-center gap-3 rounded-2xl bg-primary px-6 py-3 text-white shadow-lg">
