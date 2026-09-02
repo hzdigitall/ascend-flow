@@ -1,22 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import { Wallet } from "lucide-react";
-import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { adminConfirmPayment } from "@/lib/admin.functions";
 import { AppShell } from "@/components/layout/AppShell";
 import { adminNav } from "@/lib/adminNav";
 import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { brl, dateTimeBR } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/admin/pagamentos")({
   head: () => ({
     meta: [
       { title: "Gestão de pagamentos — Arena Suplementos" },
-      { name: "description", content: "Acompanhe pagamentos PIX e confirme manualmente quando necessário." },
+      { name: "description", content: "Acompanhe os pagamentos PIX e USDT confirmados automaticamente pelo gateway." },
       { property: "og:title", content: "Gestão de pagamentos — Arena Suplementos" },
       { property: "og:description", content: "Controle financeiro dos pagamentos da plataforma." },
     ],
@@ -33,9 +29,6 @@ const statusLabel: Record<string, string> = {
 };
 
 function AdminPaymentsPage() {
-  const qc = useQueryClient();
-  const confirm = useServerFn(adminConfirmPayment);
-
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["admin", "payments"],
     queryFn: async () => {
@@ -49,21 +42,11 @@ function AdminPaymentsPage() {
     },
   });
 
-  const confirmPayment = useMutation({
-    mutationFn: (paymentId: string) =>
-      confirm({ data: { paymentId, note: "Confirmação manual pelo painel." } }),
-    onSuccess: () => {
-      toast.success("Pagamento confirmado e créditos liberados.");
-      void qc.invalidateQueries({ queryKey: ["admin"] });
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
   return (
     <AppShell items={adminNav} variant="admin">
       <PageHeader
         title="Pagamentos"
-        description="Confirme manualmente pagamentos PIX quando o gateway falhar."
+        description="Todos os depósitos são confirmados automaticamente pelo gateway (PIX e USDT)."
       />
       <Card className="shadow-card">
         <CardContent className="p-0">
