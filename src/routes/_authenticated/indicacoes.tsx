@@ -337,18 +337,24 @@ function Page() {
                   </p>
                 ) : (
                   <p className="text-sm text-muted-foreground">
-                    Você ainda não cumpriu os requisitos deste mês. Faltam{" "}
+                    {currentRank
+                      ? "Você ainda não repetiu os requisitos da sua graduação neste mês. Faltam "
+                      : "Você ainda não cumpriu os requisitos deste mês. Faltam "}
                     <span className="font-semibold text-foreground">
                       {formatPoints(Math.max((nextRank?.points ?? 0) - currentPoints, 0))}
                     </span>{" "}
-                    pontos para se qualificar como {nextRank?.name}.
+                    pontos para receber o BLA de {nextRank?.name}
+                    {nextRank?.req ? ` (e ter ${nextRank.req} na equipe direta)` : ""}.
                   </p>
                 )}
               </div>
 
               <div className="mt-8 space-y-3">
                 <div className="flex justify-between text-sm font-medium">
-                  <span className="text-muted-foreground">Próxima meta: <span className="text-foreground">{nextRank?.name || "Titan"}</span></span>
+                  <span className="text-muted-foreground">
+                    Meta do mês:{" "}
+                    <span className="text-foreground">{nextRank?.name || "Titan"}</span>
+                  </span>
                   <span>{progress.toFixed(0)}%</span>
                 </div>
                 <Progress value={progress} className="h-3" />
@@ -366,6 +372,7 @@ function Page() {
                 <div className="border-b p-6">
                   <h3 className="font-bold">Histórico do BLA</h3>
                 </div>
+
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-muted/50 text-[11px] font-bold uppercase text-muted-foreground">
