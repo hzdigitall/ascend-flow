@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.withdrawal_auto_begin_submission(uuid) FROM PUBLIC, anon, authenticated;

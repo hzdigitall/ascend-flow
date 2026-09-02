@@ -87,9 +87,13 @@ export function WithdrawalDialog({
       return;
     }
 
-    try {
-      await requestWd({ data: values });
-      toast.success("Solicitação de saque enviada com sucesso!");
+try {
+      const res = await requestWd({ data: values });
+      if (res.auto) {
+        toast.success("Saque enviado automaticamente! O valor será processado via PIX.");
+      } else {
+        toast.success("Solicitação de saque enviada! Aguarde a aprovação do administrador.");
+      }
       setOpen(false);
       form.reset();
       onSuccess?.();
@@ -108,9 +112,10 @@ export function WithdrawalDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Solicitar Saque PIX</DialogTitle>
+<DialogTitle>Solicitar Saque PIX</DialogTitle>
           <DialogDescription>
             Escolha a carteira e informe os dados para recebimento. Taxa de 2% aplicada.
+            Saques até R$ 500 são enviados automaticamente; acima disso, aguardam aprovação.
           </DialogDescription>
         </DialogHeader>
 
