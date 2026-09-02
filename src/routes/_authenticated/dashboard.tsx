@@ -246,7 +246,8 @@ function DashboardPage() {
             <CardContent>
               {(data?.plans.length ?? 0) > 0 ? (
                 <div className="space-y-4">
-                  {data!.plans.map((plan) => {
+                  {data!.plans.map((plan, i) => {
+                    const bonus = i === 0 ? SIGNUP_BONUS : 0;
                     const earned = data!.roiByPlan[plan.id] ?? 0;
                     const cap = Number(plan.price) * 2;
                     const pct = cap > 0 ? (earned / cap) * 100 : 0;
@@ -258,6 +259,18 @@ function DashboardPage() {
                           </p>
                           <StatusBadge status={plan.status} />
                         </div>
+
+                        <div className="rounded-lg bg-muted/60 p-2">
+                          <p className="text-sm font-semibold">
+                            {brl(Number(plan.price) + bonus)}
+                          </p>
+                          {bonus > 0 ? (
+                            <p className="text-[10px] text-muted-foreground">
+                              {brl(plan.price)} do plano + {brl(bonus)} de bônus de cadastro
+                            </p>
+                          ) : null}
+                        </div>
+
 
                         <div className="space-y-1">
                           <div className="flex items-center justify-between text-xs">
