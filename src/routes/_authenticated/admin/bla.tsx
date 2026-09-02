@@ -488,7 +488,7 @@ function AdminBlaPage() {
               <div className="flex items-center gap-3">
                 <Switch
                   checked={rankForm.active}
-                  onCheckedChange={(v) => setRankForm({ ...rankForm, active: v })}
+                  onCheckedChange={(v: boolean) => setRankForm({ ...rankForm, active: v })}
                 />
                 <Label>Graduação ativa</Label>
               </div>
