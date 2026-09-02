@@ -60,6 +60,27 @@ const statusLabel: Record<string, string> = {
   manual: "Manual",
 };
 
+type RankForm = {
+  id?: string;
+  name: string;
+  level: string;
+  points_required: string;
+  bonus: string;
+  required_rank_level: string;
+  required_rank_count: string;
+  active: boolean;
+};
+
+const emptyRank: RankForm = {
+  name: "",
+  level: "",
+  points_required: "",
+  bonus: "",
+  required_rank_level: "0",
+  required_rank_count: "0",
+  active: true,
+};
+
 function AdminBlaPage() {
   const { profile } = useAuth();
   const qc = useQueryClient();
@@ -70,8 +91,11 @@ function AdminBlaPage() {
   const [rankInput, setRankInput] = useState("0");
   const [reason, setReason] = useState("");
   const [running, setRunning] = useState(false);
+  const [rankForm, setRankForm] = useState<RankForm | null>(null);
+  const [savingRank, setSavingRank] = useState(false);
 
   const period = `${month}-01`;
+
 
   const ranksQ = useQuery({
     queryKey: ["career-ranks"],
