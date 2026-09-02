@@ -646,15 +646,18 @@ function AdminBlaPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={!!editing} onOpenChange={(open) => !open && setEditing(null)}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Editar líder</DialogTitle>
-            <DialogDescription>
+      <Sheet open={!!editing} onOpenChange={(open) => !open && setEditing(null)}>
+        <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>Editar líder</SheetTitle>
+            <SheetDescription>
               Ajuste a pontuação do período e a graduação de {editing?.profiles?.full_name || "—"}.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
+            </SheetDescription>
+          </SheetHeader>
+          <div className="space-y-4 py-6">
+            <div className="rounded-lg border bg-muted/30 p-3 text-xs text-muted-foreground">
+              {editing?.profiles?.email} · período {period}
+            </div>
             <div className="space-y-1">
               <Label htmlFor="bla-points">Pontos do período</Label>
               <Input
@@ -692,14 +695,15 @@ function AdminBlaPage() {
               />
             </div>
           </div>
-          <DialogFooter>
+          <SheetFooter className="gap-2">
             <Button variant="outline" onClick={() => setEditing(null)}>
               Cancelar
             </Button>
             <Button onClick={saveEdit}>Salvar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+
     </AppShell>
   );
 }
