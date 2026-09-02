@@ -625,10 +625,18 @@ function AdminBlaPage() {
                         )}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <Button variant="ghost" size="sm" onClick={() => openEdit(r)}>
-                          <Pencil className="mr-2 h-4 w-4" /> Editar
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          aria-label="Editar líder"
+                          className="group gap-1 text-muted-foreground hover:text-primary"
+                          onClick={() => openEdit(r)}
+                        >
+                          Editar
+                          <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </Button>
                       </td>
+
                     </tr>
                   ))}
                 </tbody>
