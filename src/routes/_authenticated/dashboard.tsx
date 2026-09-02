@@ -2,8 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowUpRight,
+  Banknote,
   Coins,
   Copy,
+  Lock,
   Sparkles,
   TrendingUp,
   Users,
@@ -105,6 +107,13 @@ function DashboardPage() {
 
   const directs = (data?.referrals ?? []).filter((r) => r.level === 1).length;
 
+  const SIGNUP_BONUS = 30;
+  const investedTotal =
+    (data?.plans ?? []).reduce((sum, p) => sum + Number(p.price ?? 0), 0) +
+    ((data?.plans.length ?? 0) > 0 ? SIGNUP_BONUS : 0);
+  const withdrawable =
+    Number(wallet?.earnings_balance ?? 0) + Number(wallet?.referral_balance ?? 0);
+
   return (
     <UserShell>
       <PageHeader
@@ -163,6 +172,21 @@ function DashboardPage() {
           value={pts(wallet?.points_balance)}
           icon={Coins}
           hint={t("dash.points.hint")}
+          loading={!wallet}
+        />
+        <StatCard
+          label="Montante investido"
+          value={brl(investedTotal)}
+          icon={Lock}
+          hint="Inclui o bônus de cadastro de R$ 30. Liberado no saldo principal quando o plano vencer."
+          loading={isLoading}
+        />
+        <StatCard
+          label="Disponível para saque"
+          value={brl(withdrawable)}
+          icon={Banknote}
+          tone="success"
+          hint="Rendimentos e comissões já liberados."
           loading={!wallet}
         />
       </div>
