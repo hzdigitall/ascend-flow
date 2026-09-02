@@ -1,0 +1,10 @@
+REVOKE ALL ON FUNCTION public.guard_blocked_account() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.guard_daily_withdrawal_limit() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.guard_payment_paid() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.guard_user_plan_activation() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.qualified_rank_level(uuid, date) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.qualified_rank_level(uuid, date) TO service_role;
+REVOKE ALL ON FUNCTION public.get_my_bla() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.get_my_bla() TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.push_login_notices() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.push_login_notices() TO authenticated, service_role;
