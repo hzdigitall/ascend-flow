@@ -175,3 +175,38 @@
 @utility shadow-card {
   box-shadow: var(--shadow-card);
 }
+
+/* ---- Passe de Carreira: animação de água ---- */
+@keyframes arena-wave {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes arena-shine {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+@keyframes arena-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+@keyframes arena-bubble {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  20% { opacity: 0.7; }
+  100% { transform: translateY(-26px) scale(1); opacity: 0; }
+}
+
+@utility animate-wave {
+  animation: arena-wave 6s linear infinite;
+}
+@utility animate-wave-slow {
+  animation: arena-wave 11s linear infinite;
+}
+@utility animate-shine {
+  animation: arena-shine 3.4s ease-in-out infinite;
+}
+@utility animate-bob {
+  animation: arena-bob 3s ease-in-out infinite;
+}
+@utility animate-bubble {
+  animation: arena-bubble 3.2s ease-in-out infinite;
+}
