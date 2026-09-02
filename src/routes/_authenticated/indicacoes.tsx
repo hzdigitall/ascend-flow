@@ -521,7 +521,7 @@ function Page() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold">Seus Depósitos</p>
-                      <p className="text-xs text-muted-foreground">Cada R$ 50,00 investidos em planos Arena rendem 5 Pontos Arena.</p>
+                      <p className="text-xs text-muted-foreground">Cada R$ 50,00 investidos em planos Arena rendem 1 Ponto Arena.</p>
                     </div>
                   </div>
                   <div className="flex gap-3">
@@ -530,7 +530,7 @@ function Page() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold">Indicações até o 3º nível</p>
-                      <p className="text-xs text-muted-foreground">Quando um indicado do seu 1º, 2º ou 3º nível ativa um plano, você ganha pontos na mesma proporção (R$ 50 = 5 pts).</p>
+                      <p className="text-xs text-muted-foreground">Quando um indicado do seu 1º, 2º ou 3º nível ativa um plano, você ganha pontos na mesma proporção (R$ 50 = 1 ponto).</p>
 
                     </div>
                   </div>
@@ -550,7 +550,7 @@ function Page() {
                       Sem qualificação no mês, o título é mantido, mas o bônus não é pago naquele
                       período.
                     </li>
-                    <li>O pagamento é creditado automaticamente na virada do mês.</li>
+                    <li>O pagamento do BLA é creditado todo dia 15, referente ao mês anterior.</li>
                   </ul>
                 </div>
 
