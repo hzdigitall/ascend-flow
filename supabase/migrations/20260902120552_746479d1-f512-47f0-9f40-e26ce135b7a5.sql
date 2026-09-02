@@ -1,0 +1,1 @@
+UPDATE public.profiles SET sponsor_id = NULL, updated_at = now() WHERE id = '5a671078-5573-4914-b545-db87fda4d5bd';
