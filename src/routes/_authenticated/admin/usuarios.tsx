@@ -93,14 +93,38 @@ function UsersPage() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["admin", "users"],
     queryFn: async () => {
+      // PostgREST devolve no máximo 1000 linhas por requisição: pagina até o fim
+      // para que a busca encontre também os cadastros mais antigos.
+      const fetchAllProfiles = async () => {
+        const CHUNK = 1000;
+        const all: Array<{
+          id: string;
+          full_name: string;
+          email: string;
+          cpf: string | null;
+          phone: string | null;
+          blocked: boolean;
+          sponsor_id: string | null;
+          sponsor_badge: boolean;
+          created_at: string;
+        }> = [];
+        for (let page = 0; page < 50; page += 1) {
+          const { data: chunk, error } = await supabase
+            .from("profiles")
+            .select(
+              "id, full_name, email, cpf, phone, blocked, sponsor_id, sponsor_badge, created_at",
+            )
+            .order("created_at", { ascending: false })
+            .range(page * CHUNK, page * CHUNK + CHUNK - 1);
+          if (error) throw error;
+          all.push(...(chunk ?? []));
+          if (!chunk || chunk.length < CHUNK) break;
+        }
+        return all;
+      };
+
       const [profiles, roles, wallets] = await Promise.all([
-        // Só as colunas usadas na tela: payload muito menor.
-        supabase
-          .from("profiles")
-          .select(
-            "id, full_name, email, cpf, phone, blocked, sponsor_id, sponsor_badge, created_at",
-          )
-          .order("created_at", { ascending: false }),
+        fetchAllProfiles(),
         supabase.from("user_roles").select("user_id, role"),
         supabase
           .from("wallets")
@@ -108,13 +132,14 @@ function UsersPage() {
             "user_id, main_balance, earnings_balance, referral_balance, usdt_balance, points_balance",
           ),
       ]);
-      if (profiles.error) throw profiles.error;
+
       const adminIds = new Set(
         (roles.data ?? []).filter((r) => r.role === "admin").map((r) => r.user_id),
       );
       const walletMap = new Map((wallets.data ?? []).map((w) => [w.user_id, w]));
-      const nameMap = new Map((profiles.data ?? []).map((p) => [p.id, p.full_name]));
-      return (profiles.data ?? []).map((p) => ({
+      const nameMap = new Map(profiles.map((p) => [p.id, p.full_name]));
+      return profiles.map((p) => ({
+
         ...p,
         isAdmin: adminIds.has(p.id),
         wallet: walletMap.get(p.id) ?? null,
