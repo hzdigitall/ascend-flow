@@ -380,6 +380,7 @@ function Page() {
                         <th className="px-6 py-3">Mês</th>
                         <th className="px-6 py-3">Graduação</th>
                         <th className="px-6 py-3">Pontos</th>
+                        <th className="px-6 py-3">Situação</th>
                         <th className="px-6 py-3 text-right">Valor</th>
                       </tr>
                     </thead>
@@ -387,15 +388,30 @@ function Page() {
                       {payoutsQuery.data!.map((p: any) => (
                         <tr key={p.period}>
                           <td className="px-6 py-4">{monthLabel(String(p.period).slice(0, 7))}</td>
-                          <td className="px-6 py-4">{p.rank_name ?? "Não qualificado"}</td>
+                          <td className="px-6 py-4">{p.rank_name ?? "—"}</td>
                           <td className="px-6 py-4 text-muted-foreground">
                             {formatPoints(Number(p.points))}
                           </td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={cn(
+                                "rounded-full px-2 py-1 text-[11px] font-bold",
+                                Number(p.amount) > 0
+                                  ? "bg-primary/10 text-primary"
+                                  : "bg-muted text-muted-foreground",
+                              )}
+                            >
+                              {Number(p.amount) > 0 ? "Pago" : "Não qualificado"}
+                            </span>
+                          </td>
                           <td className="px-6 py-4 text-right font-bold text-primary">
-                            R$ {Number(p.amount).toLocaleString("pt-BR")}
+                            {Number(p.amount) > 0
+                              ? `R$ ${Number(p.amount).toLocaleString("pt-BR")}`
+                              : "—"}
                           </td>
                         </tr>
                       ))}
+
                     </tbody>
                   </table>
                 </div>
