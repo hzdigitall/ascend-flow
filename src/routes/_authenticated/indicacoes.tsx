@@ -260,11 +260,22 @@ function Page() {
   const qualifiedLevel = Number(blaQuery.data?.qualified_level ?? 0);
   const rankName = blaQuery.data?.rank_name ?? null;
   const period = String(blaQuery.data?.period ?? "").slice(0, 7);
-  const nextRank =
-    CAREER_RANKS.find((r) => r.points > currentPoints) ?? CAREER_RANKS[CAREER_RANKS.length - 1];
   const currentRank = rankName ? (CAREER_RANKS.find((r) => r.name === rankName) ?? null) : null;
   const qualifiedRank = qualifiedLevel > 0 ? (CAREER_RANKS[qualifiedLevel - 1] ?? null) : null;
+  // Meta do mês: manter a própria graduação enquanto não a repetir; depois, a próxima faixa.
+  const targetRank =
+    currentRank && currentPoints < currentRank.points
+      ? currentRank
+      : (CAREER_RANKS.find((r) => r.points > currentPoints) ??
+        CAREER_RANKS[CAREER_RANKS.length - 1]);
+  const nextRank = targetRank;
   const progress = nextRank ? Math.min((currentPoints / nextRank.points) * 100, 100) : 100;
+  const daysLeft = (() => {
+    const now = new Date();
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    return Math.max(Math.ceil((end.getTime() - now.getTime()) / 86_400_000), 0);
+  })();
+
 
   return (
     <UserShell>
