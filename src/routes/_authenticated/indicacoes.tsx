@@ -17,6 +17,7 @@ import careerPlanAsset from "@/assets/career-plan.png.asset.json";
 import { Progress } from "@/components/ui/progress";
 import { pts as formatPoints } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { BattlePass } from "@/components/career/BattlePass";
 import {
   Dialog,
   DialogContent,
@@ -275,6 +276,32 @@ function Page() {
     const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     return Math.max(Math.ceil((end.getTime() - now.getTime()) / 86_400_000), 0);
   })();
+  /** Dias até o próximo dia 15 (data de pagamento do BLA). */
+  const daysToPayout = (() => {
+    const now = new Date();
+    const day = now.getDate();
+    const target =
+      day <= 15
+        ? new Date(now.getFullYear(), now.getMonth(), 15)
+        : new Date(now.getFullYear(), now.getMonth() + 1, 15);
+    return Math.max(
+      Math.round(
+        (target.getTime() - new Date(now.getFullYear(), now.getMonth(), day).getTime()) /
+          86_400_000,
+      ),
+      0,
+    );
+  })();
+  const networkStats = useMemo(() => {
+    const rows = data ?? [];
+    return {
+      total: rows.length,
+      directs: rows.filter((r) => r.level === 1).length,
+      active: rows.filter((r) => r.is_active).length,
+    };
+  }, [data]);
+
+
 
 
   return (
@@ -285,12 +312,27 @@ function Page() {
       />
 
       <Tabs defaultValue="rede" className="w-full">
-        <TabsList className="mb-8 grid w-full grid-cols-2 lg:w-[400px]">
+        <TabsList className="mb-8 grid w-full grid-cols-3 lg:w-[560px]">
           <TabsTrigger value="rede">Minha Rede</TabsTrigger>
+          <TabsTrigger value="passe">Passe Arena</TabsTrigger>
           <TabsTrigger value="carreira">Plano de Carreira</TabsTrigger>
         </TabsList>
 
+        <TabsContent value="passe" className="space-y-6">
+          <BattlePass
+            ranks={CAREER_RANKS}
+            currentPoints={currentPoints}
+            currentRankName={currentRank?.name ?? null}
+            qualifiedRankName={qualifiedRank?.name ?? null}
+            nextRank={nextRank}
+            periodLabel={period ? monthLabel(period) : "este mês"}
+            network={networkStats}
+            daysToPayout={daysToPayout}
+          />
+        </TabsContent>
+
         <TabsContent value="carreira" className="space-y-6">
+
           <Card className="overflow-hidden border-primary/20 bg-primary/5 shadow-card">
             <CardContent className="p-6 sm:p-8">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
@@ -479,7 +521,7 @@ function Page() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold">Seus Depósitos</p>
-                      <p className="text-xs text-muted-foreground">Cada R$ 50,00 investidos em planos Arena rendem 5 Pontos Arena.</p>
+                      <p className="text-xs text-muted-foreground">Cada R$ 50,00 investidos em planos Arena rendem 1 Ponto Arena.</p>
                     </div>
                   </div>
                   <div className="flex gap-3">
@@ -488,7 +530,7 @@ function Page() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold">Indicações até o 3º nível</p>
-                      <p className="text-xs text-muted-foreground">Quando um indicado do seu 1º, 2º ou 3º nível ativa um plano, você ganha pontos na mesma proporção (R$ 50 = 5 pts).</p>
+                      <p className="text-xs text-muted-foreground">Quando um indicado do seu 1º, 2º ou 3º nível ativa um plano, você ganha pontos na mesma proporção (R$ 50 = 1 ponto).</p>
 
                     </div>
                   </div>
@@ -508,7 +550,7 @@ function Page() {
                       Sem qualificação no mês, o título é mantido, mas o bônus não é pago naquele
                       período.
                     </li>
-                    <li>O pagamento é creditado automaticamente na virada do mês.</li>
+                    <li>O pagamento do BLA é creditado todo dia 15, referente ao mês anterior.</li>
                   </ul>
                 </div>
 

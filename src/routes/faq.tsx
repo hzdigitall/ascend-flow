@@ -54,7 +54,7 @@ const content = {
       },
       {
         q: "O que são os Pontos Arena?",
-        a: "A cada R$ 50 investidos — por você ou por um indicado direto — você ganha 5 Pontos Arena. Eles podem ser trocados por produtos da loja de prêmios, como Arena Glow, Shape, Mind e Burn, e também contam para o seu plano de carreira, que vai de Master a Titan.",
+        a: "A cada R$ 50 investidos — por você ou por um indicado até o 3º nível — você ganha 1 Ponto Arena. Eles podem ser trocados por produtos da loja de prêmios, como Arena Glow, Shape, Mind e Burn, e também contam para o seu plano de carreira, que vai de Master a Titan.",
       },
     ] satisfies FaqItem[],
   },
