@@ -111,7 +111,7 @@ export function BattlePass({
                 {currentRankName ?? "Sem graduação"}
               </h3>
               <p className="text-sm text-primary-foreground/80">
-                {formatPoints(currentPoints)} pontos em {periodLabel}
+                {formatPoints(currentPoints)} em {periodLabel}
               </p>
             </div>
             <div className="animate-bob rounded-2xl border border-primary-foreground/20 bg-background/10 px-5 py-4 text-center backdrop-blur">
@@ -130,8 +130,8 @@ export function BattlePass({
           <div className="relative mt-6 space-y-2">
             <WaterBar value={overall} />
             <div className="flex justify-between text-[11px] font-semibold text-primary-foreground/80">
-              <span>{formatPoints(currentPoints)} pts</span>
-              <span>{top ? `${formatPoints(top.points)} pts · ${top.name}` : ""}</span>
+              <span>{formatPoints(currentPoints)}</span>
+              <span>{top ? `${formatPoints(top.points)} · ${top.name}` : ""}</span>
             </div>
           </div>
         </div>
@@ -154,7 +154,7 @@ export function BattlePass({
             </div>
             <p className="mt-1 text-lg font-black">{nextRank?.name ?? "Máximo"}</p>
             <p className="text-xs text-muted-foreground">
-              Faltam {formatPoints(Math.max((nextRank?.points ?? 0) - currentPoints, 0))} pts
+              Faltam {formatPoints(Math.max((nextRank?.points ?? 0) - currentPoints, 0))}
               {nextRank?.req ? ` e ${nextRank.req} na equipe direta` : ""}
             </p>
             <div className="mt-3">
@@ -217,7 +217,7 @@ export function BattlePass({
                       </div>
                       <p className="mt-3 text-sm font-black uppercase leading-tight">{rank.name}</p>
                       <p className="text-[11px] text-muted-foreground">
-                        {formatPoints(rank.points)} pts
+                        {formatPoints(rank.points)}
                       </p>
                       {rank.req && (
                         <p className="text-[10px] text-muted-foreground">{rank.req}</p>
