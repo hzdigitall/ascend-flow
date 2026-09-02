@@ -9,11 +9,13 @@ import type { WithdrawalRow } from "@/lib/withdrawal-submit.server";
 /**
  * Saques (cash-out PIX e withdraw USDT BEP20).
  *
- * Até R$ 500 (AUTO_WITHDRAW_LIMIT) o saque é enviado automaticamente à
- * ConnectPay no momento da solicitação; acima disso, reserva saldo e fica
+ * PIX: até R$ 1.000 (AUTO_PIX_WITHDRAW_LIMIT) o saque é enviado automaticamente
+ * à ConnectPay no momento da solicitação; acima disso, reserva saldo e fica
  * aguardando aprovação do administrador.
+ * USDT: sem limite — sempre enviado automaticamente.
  */
-const AUTO_WITHDRAW_LIMIT = 500;
+const AUTO_PIX_WITHDRAW_LIMIT = 1000;
+
 
 export const requestPixWithdrawal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
