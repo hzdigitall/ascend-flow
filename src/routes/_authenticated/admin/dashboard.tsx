@@ -58,43 +58,79 @@ function AdminDashboard() {
       {isError ? (
         <ErrorState onRetry={() => refetch()} />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <StatCard
-            label="Usuários"
-            value={s?.totalUsers ?? 0}
-            icon={Users}
-            loading={isLoading}
-          />
-          <StatCard
-            label="Pagamentos confirmados"
-            value={s?.plansSold ?? 0}
-            icon={ShieldCheck}
-            tone="success"
-            loading={isLoading}
-          />
-          <StatCard
-            label="Receita (sem ativações manuais)"
-            value={brl(s?.paymentVolume ?? 0)}
-            icon={Wallet}
-            tone="secondary"
-            loading={isLoading}
-          />
-          <StatCard
-            label={`Ativação manual (${s?.manualCount ?? 0})`}
-            value={brl(s?.manualVolume ?? 0)}
-            icon={ShieldCheck}
-            tone="muted"
-            loading={isLoading}
-          />
+        <div className="space-y-6">
+          <section className="space-y-3">
+            <h2 className="text-sm font-semibold text-muted-foreground">Visão geral</h2>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <StatCard label="Usuários" value={s?.totalUsers ?? 0} icon={Users} loading={isLoading} />
+              <StatCard
+                label="Planos ativos"
+                value={s?.activeUsers ?? 0}
+                icon={ShieldCheck}
+                loading={isLoading}
+              />
+              <StatCard
+                label="Saques pendentes"
+                value={s?.pendingWithdrawals ?? 0}
+                icon={Wallet}
+                tone="muted"
+                loading={isLoading}
+              />
+              <StatCard
+                label="Pedidos pendentes"
+                value={s?.pendingOrders ?? 0}
+                icon={Wallet}
+                tone="muted"
+                loading={isLoading}
+              />
+            </div>
+          </section>
 
-          <StatCard
-            label="Saques pendentes"
-            value={s?.pendingWithdrawals ?? 0}
-            icon={Wallet}
-            tone="muted"
-            loading={isLoading}
-          />
+          <section className="space-y-3">
+            <h2 className="text-sm font-semibold text-muted-foreground">
+              Entradas reais (PIX / USDT)
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <StatCard
+                label="Pagamentos confirmados"
+                value={s?.confirmedPayments ?? 0}
+                icon={ShieldCheck}
+                tone="success"
+                loading={isLoading}
+              />
+              <StatCard
+                label="Receita confirmada"
+                value={brl(s?.paymentVolume ?? 0)}
+                icon={Wallet}
+                tone="secondary"
+                loading={isLoading}
+              />
+            </div>
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="text-sm font-semibold text-muted-foreground">
+              Ativações sem entrada de caixa
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <StatCard
+                label={`Ativação de patrocínio manual (${s?.manualCount ?? 0})`}
+                value={brl(s?.manualVolume ?? 0)}
+                icon={ShieldCheck}
+                tone="muted"
+                loading={isLoading}
+              />
+              <StatCard
+                label={`Compras com saldo interno (${s?.balanceCount ?? 0})`}
+                value={brl(s?.balanceVolume ?? 0)}
+                icon={Wallet}
+                tone="muted"
+                loading={isLoading}
+              />
+            </div>
+          </section>
         </div>
+
       )}
     </AppShell>
   );

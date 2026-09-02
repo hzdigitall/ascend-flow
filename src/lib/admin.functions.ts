@@ -237,10 +237,12 @@ export const adminStats = createServerFn({ method: "POST" })
     const sum = (rows: { amount?: number | string; points?: number | string }[] | null, key: "amount" | "points") =>
       (rows ?? []).reduce((acc, row) => acc + Number(row[key] ?? 0), 0);
 
-    // Planos liberados manualmente pelo admin não são receita: ficam separados.
+    // Pagamentos confirmados = apenas entradas reais (PIX / USDT).
+    // Compras com saldo e ativações manuais do admin ficam separadas.
     const allPaid = paidPayments.data ?? [];
-    const realPayments = allPaid.filter((r) => r.gateway !== "admin");
     const manualPayments = allPaid.filter((r) => r.gateway === "admin");
+    const balancePayments = allPaid.filter((r) => r.gateway === "balance");
+    const realPayments = allPaid.filter((r) => r.gateway !== "admin" && r.gateway !== "balance");
 
     const byDay = new Map<string, { day: string; users: number; volume: number }>();
     const bucket = (iso: string) => {
@@ -256,7 +258,10 @@ export const adminStats = createServerFn({ method: "POST" })
       totalUsers: users.count ?? 0,
       activeUsers: activeUsers.count ?? 0,
       plansSold: plansSold.count ?? 0,
+      confirmedPayments: realPayments.length,
       paymentVolume: sum(realPayments, "amount"),
+      balanceCount: balancePayments.length,
+      balanceVolume: sum(balancePayments, "amount"),
       manualVolume: sum(manualPayments, "amount"),
       manualCount: manualPayments.length,
       pendingWithdrawals: pendingWd.count ?? 0,
