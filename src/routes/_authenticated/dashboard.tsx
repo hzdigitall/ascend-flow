@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getNetworkAmount } from "@/lib/network.functions";
 import {
   ArrowUpRight,
   Banknote,
@@ -98,6 +100,13 @@ function DashboardPage() {
   });
 
 
+  const fetchNetwork = useServerFn(getNetworkAmount);
+  const { data: net, isLoading: netLoading } = useQuery({
+    queryKey: ["dashboard", "network", profile?.id],
+    enabled: Boolean(profile?.id),
+    queryFn: () => fetchNetwork(),
+  });
+
   const refLink = profile?.referral_code ? buildReferralLink(profile.referral_code) : "";
 
   const copyLink = async () => {
@@ -192,6 +201,64 @@ function DashboardPage() {
           loading={!wallet}
         />
       </div>
+
+      <Card className="shadow-card">
+        <CardHeader>
+          <CardTitle className="text-base">Montante da rede</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="rounded-xl border p-3">
+              <p className="text-xs text-muted-foreground">Pessoas na rede</p>
+              <p className="text-xl font-bold">{net?.members ?? 0}</p>
+            </div>
+            <div className="rounded-xl border p-3">
+              <p className="text-xs text-muted-foreground">Montante investido pela rede</p>
+              <p className="text-xl font-bold">{brl(net?.totalInvested ?? 0)}</p>
+            </div>
+            <div className="rounded-xl border p-3">
+              <p className="text-xs text-muted-foreground">Rendimento da rede</p>
+              <p className="text-xl font-bold text-success">{brl(net?.totalEarned ?? 0)}</p>
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                Suas comissões: {brl(net?.myCommissions ?? 0)}
+              </p>
+            </div>
+          </div>
+
+          {netLoading ? (
+            <p className="py-4 text-center text-sm text-muted-foreground">{t("common.loading")}</p>
+          ) : (net?.byLevel.length ?? 0) === 0 ? (
+            <EmptyState
+              icon={Users}
+              title="Sua rede ainda está vazia"
+              description="Compartilhe seu link de indicação para começar a montar sua rede."
+            />
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs uppercase text-muted-foreground">
+                    <th className="py-2 pr-3 font-medium">Nível</th>
+                    <th className="py-2 pr-3 font-medium">Pessoas</th>
+                    <th className="py-2 pr-3 font-medium">Montante</th>
+                    <th className="py-2 font-medium">Rendendo</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {net!.byLevel.map((row) => (
+                    <tr key={row.level}>
+                      <td className="py-2 pr-3 font-medium">Nível {row.level}</td>
+                      <td className="py-2 pr-3">{row.members}</td>
+                      <td className="py-2 pr-3">{brl(row.invested)}</td>
+                      <td className="py-2 text-success">{brl(row.earned)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="shadow-card lg:col-span-2">
