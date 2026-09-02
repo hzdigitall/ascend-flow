@@ -102,7 +102,13 @@ function AdminPaymentsPage() {
                         <p className="text-xs text-muted-foreground">{p.profiles?.email ?? ""}</p>
                       </td>
                       <td className="px-6 py-4">{brl(p.amount)}</td>
-                      <td className="px-6 py-4 text-muted-foreground">{p.gateway}</td>
+                      <td className="px-6 py-4 text-muted-foreground">
+                        {p.gateway === "admin"
+                          ? "Ativação de patrocínio manual"
+                          : p.gateway === "balance"
+                            ? "Saldo interno"
+                            : p.gateway}
+                      </td>
                       <td className="px-6 py-4 text-muted-foreground">
                         {dateTimeBR(p.created_at)}
                       </td>
