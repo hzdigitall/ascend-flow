@@ -21,6 +21,8 @@ async function findUserByEmailOrCode(
   if (!term) throw new Error("Informe o e-mail ou o código de indicação.");
   const cols = "id, full_name, email, referral_code, sponsor_id";
 
+  const escaped = term.replace(/[%_,]/g, (m) => `\\${m}`);
+
   const [byEmail, byCode] = await Promise.all([
     admin.from("profiles").select(cols).ilike("email", term).limit(2),
     admin.from("profiles").select(cols).ilike("referral_code", term).limit(2),
@@ -30,13 +32,32 @@ async function findUserByEmailOrCode(
 
   const found = new Map<string, LookupRow>();
   [...(byEmail.data ?? []), ...(byCode.data ?? [])].forEach((r: LookupRow) => found.set(r.id, r));
-  const list = [...found.values()];
+  let list = [...found.values()];
+
+  // Fallback: busca parcial por e-mail ou nome quando não houve correspondência exata.
+  if (list.length === 0) {
+    const [partialEmail, partialName] = await Promise.all([
+      admin.from("profiles").select(cols).ilike("email", `%${escaped}%`).limit(5),
+      admin.from("profiles").select(cols).ilike("full_name", `%${escaped}%`).limit(5),
+    ]);
+    const partial = new Map<string, LookupRow>();
+    [...(partialEmail.data ?? []), ...(partialName.data ?? [])].forEach((r: LookupRow) =>
+      partial.set(r.id, r),
+    );
+    list = [...partial.values()];
+  }
 
   if (list.length === 0) {
-    throw new Error("Usuário não encontrado (informe o e-mail completo ou o código de indicação).");
+    throw new Error(
+      `Nenhum usuário encontrado para "${term}". Informe o e-mail completo, o nome ou o código de indicação.`,
+    );
   }
-  if (list.length > 1) throw new Error("Mais de um usuário corresponde à busca.");
+  if (list.length > 1) {
+    const opts = list.slice(0, 5).map((r) => r.email).join(", ");
+    throw new Error(`Mais de um usuário corresponde a "${term}": ${opts}. Informe o e-mail completo.`);
+  }
   return list[0]!;
+
 }
 
 /** Converte erros dos gatilhos do banco em mensagens legíveis para o admin. */
