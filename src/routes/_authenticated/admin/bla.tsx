@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/layout/AppShell";
 import { adminNav } from "@/lib/adminNav";
-import { PageHeader, EmptyState, ErrorState, TableSkeleton } from "@/components/states";
+import { EmptyState, ErrorState, TableSkeleton } from "@/components/states";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +30,8 @@ import {
 } from "@/components/ui/select";
 import { brl, pts as formatPoints } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
+import { WaterBar } from "@/components/career/BattlePass";
+import arenaLogo from "@/assets/arena-logo.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/admin/bla")({
   head: () => ({
