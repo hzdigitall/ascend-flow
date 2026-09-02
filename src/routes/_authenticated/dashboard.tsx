@@ -7,8 +7,7 @@ import {
   Banknote,
   Coins,
   Copy,
-  Lock,
-  Sparkles,
+Sparkles,
   TrendingUp,
   Users,
   Wallet,
@@ -119,8 +118,7 @@ function DashboardPage() {
 
   // O bônus de cadastro (R$ 30) já é creditado no saldo principal no cadastro,
   // então aqui entram apenas os preços dos planos (bloqueados até o vencimento).
-  const investedLocked = (data?.plans ?? []).reduce((sum, p) => sum + Number(p.price ?? 0), 0);
-  const investedTotal = investedLocked;
+const investedLocked = (data?.plans ?? []).reduce((sum, p) => sum + Number(p.price ?? 0), 0);
   const withdrawable =
     Number(wallet?.earnings_balance ?? 0) + Number(wallet?.referral_balance ?? 0);
 
@@ -185,14 +183,7 @@ function DashboardPage() {
           hint={t("dash.points.hint")}
           loading={!wallet}
         />
-        <StatCard
-          label="Montante investido"
-          value={brl(investedTotal)}
-          icon={Lock}
-          hint="Valor dos planos ativos. Liberado no saldo principal quando o plano vencer."
-          loading={isLoading}
-        />
-        <StatCard
+<StatCard
           label="Disponível para saque"
           value={brl(withdrawable)}
           icon={Banknote}
