@@ -1,4 +1,5 @@
 import {
+  BadgeCheck,
   Gift,
   Image,
   LayoutDashboard,
@@ -20,6 +21,7 @@ export const adminNav: NavItem[] = [
   { label: "Usuários", to: "/admin/usuarios", icon: Users, section: "Gestão" },
   { label: "Registros", to: "/admin/registros", icon: FileSearch, section: "Gestão" },
   { label: "Planos", to: "/admin/planos", icon: ShieldCheck, section: "Gestão" },
+  { label: "Planos ativos", to: "/admin/planos-ativos", icon: BadgeCheck, section: "Gestão" },
   { label: "Auditoria de planos", to: "/admin/auditoria-planos", icon: History, section: "Gestão" },
   { label: "BLA — Liderança", to: "/admin/bla", icon: Crown, section: "Gestão" },
   { label: "Pagamentos", to: "/admin/pagamentos", icon: Wallet, section: "Financeiro" },
