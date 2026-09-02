@@ -30,6 +30,9 @@ export const Route = createFileRoute("/api/public/webhooks/connectpay/crypto")({
         const asset = String(data["asset"] ?? "USDT");
         const chain = String(data["chain"] ?? "BEP20");
         const txHash = (data["tx_hash"] ?? data["hash"] ?? null) as string | null;
+        const depositAddress =
+          String(data["deposit_address"] ?? data["address"] ?? "") || null;
+
         const amountRaw = data["amount"];
         const amount =
           amountRaw === undefined || amountRaw === null ? null : Number(amountRaw as string);
@@ -54,6 +57,8 @@ export const Route = createFileRoute("/api/public/webhooks/connectpay/crypto")({
                 amount: amount !== null && Number.isFinite(amount) ? amount : null,
                 tx_hash: txHash,
                 external_id: externalId,
+                deposit_address: depositAddress,
+
               },
               "webhook",
             );
