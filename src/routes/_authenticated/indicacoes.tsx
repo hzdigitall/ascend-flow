@@ -17,6 +17,7 @@ import careerPlanAsset from "@/assets/career-plan.png.asset.json";
 import { Progress } from "@/components/ui/progress";
 import { pts as formatPoints } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { BattlePass } from "@/components/career/BattlePass";
 import {
   Dialog,
   DialogContent,
