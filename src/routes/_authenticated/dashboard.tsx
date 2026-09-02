@@ -262,14 +262,10 @@ const SIGNUP_BONUS = 30;
                         </div>
 
                         <div className="rounded-lg bg-muted/60 p-2">
-                          <p className="text-sm font-semibold">
-                            {brl(Number(plan.price) + bonus)}
+                          <p className="text-sm font-semibold">{brl(plan.price)}</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            Montante do plano (somado ao saldo principal)
                           </p>
-                          {bonus > 0 ? (
-                            <p className="text-[10px] text-muted-foreground">
-                              {brl(plan.price)} do plano + {brl(bonus)} de bônus de cadastro
-                            </p>
-                          ) : null}
                         </div>
 
 
