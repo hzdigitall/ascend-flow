@@ -29,11 +29,11 @@ function AdminPaymentsPage() {
     queryKey: ["admin", "payments"],
     queryFn: async () => {
 const { data, error } = await supabase
-        .from("payments")
-        .select("*, profiles(full_name, email)")
-        .eq("status", "paid")
-        .order("created_at", { ascending: false })
-        .limit(200);
+      .from("payments")
+      .select("*, profiles(full_name, email)")
+      .eq("status", "paid")
+      .order("created_at", { ascending: false })
+      .limit(200);
       if (error) throw error;
       return data;
     },
