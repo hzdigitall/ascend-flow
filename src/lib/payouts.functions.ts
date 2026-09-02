@@ -41,6 +41,8 @@ export const requestPixWithdrawal = createServerFn({ method: "POST" })
     const auto = data.amount <= AUTO_PIX_WITHDRAW_LIMIT;
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { assertDailyWithdrawalLimit } = await import("./withdrawal-daily-limit.server");
+    await assertDailyWithdrawalLimit(supabaseAdmin, context.userId);
     const { data: id, error } = await supabaseAdmin.rpc("request_withdrawal_v2", {
       _user: context.userId,
       _amount: data.amount,
@@ -98,6 +100,8 @@ export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
     const auto = true;
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { assertDailyWithdrawalLimit } = await import("./withdrawal-daily-limit.server");
+    await assertDailyWithdrawalLimit(supabaseAdmin, context.userId);
     const cp = await import("./connectpay.server");
     const gateway = await cp.loadGateway(supabaseAdmin);
     if (!gateway?.active || !gateway.usdt_withdraw_enabled) {
