@@ -260,6 +260,18 @@ function DashboardPage() {
                           <StatusBadge status={plan.status} />
                         </div>
 
+                        <div className="rounded-lg bg-muted/60 p-2">
+                          <p className="text-sm font-semibold">
+                            {brl(Number(plan.price) + bonus)}
+                          </p>
+                          {bonus > 0 ? (
+                            <p className="text-[10px] text-muted-foreground">
+                              {brl(plan.price)} do plano + {brl(bonus)} de bônus de cadastro
+                            </p>
+                          ) : null}
+                        </div>
+
+
                         <div className="space-y-1">
                           <div className="flex items-center justify-between text-xs">
                             <span className="text-muted-foreground">{t("dash.roiProgress")}</span>
