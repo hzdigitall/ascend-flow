@@ -21,11 +21,7 @@ export const Route = createFileRoute("/_authenticated/admin/pagamentos")({
 });
 
 const statusLabel: Record<string, string> = {
-  pending: "Pendente",
   paid: "Pago",
-  expired: "Expirado",
-  cancelled: "Cancelado",
-  refunded: "Reembolsado",
 };
 
 function AdminPaymentsPage() {
