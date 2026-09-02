@@ -148,11 +148,11 @@ const SIGNUP_BONUS = 30;
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
+<StatCard
           label={t("dash.balance.main")}
-          value={brl(Number(wallet?.main_balance ?? 0) + investedTotal)}
+          value={brl(Number(wallet?.main_balance ?? 0) + investedLocked)}
           icon={Wallet}
-          hint={`Inclui ${brl(investedTotal)} de montante investido (bloqueado até o vencimento do plano).`}
+          hint={`Inclui ${brl(investedLocked)} de montante investido (bloqueado até o vencimento do plano). O bônus de cadastro de R$ 30 já está incluso no saldo.`}
           loading={!wallet}
         />
         <StatCard
