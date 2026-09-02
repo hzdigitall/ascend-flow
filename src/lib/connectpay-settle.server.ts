@@ -104,28 +104,32 @@ export async function settleCryptoDeposit(
 ): Promise<SettleResult> {
   const base = () => admin.from("deposits").select("*").eq("method", "crypto");
 
-  let deposit: Record<string, unknown> | null = null;
+  const findDeposit = async () => {
+    if (event.external_id) {
+      const { data } = await base().eq("external_id", event.external_id).maybeSingle();
+      if (data) return data;
+    }
+    if (event.transaction_id) {
+      const { data } = await base()
+        .eq("provider_transaction_id", event.transaction_id)
+        .maybeSingle();
+      if (data) return data;
+    }
+    if (event.deposit_address) {
+      // A ConnectPay não devolve external_id no webhook de cripto: casa pelo endereço gerado.
+      const { data } = await base()
+        .ilike("pay_address", event.deposit_address)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data) return data;
+    }
+    return null;
+  };
 
-  if (event.external_id) {
-    const { data } = await base().eq("external_id", event.external_id).maybeSingle();
-    deposit = data as Record<string, unknown> | null;
-  }
-  if (!deposit && event.transaction_id) {
-    const { data } = await base()
-      .eq("provider_transaction_id", event.transaction_id)
-      .maybeSingle();
-    deposit = data as Record<string, unknown> | null;
-  }
-  if (!deposit && event.deposit_address) {
-    // A ConnectPay não devolve external_id no webhook de cripto: casa pelo endereço gerado.
-    const { data } = await base()
-      .ilike("pay_address", event.deposit_address)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    deposit = data as Record<string, unknown> | null;
-  }
+  const deposit = await findDeposit();
   if (!deposit) return { credited: false, reason: "deposit_not_found" };
+
 
 
   const status = event.status.toUpperCase();
