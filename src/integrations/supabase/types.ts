@@ -1862,36 +1862,21 @@ export type Database = {
         }
         Returns: string
       }
-      request_withdrawal_v2:
-        | {
-            Args: {
-              _address: string
-              _amount: number
-              _currency: string
-              _key: string
-              _key_type: string
-              _method: string
-              _network: string
-              _user: string
-              _wallet: string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              _address: string
-              _amount: number
-              _auto?: boolean
-              _currency: string
-              _key: string
-              _key_type: string
-              _method: string
-              _network: string
-              _user: string
-              _wallet: string
-            }
-            Returns: string
-          }
+      request_withdrawal_v2: {
+        Args: {
+          _address: string
+          _amount: number
+          _auto?: boolean
+          _currency: string
+          _key: string
+          _key_type: string
+          _method: string
+          _network: string
+          _user: string
+          _wallet: string
+        }
+        Returns: string
+      }
       resolve_referral_code: {
         Args: { _code: string }
         Returns: {
