@@ -285,12 +285,27 @@ function Page() {
       />
 
       <Tabs defaultValue="rede" className="w-full">
-        <TabsList className="mb-8 grid w-full grid-cols-2 lg:w-[400px]">
+        <TabsList className="mb-8 grid w-full grid-cols-3 lg:w-[560px]">
           <TabsTrigger value="rede">Minha Rede</TabsTrigger>
+          <TabsTrigger value="passe">Passe Arena</TabsTrigger>
           <TabsTrigger value="carreira">Plano de Carreira</TabsTrigger>
         </TabsList>
 
+        <TabsContent value="passe" className="space-y-6">
+          <BattlePass
+            ranks={CAREER_RANKS}
+            currentPoints={currentPoints}
+            currentRankName={currentRank?.name ?? null}
+            qualifiedRankName={qualifiedRank?.name ?? null}
+            nextRank={nextRank}
+            periodLabel={period ? monthLabel(period) : "este mês"}
+            network={networkStats}
+            daysToPayout={daysToPayout}
+          />
+        </TabsContent>
+
         <TabsContent value="carreira" className="space-y-6">
+
           <Card className="overflow-hidden border-primary/20 bg-primary/5 shadow-card">
             <CardContent className="p-6 sm:p-8">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
