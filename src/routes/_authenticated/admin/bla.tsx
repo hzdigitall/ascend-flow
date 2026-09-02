@@ -174,6 +174,56 @@ function AdminBlaPage() {
     }
   }
 
+  async function saveRank() {
+    if (!rankForm) return;
+    setSavingRank(true);
+    try {
+      const payload = {
+        name: rankForm.name.trim(),
+        level: Number(rankForm.level),
+        points_required: Number(rankForm.points_required),
+        bonus: Number(rankForm.bonus),
+        required_rank_level:
+          Number(rankForm.required_rank_level) > 0 ? Number(rankForm.required_rank_level) : null,
+        required_rank_count: Number(rankForm.required_rank_count) || 0,
+        active: rankForm.active,
+      };
+      if (!payload.name) throw new Error("Informe o nome da graduação.");
+      if (!Number.isFinite(payload.level) || payload.level < 1)
+        throw new Error("Nível inválido.");
+      if (!Number.isFinite(payload.points_required) || payload.points_required < 0)
+        throw new Error("Pontos exigidos inválidos.");
+      if (!Number.isFinite(payload.bonus) || payload.bonus < 0)
+        throw new Error("Valor do BLA inválido.");
+
+      const { error } = rankForm.id
+        ? await supabase.from("career_ranks").update(payload).eq("id", rankForm.id)
+        : await supabase.from("career_ranks").insert(payload);
+      if (error) throw error;
+
+      toast.success("Graduação salva.");
+      setRankForm(null);
+      qc.invalidateQueries({ queryKey: ["career-ranks"] });
+    } catch (error) {
+      toast.error((error as Error).message || "Falha ao salvar a graduação.");
+    } finally {
+      setSavingRank(false);
+    }
+  }
+
+  async function toggleRank(rank: any) {
+    const { error } = await supabase
+      .from("career_ranks")
+      .update({ active: !rank.active })
+      .eq("id", rank.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ["career-ranks"] });
+  }
+
+
   function openEdit(row: any) {
     setEditing(row);
     setPointsInput(String(row.points ?? 0));
