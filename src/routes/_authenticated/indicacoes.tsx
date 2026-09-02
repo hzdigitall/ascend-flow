@@ -260,11 +260,22 @@ function Page() {
   const qualifiedLevel = Number(blaQuery.data?.qualified_level ?? 0);
   const rankName = blaQuery.data?.rank_name ?? null;
   const period = String(blaQuery.data?.period ?? "").slice(0, 7);
-  const nextRank =
-    CAREER_RANKS.find((r) => r.points > currentPoints) ?? CAREER_RANKS[CAREER_RANKS.length - 1];
   const currentRank = rankName ? (CAREER_RANKS.find((r) => r.name === rankName) ?? null) : null;
   const qualifiedRank = qualifiedLevel > 0 ? (CAREER_RANKS[qualifiedLevel - 1] ?? null) : null;
+  // Meta do mês: manter a própria graduação enquanto não a repetir; depois, a próxima faixa.
+  const targetRank =
+    currentRank && currentPoints < currentRank.points
+      ? currentRank
+      : (CAREER_RANKS.find((r) => r.points > currentPoints) ??
+        CAREER_RANKS[CAREER_RANKS.length - 1]);
+  const nextRank = targetRank;
   const progress = nextRank ? Math.min((currentPoints / nextRank.points) * 100, 100) : 100;
+  const daysLeft = (() => {
+    const now = new Date();
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    return Math.max(Math.ceil((end.getTime() - now.getTime()) / 86_400_000), 0);
+  })();
+
 
   return (
     <UserShell>
@@ -295,6 +306,12 @@ function Page() {
                   <p className="text-xs text-muted-foreground">
                     A pontuação zera na virada do mês. A graduação conquistada permanece.
                   </p>
+                  <p className="text-xs font-semibold text-primary">
+                    {daysLeft === 1
+                      ? "Falta 1 dia para o fechamento do mês."
+                      : `Faltam ${daysLeft} dias para o fechamento do mês.`}
+                  </p>
+
                 </div>
                 {currentRank && (
                   <div className="flex items-center gap-3 rounded-2xl bg-primary px-6 py-3 text-white shadow-lg">
@@ -320,18 +337,24 @@ function Page() {
                   </p>
                 ) : (
                   <p className="text-sm text-muted-foreground">
-                    Você ainda não cumpriu os requisitos deste mês. Faltam{" "}
+                    {currentRank
+                      ? "Você ainda não repetiu os requisitos da sua graduação neste mês. Faltam "
+                      : "Você ainda não cumpriu os requisitos deste mês. Faltam "}
                     <span className="font-semibold text-foreground">
                       {formatPoints(Math.max((nextRank?.points ?? 0) - currentPoints, 0))}
                     </span>{" "}
-                    pontos para se qualificar como {nextRank?.name}.
+                    pontos para receber o BLA de {nextRank?.name}
+                    {nextRank?.req ? ` (e ter ${nextRank.req} na equipe direta)` : ""}.
                   </p>
                 )}
               </div>
 
               <div className="mt-8 space-y-3">
                 <div className="flex justify-between text-sm font-medium">
-                  <span className="text-muted-foreground">Próxima meta: <span className="text-foreground">{nextRank?.name || "Titan"}</span></span>
+                  <span className="text-muted-foreground">
+                    Meta do mês:{" "}
+                    <span className="text-foreground">{nextRank?.name || "Titan"}</span>
+                  </span>
                   <span>{progress.toFixed(0)}%</span>
                 </div>
                 <Progress value={progress} className="h-3" />
@@ -349,6 +372,7 @@ function Page() {
                 <div className="border-b p-6">
                   <h3 className="font-bold">Histórico do BLA</h3>
                 </div>
+
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-muted/50 text-[11px] font-bold uppercase text-muted-foreground">
@@ -356,6 +380,7 @@ function Page() {
                         <th className="px-6 py-3">Mês</th>
                         <th className="px-6 py-3">Graduação</th>
                         <th className="px-6 py-3">Pontos</th>
+                        <th className="px-6 py-3">Situação</th>
                         <th className="px-6 py-3 text-right">Valor</th>
                       </tr>
                     </thead>
@@ -363,15 +388,30 @@ function Page() {
                       {payoutsQuery.data!.map((p: any) => (
                         <tr key={p.period}>
                           <td className="px-6 py-4">{monthLabel(String(p.period).slice(0, 7))}</td>
-                          <td className="px-6 py-4">{p.rank_name ?? "Não qualificado"}</td>
+                          <td className="px-6 py-4">{p.rank_name ?? "—"}</td>
                           <td className="px-6 py-4 text-muted-foreground">
                             {formatPoints(Number(p.points))}
                           </td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={cn(
+                                "rounded-full px-2 py-1 text-[11px] font-bold",
+                                Number(p.amount) > 0
+                                  ? "bg-primary/10 text-primary"
+                                  : "bg-muted text-muted-foreground",
+                              )}
+                            >
+                              {Number(p.amount) > 0 ? "Pago" : "Não qualificado"}
+                            </span>
+                          </td>
                           <td className="px-6 py-4 text-right font-bold text-primary">
-                            R$ {Number(p.amount).toLocaleString("pt-BR")}
+                            {Number(p.amount) > 0
+                              ? `R$ ${Number(p.amount).toLocaleString("pt-BR")}`
+                              : "—"}
                           </td>
                         </tr>
                       ))}
+
                     </tbody>
                   </table>
                 </div>
@@ -447,8 +487,9 @@ function Page() {
                       <ChevronRight className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold">Indicações Diretas</p>
-                      <p className="text-xs text-muted-foreground">Quando um indicado do seu 1º nível ativa um plano, você ganha pontos na mesma proporção (R$ 50 = 5 pts).</p>
+                      <p className="text-sm font-semibold">Indicações até o 3º nível</p>
+                      <p className="text-xs text-muted-foreground">Quando um indicado do seu 1º, 2º ou 3º nível ativa um plano, você ganha pontos na mesma proporção (R$ 50 = 5 pts).</p>
+
                     </div>
                   </div>
                 </div>

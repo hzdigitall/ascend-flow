@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Crown, Play, Pencil } from "lucide-react";
+import { Crown, Play, Pencil, Plus } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/layout/AppShell";
@@ -60,6 +61,27 @@ const statusLabel: Record<string, string> = {
   manual: "Manual",
 };
 
+type RankForm = {
+  id?: string;
+  name: string;
+  level: string;
+  points_required: string;
+  bonus: string;
+  required_rank_level: string;
+  required_rank_count: string;
+  active: boolean;
+};
+
+const emptyRank: RankForm = {
+  name: "",
+  level: "",
+  points_required: "",
+  bonus: "",
+  required_rank_level: "0",
+  required_rank_count: "0",
+  active: true,
+};
+
 function AdminBlaPage() {
   const { profile } = useAuth();
   const qc = useQueryClient();
@@ -70,8 +92,11 @@ function AdminBlaPage() {
   const [rankInput, setRankInput] = useState("0");
   const [reason, setReason] = useState("");
   const [running, setRunning] = useState(false);
+  const [rankForm, setRankForm] = useState<RankForm | null>(null);
+  const [savingRank, setSavingRank] = useState(false);
 
   const period = `${month}-01`;
+
 
   const ranksQ = useQuery({
     queryKey: ["career-ranks"],
@@ -149,6 +174,56 @@ function AdminBlaPage() {
       setRunning(false);
     }
   }
+
+  async function saveRank() {
+    if (!rankForm) return;
+    setSavingRank(true);
+    try {
+      const payload = {
+        name: rankForm.name.trim(),
+        level: Number(rankForm.level),
+        points_required: Number(rankForm.points_required),
+        bonus: Number(rankForm.bonus),
+        required_rank_level:
+          Number(rankForm.required_rank_level) > 0 ? Number(rankForm.required_rank_level) : null,
+        required_rank_count: Number(rankForm.required_rank_count) || 0,
+        active: rankForm.active,
+      };
+      if (!payload.name) throw new Error("Informe o nome da graduação.");
+      if (!Number.isFinite(payload.level) || payload.level < 1)
+        throw new Error("Nível inválido.");
+      if (!Number.isFinite(payload.points_required) || payload.points_required < 0)
+        throw new Error("Pontos exigidos inválidos.");
+      if (!Number.isFinite(payload.bonus) || payload.bonus < 0)
+        throw new Error("Valor do BLA inválido.");
+
+      const { error } = rankForm.id
+        ? await supabase.from("career_ranks").update(payload).eq("id", rankForm.id)
+        : await supabase.from("career_ranks").insert(payload);
+      if (error) throw error;
+
+      toast.success("Graduação salva.");
+      setRankForm(null);
+      qc.invalidateQueries({ queryKey: ["career-ranks"] });
+    } catch (error) {
+      toast.error((error as Error).message || "Falha ao salvar a graduação.");
+    } finally {
+      setSavingRank(false);
+    }
+  }
+
+  async function toggleRank(rank: any) {
+    const { error } = await supabase
+      .from("career_ranks")
+      .update({ active: !rank.active })
+      .eq("id", rank.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ["career-ranks"] });
+  }
+
 
   function openEdit(row: any) {
     setEditing(row);
@@ -248,6 +323,189 @@ function AdminBlaPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="mb-6 shadow-card">
+        <CardContent className="p-0">
+          <div className="flex items-center justify-between border-b p-6">
+            <div>
+              <h3 className="font-bold">Graduações</h3>
+              <p className="text-xs text-muted-foreground">
+                Pontos exigidos, valor do BLA e requisitos de equipe de cada nível.
+              </p>
+            </div>
+            <Button size="sm" onClick={() => setRankForm({ ...emptyRank })}>
+              <Plus className="mr-2 h-4 w-4" /> Nova graduação
+            </Button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-muted/50 text-[11px] font-bold uppercase text-muted-foreground">
+                <tr>
+                  <th className="px-6 py-3">Nível</th>
+                  <th className="px-6 py-3">Graduação</th>
+                  <th className="px-6 py-3">Pontos no mês</th>
+                  <th className="px-6 py-3">Requisito de equipe</th>
+                  <th className="px-6 py-3">BLA</th>
+                  <th className="px-6 py-3">Ativa</th>
+                  <th className="px-6 py-3 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {(ranksQ.data ?? []).map((rank: any) => {
+                  const reqName = (ranksQ.data ?? []).find(
+                    (r: any) => r.level === rank.required_rank_level,
+                  )?.name;
+                  return (
+                    <tr key={rank.id} className="hover:bg-muted/30">
+                      <td className="px-6 py-4 text-muted-foreground">{rank.level}</td>
+                      <td className="px-6 py-4 font-semibold">{rank.name}</td>
+                      <td className="px-6 py-4">{formatPoints(Number(rank.points_required))}</td>
+                      <td className="px-6 py-4 text-xs text-muted-foreground">
+                        {rank.required_rank_count > 0 && rank.required_rank_level
+                          ? `${rank.required_rank_count} diretos ${reqName ?? `nível ${rank.required_rank_level}`}`
+                          : "Apenas pontos"}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-primary">{brl(Number(rank.bonus))}</td>
+                      <td className="px-6 py-4">
+                        <Switch checked={rank.active} onCheckedChange={() => toggleRank(rank)} />
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            setRankForm({
+                              id: rank.id,
+                              name: rank.name,
+                              level: String(rank.level),
+                              points_required: String(rank.points_required),
+                              bonus: String(rank.bonus),
+                              required_rank_level: String(rank.required_rank_level ?? 0),
+                              required_rank_count: String(rank.required_rank_count ?? 0),
+                              active: rank.active,
+                            })
+                          }
+                        >
+                          <Pencil className="mr-2 h-4 w-4" /> Editar
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={!!rankForm} onOpenChange={(open) => !open && setRankForm(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{rankForm?.id ? "Editar graduação" : "Nova graduação"}</DialogTitle>
+            <DialogDescription>
+              Estes valores definem a qualificação mensal do BLA de cada líder.
+            </DialogDescription>
+          </DialogHeader>
+          {rankForm && (
+            <div className="space-y-4 py-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="rank-name">Nome</Label>
+                  <Input
+                    id="rank-name"
+                    value={rankForm.name}
+                    onChange={(e) => setRankForm({ ...rankForm, name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="rank-level">Nível</Label>
+                  <Input
+                    id="rank-level"
+                    type="number"
+                    min={1}
+                    value={rankForm.level}
+                    onChange={(e) => setRankForm({ ...rankForm, level: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="rank-points">Pontos no mês</Label>
+                  <Input
+                    id="rank-points"
+                    type="number"
+                    min={0}
+                    value={rankForm.points_required}
+                    onChange={(e) =>
+                      setRankForm({ ...rankForm, points_required: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="rank-bonus">Valor do BLA (R$)</Label>
+                  <Input
+                    id="rank-bonus"
+                    type="number"
+                    min={0}
+                    value={rankForm.bonus}
+                    onChange={(e) => setRankForm({ ...rankForm, bonus: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="rank-req-count">Diretos exigidos</Label>
+                  <Input
+                    id="rank-req-count"
+                    type="number"
+                    min={0}
+                    value={rankForm.required_rank_count}
+                    onChange={(e) =>
+                      setRankForm({ ...rankForm, required_rank_count: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>Graduação mínima dos diretos</Label>
+                  <Select
+                    value={rankForm.required_rank_level}
+                    onValueChange={(v) => setRankForm({ ...rankForm, required_rank_level: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">Sem exigência</SelectItem>
+                      {(ranksQ.data ?? []).map((r: any) => (
+                        <SelectItem key={r.id} value={String(r.level)}>
+                          {r.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={rankForm.active}
+                  onCheckedChange={(v: boolean) => setRankForm({ ...rankForm, active: v })}
+                />
+                <Label>Graduação ativa</Label>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRankForm(null)}>
+              Cancelar
+            </Button>
+            <Button onClick={saveRank} disabled={savingRank}>
+              {savingRank ? "Salvando..." : "Salvar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
 
       <Card className="shadow-card">
         <CardContent className="p-0">
