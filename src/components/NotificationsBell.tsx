@@ -86,6 +86,7 @@ export function NotificationsBell({ userId }: { userId?: string | undefined }) {
 
 
   return (
+    <>
     <Popover
       open={open}
       onOpenChange={(next) => {
