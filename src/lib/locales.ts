@@ -165,7 +165,7 @@ export const pt = {
   "dash.seePlans": "Ver planos",
   "dash.knowMore": "Saiba mais",
   "dash.balance.main": "Saldo principal",
-  "dash.balance.earnings": "Ganhos",
+  "dash.balance.earnings": "GANHOS DE RENDIMENTO",
   "dash.balance.referral": "Comissões de indicação",
   "dash.balance.points": "Pontos",
   "dash.points.hint": "Use na loja de prêmios",
