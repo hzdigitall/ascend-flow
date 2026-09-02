@@ -98,6 +98,13 @@ function DashboardPage() {
   });
 
 
+  const fetchNetwork = useServerFn(getNetworkAmount);
+  const { data: net, isLoading: netLoading } = useQuery({
+    queryKey: ["dashboard", "network", profile?.id],
+    enabled: Boolean(profile?.id),
+    queryFn: () => fetchNetwork(),
+  });
+
   const refLink = profile?.referral_code ? buildReferralLink(profile.referral_code) : "";
 
   const copyLink = async () => {
