@@ -47,9 +47,7 @@ function DashboardPage() {
           .select("*, plans(name, points)")
           .eq("user_id", profile!.id)
           .eq("status", "active")
-          .order("activated_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
+          .order("activated_at", { ascending: false }),
         supabase
           .from("wallet_transactions")
           .select("*")
@@ -66,29 +64,37 @@ function DashboardPage() {
           .maybeSingle(),
       ]);
 
+      const activePlans = planRes.data ?? [];
 
-      // Calculate total earned for the specific active plan
-      let planTotalRoi = 0;
-      if (planRes.data) {
+      // Total já rendido por plano ativo
+      const roiByPlan: Record<string, number> = {};
+      if (activePlans.length > 0) {
         const { data: roiData } = await supabase
           .from("wallet_transactions")
-          .select("amount")
+          .select("amount, reference_id")
           .eq("user_id", profile!.id)
           .eq("category", "earning")
-          .eq("reference_id", planRes.data.id);
-        
-        planTotalRoi = roiData?.reduce((acc, t) => acc + Number(t.amount), 0) || 0;
+          .in(
+            "reference_id",
+            activePlans.map((p) => p.id),
+          );
+
+        for (const row of roiData ?? []) {
+          if (!row.reference_id) continue;
+          roiByPlan[row.reference_id] = (roiByPlan[row.reference_id] ?? 0) + Number(row.amount);
+        }
       }
 
       return {
-        plan: planRes.data,
+        plans: activePlans,
         transactions: txRes.data ?? [],
         referrals: refRes.data ?? [],
         banner: bannerRes.data,
-        planTotalRoi,
+        roiByPlan,
       };
     },
   });
+
 
   const refLink = profile?.referral_code ? buildReferralLink(profile.referral_code) : "";
 
