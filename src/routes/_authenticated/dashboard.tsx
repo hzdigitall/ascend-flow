@@ -149,8 +149,9 @@ function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label={t("dash.balance.main")}
-          value={brl(wallet?.main_balance)}
+          value={brl(Number(wallet?.main_balance ?? 0) + investedTotal)}
           icon={Wallet}
+          hint={`Inclui ${brl(investedTotal)} de montante investido (bloqueado até o vencimento do plano).`}
           loading={!wallet}
         />
         <StatCard
