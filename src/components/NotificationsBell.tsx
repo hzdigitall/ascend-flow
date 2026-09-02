@@ -68,8 +68,10 @@ export function NotificationsBell({ userId }: { userId?: string | undefined }) {
     if (!userId) return;
     await supabase.from("notifications").delete().eq("user_id", userId);
     lastIdRef.current = null;
+    setConfirmClear(false);
     queryClient.invalidateQueries({ queryKey: ["notifications"] });
   };
+
 
 
   return (
