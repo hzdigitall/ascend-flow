@@ -1843,6 +1843,7 @@ export type Database = {
         Args: { _plan: string; _user: string; _wallet: string }
         Returns: string
       }
+      push_login_notices: { Args: never; Returns: undefined }
       qualified_rank_level: {
         Args: { _period: string; _user: string }
         Returns: number
