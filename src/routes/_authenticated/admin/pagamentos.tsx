@@ -28,12 +28,12 @@ function AdminPaymentsPage() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["admin", "payments"],
     queryFn: async () => {
-const { data, error } = await supabase
-      .from("payments")
-      .select("*, profiles(full_name, email)")
-      .eq("status", "paid")
-      .order("created_at", { ascending: false })
-      .limit(200);
+      const { data, error } = await supabase
+        .from("payments")
+        .select("*, profiles(full_name, email)")
+        .eq("status", "paid")
+        .order("created_at", { ascending: false })
+        .limit(200);
       if (error) throw error;
       return data;
     },
@@ -41,7 +41,7 @@ const { data, error } = await supabase
 
   return (
     <AppShell items={adminNav} variant="admin">
-<PageHeader
+      <PageHeader
         title="Pagamentos"
         description="Apenas depósitos pagos (PIX e USDT) são exibidos. Cobranças geradas e não pagas ficam ocultas."
       />
@@ -69,7 +69,7 @@ const { data, error } = await supabase
                     <th className="px-6 py-4">Cliente</th>
                     <th className="px-6 py-4">Valor</th>
                     <th className="px-6 py-4">Gateway</th>
-<th className="px-6 py-4">Criado em</th>
+                    <th className="px-6 py-4">Criado em</th>
                     <th className="px-6 py-4">Status</th>
                   </tr>
                 </thead>
@@ -91,7 +91,7 @@ const { data, error } = await supabase
                       <td className="px-6 py-4 text-muted-foreground">
                         {dateTimeBR(p.created_at)}
                       </td>
-<td className="px-6 py-4">
+                      <td className="px-6 py-4">
                         <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
                           {statusLabel[p.status] ?? p.status}
                         </span>
