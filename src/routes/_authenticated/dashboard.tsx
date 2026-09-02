@@ -308,7 +308,7 @@ const investedLocked = (data?.plans ?? []).reduce((sum, p) => sum + Number(p.pri
                 <div className="space-y-4">
                   {data!.plans.map((plan) => {
                     const earned = data!.roiByPlan[plan.id] ?? 0;
-                    const cap = Number(plan.price) * 2;
+                    const cap = Number(plan.price);
                     const pct = cap > 0 ? (earned / cap) * 100 : 0;
                     return (
                       <div key={plan.id} className="space-y-3 rounded-xl border p-3">
