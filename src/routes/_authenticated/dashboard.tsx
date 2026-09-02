@@ -172,6 +172,21 @@ function DashboardPage() {
           hint={t("dash.points.hint")}
           loading={!wallet}
         />
+        <StatCard
+          label="Montante investido"
+          value={brl(investedTotal)}
+          icon={Lock}
+          hint="Inclui o bônus de cadastro de R$ 30. Liberado no saldo principal quando o plano vencer."
+          loading={isLoading}
+        />
+        <StatCard
+          label="Disponível para saque"
+          value={brl(withdrawable)}
+          icon={Banknote}
+          tone="success"
+          hint="Rendimentos e comissões já liberados."
+          loading={!wallet}
+        />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
