@@ -128,7 +128,7 @@ function WithdrawalsPage() {
     <AppShell items={adminNav} variant="admin">
 <PageHeader
         title="Saques"
-        description="Saques até R$ 500 são enviados automaticamente à gateway. Acima disso, aprovação manual obrigatória."
+        description="Saques PIX até R$ 1.000 são enviados automaticamente à gateway. Acima disso, aprovação manual obrigatória. Saques em USDT são sempre automáticos."
       />
       <Card className="shadow-card">
         <CardContent className="p-0">
