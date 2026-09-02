@@ -118,17 +118,9 @@ function AdminPaymentsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        {p.status === "pending" && Number(p.amount) >= 200000 ? (
-                          <Button
-                            size="sm"
-                            onClick={() => confirmPayment.mutate(p.id)}
-                            disabled={confirmPayment.isPending}
-                          >
-                            Confirmar
-                          </Button>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
-                        )}
+                        <span className="text-xs text-muted-foreground">
+                          {p.status === "pending" ? "Automático" : "—"}
+                        </span>
                       </td>
                     </tr>
                   ))}
