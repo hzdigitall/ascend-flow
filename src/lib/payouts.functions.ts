@@ -9,11 +9,13 @@ import type { WithdrawalRow } from "@/lib/withdrawal-submit.server";
 /**
  * Saques (cash-out PIX e withdraw USDT BEP20).
  *
- * Até R$ 500 (AUTO_WITHDRAW_LIMIT) o saque é enviado automaticamente à
- * ConnectPay no momento da solicitação; acima disso, reserva saldo e fica
+ * PIX: até R$ 1.000 (AUTO_PIX_WITHDRAW_LIMIT) o saque é enviado automaticamente
+ * à ConnectPay no momento da solicitação; acima disso, reserva saldo e fica
  * aguardando aprovação do administrador.
+ * USDT: sem limite — sempre enviado automaticamente.
  */
-const AUTO_WITHDRAW_LIMIT = 500;
+const AUTO_PIX_WITHDRAW_LIMIT = 1000;
+
 
 export const requestPixWithdrawal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -36,7 +38,7 @@ export const requestPixWithdrawal = createServerFn({ method: "POST" })
       throw new Error("Chave PIX inválida para o tipo selecionado.");
     }
 
-    const auto = data.amount <= AUTO_WITHDRAW_LIMIT;
+    const auto = data.amount <= AUTO_PIX_WITHDRAW_LIMIT;
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: id, error } = await supabaseAdmin.rpc("request_withdrawal_v2", {
@@ -93,7 +95,7 @@ export const requestUsdtWithdrawal = createServerFn({ method: "POST" })
     if (!win.isOpen) throw new Error(win.message);
     if (data.amount < 10) throw new Error("O valor mínimo para saque é R$ 10,00.");
 
-    const auto = data.amount <= AUTO_WITHDRAW_LIMIT;
+    const auto = true;
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const cp = await import("./connectpay.server");
