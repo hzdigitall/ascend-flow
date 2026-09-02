@@ -57,6 +57,8 @@ export const Route = createFileRoute("/api/public/webhooks/connectpay/crypto")({
                 amount: amount !== null && Number.isFinite(amount) ? amount : null,
                 tx_hash: txHash,
                 external_id: externalId,
+                deposit_address: depositAddress,
+
               },
               "webhook",
             );
