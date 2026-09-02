@@ -32,9 +32,10 @@ function AdminPaymentsPage() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["admin", "payments"],
     queryFn: async () => {
-      const { data, error } = await supabase
+const { data, error } = await supabase
         .from("payments")
         .select("*, profiles(full_name, email)")
+        .eq("status", "paid")
         .order("created_at", { ascending: false })
         .limit(200);
       if (error) throw error;
@@ -44,9 +45,9 @@ function AdminPaymentsPage() {
 
   return (
     <AppShell items={adminNav} variant="admin">
-      <PageHeader
+<PageHeader
         title="Pagamentos"
-        description="Todos os depósitos são confirmados automaticamente pelo gateway (PIX e USDT)."
+        description="Apenas depósitos pagos (PIX e USDT) são exibidos. Cobranças geradas e não pagas ficam ocultas."
       />
       <Card className="shadow-card">
         <CardContent className="p-0">
@@ -72,9 +73,8 @@ function AdminPaymentsPage() {
                     <th className="px-6 py-4">Cliente</th>
                     <th className="px-6 py-4">Valor</th>
                     <th className="px-6 py-4">Gateway</th>
-                    <th className="px-6 py-4">Criado em</th>
+<th className="px-6 py-4">Criado em</th>
                     <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4 text-right">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -95,14 +95,9 @@ function AdminPaymentsPage() {
                       <td className="px-6 py-4 text-muted-foreground">
                         {dateTimeBR(p.created_at)}
                       </td>
-                      <td className="px-6 py-4">
+<td className="px-6 py-4">
                         <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
                           {statusLabel[p.status] ?? p.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <span className="text-xs text-muted-foreground">
-                          {p.status === "pending" ? "Automático" : "—"}
                         </span>
                       </td>
                     </tr>
